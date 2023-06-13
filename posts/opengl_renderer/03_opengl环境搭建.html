@@ -1,0 +1,1074 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>OpenGL渲染器03_OpenGL环境  | Adiosy</title>
+    <meta property="og:title" content="OpenGL渲染器03_OpenGL环境  - Adiosy">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2021-11-23T14:34:07&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2021-11-23T14:34:07&#43;08:00'>
+        
+    <meta name="Keywords" content="Java,C/C&#43;&#43;,计算机图形学,渲染,动画,几何,物理模拟,公众号,小程序">
+    <meta name="description" content="OpenGL渲染器03_OpenGL环境 ">
+        
+    <meta name="author" content="星尘">
+    <meta property="og:url" content="http://adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+        <link href="https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet">
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/custom.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://adiosy.com">
+                        Adiosy
+                    </a>
+                
+                <p class="description">民间图形学爱好者！热爱渲染，几何，物理模拟，游戏引擎。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://adiosy.com">Home</a>
+                    
+                    <a  href="http://adiosy.com/archives.html" title="归档">归档</a>
+                    
+                    <a  href="http://adiosy.com/books.html" title="读书">读书</a>
+                    
+                    <a  href="http://adiosy.com/about.html" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 0px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 20px;
+        word-wrap: break-word;
+        white-space: nowrap;
+        z-index: 999;
+        cursor: pointer;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 13px;
+         
+        filter: drop-shadow(rgb(150, 150, 150) 0px 0px 6px) !important;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+        list-style: none;
+        padding-inline-start: 1px !important;
+    }
+
+    .post-toc .post-toc-content ul {
+        list-style: none;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: inherit;
+    }
+
+    .post-toc .post-toc-content>nav>ul>li{
+        background-color: #fff;
+        border-left: 5px solid #666;
+        padding: 2px 5px 2px 5px;
+    }
+
+    .post-toc .post-toc-content ul li:hover{
+ 
+ 
+    }
+
+    .post-toc .post-toc-content ul li a{
+        display: inline-block;
+        width: 100%;
+    }
+
+    .post-toc .post-toc-content ul li a:hover{
+        background-color: #666;
+        color: #fff;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 153px;">
+    <h2 class="post-toc-title">目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#目标">目标</a></li>
+    <li><a href="#计算机图形学">计算机图形学</a></li>
+    <li><a href="#图形库">图形库</a>
+      <ul>
+        <li><a href="#三个图形库对比">三个图形库对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#必备的库">必备的库</a>
+      <ul>
+        <li><a href="#glfw">glfw</a></li>
+        <li><a href="#glad">glad</a></li>
+      </ul>
+    </li>
+    <li><a href="#导入glfwglad">导入glfw、glad</a>
+      <ul>
+        <li><a href="#glfw-1">glfw</a></li>
+        <li><a href="#glad-1">glad</a></li>
+      </ul>
+    </li>
+    <li><a href="#hello-window">Hello Window!</a>
+      <ul>
+        <li><a href="#初始化">初始化</a></li>
+        <li><a href="#创建窗口并设置上下文">创建窗口并设置上下文</a></li>
+        <li><a href="#glad管理函数指针">glad管理函数指针</a></li>
+        <li><a href="#主循环">主循环</a></li>
+        <li><a href="#资源回收">资源回收</a></li>
+      </ul>
+    </li>
+    <li><a href="#imgui">ImGui</a>
+      <ul>
+        <li><a href="#包含头文件">包含头文件</a></li>
+        <li><a href="#修改cmakeliststxt">修改CMakeLists.txt</a></li>
+        <li><a href="#imgui使用">ImGui使用</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 15, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 125,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 125
+                    },
+                };
+
+            var e = $(window).animate({scrollTop: 0}, 600);
+            e < t ? postToc.css(a.start) : postToc.css(a.process);
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+
+    <article class="post">
+        <header>
+            <h1 class="post-title">OpenGL渲染器03_OpenGL环境 </h1>
+        </header>
+        
+  <time datetime="2021-11-23T06:34:07Z" class="post-meta meta-date dt-published">
+    2021-11-23
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/opengl' target="_blank">OpenGL</a>
+  
+</div>
+
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">Table of Contents</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="目标">目标</h2>
+<blockquote>
+<p>原本计划是OpenGL环境就放在上一节（C++环境搭建）中一起记录的，后面发现内容太多了，所以就分开记录。</p>
+</blockquote>
+<ol>
+<li>使用glfw、glad和ImGui完成OpenGL环境的搭建；</li>
+<li>创建第一个glfw窗口；</li>
+<li>使用ImGui，显示ImGui的demo窗口。</li>
+</ol>
+<h2 id="计算机图形学">计算机图形学</h2>
+<blockquote>
+<p>计算机图形学是使用数学算法将二维或三维图形转化计算机显示的栅格形式的科学，计算机图形学的主要研究内容就是研究如何在计算机中表示图形、以及利用计算机进行图形的计算、处理和显示的相关原理和算法。</p>
+<p>——来自百度百科</p>
+</blockquote>
+<blockquote>
+<p>《什么是计算机图形学》</p>
+<p><a href="http://staff.ustc.edu.cn/~lgliu/Resources/CG/What_is_CG.htm">http://staff.ustc.edu.cn/~lgliu/Resources/CG/What_is_CG.htm</a> 中国科学技术大学  刘利刚教授</p>
+</blockquote>
+<p>图形学可以大致分为：</p>
+<blockquote>
+<p>引用自 Fundamentals Of Computer Graphics(虎书)  Steve Marschner)/ [Peter Shirley</p>
+</blockquote>
+<ol>
+<li><strong>建模(Modeling)</strong>，对形状和外观性质进行数学几何定义。</li>
+<li><strong>渲染(Rendering)</strong>， 将模型生成带有光影的图形并显示到显示器上（栅格化）。</li>
+<li><strong>动画(Animation)</strong>，连续播放静态图像，产生物体运动的视觉效果。</li>
+</ol>
+<p>所以，<strong>图形学跟用什么语言、什么库实现并没有关系，底层是数学（另外还有物理相关的力学、光学等）</strong>。</p>
+<p>关于数学，我想说说我的看法：</p>
+<p>数学很抽象的，无论是代数还是几何，很多都是抽象的概念。所以会有人开玩笑说：“学高数有啥用，你菜市场买菜并不会用到微积分”。其实出现这个情况，是因为有一些数学内容，虽然跟日常生活息息相关，但被抽象化到我们感受不到。所以计算图形学中用到的一小部分数学知识，比如数学概念中的函数，y=sinx，我们可以看到y能在-1~1中循环，可以用来生成真实感的水的波浪；使用线性代数中的矩阵知识，可以用来实现物体的变换、视图的变换。就会发现这部分数学就没那么抽象了，通过图形学能窥见一点点数学的有趣。</p>
+<p>我现在了解到的，图形学会用数学的这一部分知识：</p>
+<p>线性代数（主要也就是向量和矩阵，也算是计算机图形学的基础）、微积分、数值法、拓扑、统计等。</p>
+<p>那么，最基本的，如何将图像显示到显示器上呢？这就需要GPU和图形库了。</p>
+<h2 id="图形库">图形库</h2>
+<p>常见的图形库有： Direct3D、OpenGL和Vulkan。</p>
+<h3 id="三个图形库对比">三个图形库对比</h3>
+<ol>
+<li>Direct3D，简称D3D。微软公司开发的图像处理接口，是DirectX多媒体处理接口中的一部分，一般是Windows系统使用。</li>
+<li>OpenGL，跨平台图形库。发展已有20余年，被广泛应用在游戏、影视、军事、航空航天、地理、医学、机械设计，以及各类科学数据可视化等领域。</li>
+<li>Vulkan，称作OpenGL的替代者，OpenGL还是隐藏了一部分显卡驱动的细节，Vulkan将其暴漏了出来，还支持多线程。但Vulkan学习门槛较高，需要对硬件驱动框架有综合的认识。</li>
+</ol>
+<p><strong>最后，我决定使用OpenGL</strong>。不为别的，就因为跨平台（主要别的图形库也不了解，不会用&hellip;）。不过，图形库还是一个工具，图形学知识基本都适用，所以我准备在渲染的底层数学这方面，尽量学得深入一点。</p>
+<p><strong>OpenGL</strong></p>
+<p>
+        <a data-fancybox="gallery" href="https://learnopengl-cn.github.io/img/01/01/opengl.jpg">
+            <img class="mx-auto" alt="OpenGL Logo" src="https://learnopengl-cn.github.io/img/01/01/opengl.jpg" />
+        </a>
+    </p>
+<p><strong>OpenGL本身不是一个API</strong>，只是定义了一整套由Khronos组织制定并维护的规范。所以它也不是库，不能调用，它就是一个协议、规范，严格规定每个函数的输入、输出，如何执行。其具体实现，基本上是显卡厂商自行开发，OpenGL规范并没有规定实现的细节，只要求功能和结果与规范相匹配即可。</p>
+<p>我感觉OpenGL有点像是编程中的接口（interface），定义好所有的输入输出，但具体的实现接口就不管了。就像要实现一个数组排序，定好接口输入时数组，输出时排序后数组。具体的实现不管是冒泡排序、选择排序，甚至是猴子排序，也都可以。所以只要是OpenGL，接口名都很像。</p>
+<p>还有几个跟OpenGL有关的拓展定义：</p>
+<ol>
+<li>OpenGL ES：针对移动端，比如手机游戏机。</li>
+<li>WebGL：针对Web端，允许把JavaScript和OpenGL ES 2.0结合在一起，通过增加OpenGL ES 2.0的一个JavaScript绑定，可以为HTML5 Canvas提供硬件3D渲染。</li>
+</ol>
+<p>下边是基于OpenGL实现库的描述。</p>
+<h2 id="必备的库">必备的库</h2>
+<p>提供窗口的库主要有以下几种：</p>
+<ol>
+<li>glut，OpenGL的工具库。它可以用glBegin..glEnd来调用，类似的方式画一些图元。但版本有点老了，最后的版本更新时间1998年8月，并不推荐使用。</li>
+<li>freeglut，glut的开源实现，完全兼容glut，开源、功能齐全。</li>
+<li>glfw，C语言库，一个头文件和少量的API就可以完成任务，是一个轻量级的、开源的、跨平台的OpenGL库。</li>
+</ol>
+<p>此外，GUI方面，自己写的话周期过长，而且要实现一个好看点的还挺麻烦，我觉得Dear ImGui是个不错的选择，也是轻量级API，API基本上都是静态方法，还有对glfw的原生支持，用起来会很方便。</p>
+<p><strong>所以我决定使用glfw、ImGui ！</strong></p>
+<h3 id="glfw">glfw</h3>
+<p>下载地址：https://www.glfw.org/download.html</p>
+<p>使用版本：3.3.5</p>
+<p>可以下载编译好的<strong>二进制版本，也可以下载源码</strong>。如果使用二进制版本，不管是预编译还是自己编译的，最终glfw会有两个重要的目录：</p>
+<pre tabindex="0"><code>.
+├── include
+│	 └── GLFW
+│		├── glfw3.h
+│   	└── glfw3native.h
+├── lib ###如果是二进制版本，lib会有很多不一样的版本支持，比如：lib-mingw,lib-vs2019...
+│	 ├── glfw3.dll
+│	 ├── libglfw3dll.a
+│	 └── libglfw3.a
+</code></pre><p>需要用glfw的项目就包含 %glfw%/include目录，并链接 lib目录到当前项目即可。链接库可以是静态链接，也可以是动态连链接。关于链接库的区别可以参考：<a href="http://www.cppblog.com/amazon/archive/2009/09/04/95318.html">LIB和DLL的区别与使用</a>。</p>
+<p><strong>编译源码</strong>（可选）</p>
+<blockquote>
+<p>源码编译使用上一节《从零开始写一个渲染器02_C++环境搭建》中的 CMake+MinGW构建和编译。</p>
+</blockquote>
+<ol>
+<li>解压glfw-3.3.5.zip。</li>
+<li>依次执行以下命令</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#0086b3">cd</span> glfw-3.3.5
+</span></span><span style="display:flex;"><span>mkdir build
+</span></span><span style="display:flex;"><span><span style="color:#0086b3">cd</span> build
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"># 这里需要../  在CMakeLists.txt目录下进行cmake才可以。 </span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"># -G这里是要创建MinGW的Makefile</span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"># -BUILD_SHARED_LIBS=true 生成.dll</span>
+</span></span><span style="display:flex;"><span>cmake ../ -G <span style="color:#d14">&#34;MinGW Makefiles&#34;</span> -BUILD_SHARED_LIBS<span style="color:#000;font-weight:bold">=</span><span style="color:#0086b3">true</span>
+</span></span></code></pre></div><ol start="3">
+<li>执行编译、安装命令</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mingw32-make install <span style="color:#998;font-style:italic">#install 默认会将文件写到 C:\Program Files (x86)\GLFW 中去</span>
+</span></span></code></pre></div><p>
+        <a data-fancybox="gallery" href="../assets/image_16370542408964.png">
+            <img class="mx-auto" alt="" src="../assets/image_16370542408964.png" />
+        </a>
+    </p>
+<ol>
+<li>前往 C:\Program Files (x86)\GLFW 目录下查看安装结果。<strong>将 bin/glfw3.dll 复制一份到 /lib目录。</strong></li>
+</ol>
+<h3 id="glad">glad</h3>
+<p>glad是管理函数指针的，OpenGL很多函数指针没办法在编译期间确定，需要在运行时查询。如果不使用glad。我们查询函数指针要写额外的一些查询指针代码，繁琐复杂。类似下边这样：</p>
+<blockquote>
+<p>引用自 <a href="https://learnopengl-cn.github.io/">https://learnopengl-cn.github.io/</a></p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 定义函数原型
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">typedef</span> <span style="color:#900;font-weight:bold">void</span> (<span style="color:#000;font-weight:bold">*</span>GL_GENBUFFERS) (GLsizei, GLuint<span style="color:#000;font-weight:bold">*</span>);
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 找到正确的函数并赋值给函数指针
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>GL_GENBUFFERS glGenBuffers  <span style="color:#000;font-weight:bold">=</span> (GL_GENBUFFERS)wglGetProcAddress(<span style="color:#d14">&#34;glGenBuffers&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 现在函数可以被正常调用了
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>GLuint buffer;
+</span></span><span style="display:flex;"><span>glGenBuffers(<span style="color:#099">1</span>, <span style="color:#000;font-weight:bold">&amp;</span>buffer);
+</span></span></code></pre></div><p>引入glad的话，直接使用就行：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>GLuint buffer;
+</span></span><span style="display:flex;"><span>glGenBuffers(<span style="color:#099">1</span>, <span style="color:#000;font-weight:bold">&amp;</span>buffer);
+</span></span></code></pre></div><p><strong>glad下载</strong></p>
+<p>地址：https://glad.dav1d.de/</p>
+<p>下载时候是根据配置生成的，配置如下：</p>
+<table>
+<thead>
+<tr>
+<th>配置</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Language</td>
+<td>C/C++</td>
+</tr>
+<tr>
+<td>Specification</td>
+<td>OpenGL</td>
+</tr>
+<tr>
+<td>API.gl</td>
+<td>Verson3.3（版本选择3.3）</td>
+</tr>
+</tbody>
+</table>
+<p>勾选【Generate a loader】，然后点击Generate，下载glad.zip并解压。</p>
+<h2 id="导入glfwglad">导入glfw、glad</h2>
+<h3 id="glfw-1">glfw</h3>
+<ol>
+<li>
+<p>在CLion中创建项目，</p>
+<p>将glfw中的glfw3.dll复制到lib文件夹，并将/include文件下的GLFW复制到项目的include文件夹下。</p>
+<p>项目目录：</p>
+</li>
+</ol>
+<pre tabindex="0"><code>.
+├── include #包含外部头文件
+│	 └── GLFW
+│		├── glfw3.h
+│   	└── glfw3native.h
+├──  lib #库文件
+│	 └──glfw3.dll
+├── src
+│	 └── main.cpp
+└── CMakeLists.txt
+</code></pre><ol start="2">
+<li>编辑CMakeLists.txt</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#998;font-style:italic"># 版本号限定 可选</span>
+</span></span><span style="display:flex;"><span>cmake_minimum_required<span style="color:#000;font-weight:bold">(</span>VERSION 3.0<span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"># 项目名称</span>
+</span></span><span style="display:flex;"><span>project<span style="color:#000;font-weight:bold">(</span>00_setup_environment2<span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"># 文件复制</span>
+</span></span><span style="display:flex;"><span>file<span style="color:#000;font-weight:bold">(</span>COPY lib/glfw3.dll DESTINATION ./<span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"># 源码</span>
+</span></span><span style="display:flex;"><span>aux_source_directory<span style="color:#000;font-weight:bold">(</span>src/ SOURCE<span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"># 设置包含目录</span>
+</span></span><span style="display:flex;"><span>include_directories<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">${</span><span style="color:#008080">PROJECT_SOURCE_DIR</span><span style="color:#d14">}</span>/include<span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"># 可执行程序</span>
+</span></span><span style="display:flex;"><span>add_executable<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">${</span><span style="color:#008080">PROJECT_NAME</span><span style="color:#d14">}</span> <span style="color:#d14">${</span><span style="color:#008080">SOURCE</span><span style="color:#d14">}</span><span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"># 设置需要的链接库，导入glfw3.dll</span>
+</span></span><span style="display:flex;"><span>link_directories<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">${</span><span style="color:#008080">PROJECT_SOURCE_DIR</span><span style="color:#d14">}</span>/lib<span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>target_link_libraries<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">${</span><span style="color:#008080">PROJECT_NAME</span><span style="color:#d14">}</span> <span style="color:#d14">${</span><span style="color:#008080">PROJECT_SOURCE_DIR</span><span style="color:#d14">}</span>/lib/glfw3.dll
+</span></span></code></pre></div><h3 id="glad-1">glad</h3>
+<ol>
+<li>%glad%/glad目录和glad/KHR目录复制到项目的/include目录。</li>
+<li>%glad%/src/glad.c 复制到项目的/src目录。</li>
+</ol>
+<p>此时项目目录：</p>
+<pre tabindex="0"><code>.
+├── include #包含外部头文件
+│	 ├── glad
+│	 	  └── glad.h
+│	 ├── KHR
+│	 	  └── khrplatform.h
+│	 └── GLFW
+│		├── glfw3.h
+│   	└── glfw3native.h
+├──  lib #库文件
+│	 └──glfw3.dll
+├── src
+│	 ├── main.cpp
+│	 └── glad.c
+└── CMakeLists.txt
+</code></pre><h2 id="hello-window">Hello Window!</h2>
+<p>接下来我们实现第一个glfw窗口，这同时也是最基础的glfw程序，一般来讲，需要以下几个步骤：</p>
+<ol>
+<li>glfw的初始化。</li>
+<li>创建窗口，设置上下文。</li>
+<li>glad管理函数指针。</li>
+<li>渲染主循环。</li>
+<li>资源回收。</li>
+</ol>
+<h3 id="初始化">初始化</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>glfwInit();
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 主版本 3.3，所以MAJOR=3,MINOR=3
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, <span style="color:#099">3</span>);
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 次版本
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, <span style="color:#099">3</span>);
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 使用核心模式
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+</span></span></code></pre></div><p>上边的配置是不可省略的，设置主次版本和模式。</p>
+<h3 id="创建窗口并设置上下文">创建窗口并设置上下文</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#998;font-style:italic">//设置窗口宽高、名称
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>GLFWwindow<span style="color:#000;font-weight:bold">*</span> pWindow <span style="color:#000;font-weight:bold">=</span> glfwCreateWindow(WIN_WINDTH, WIN_HEIGHT, <span style="color:#d14">&#34;hello opengl中文!&#34;</span>, <span style="color:#000;font-weight:bold">nullptr</span>, <span style="color:#000;font-weight:bold">nullptr</span>);
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">//上下文设置
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>glfwMakeContextCurrent(pWindow);
+</span></span></code></pre></div><p>WIN_WINDTH, WIN_HEIGHT是自定义的宏，指定窗口宽度和高度，“hello opengl中文”是窗口标题。</p>
+<p>关于窗口的一些其他设置，比如icon、全屏、显示鼠标指针等属性可参考：<a href="https://www.glfw.org/docs/latest/window_guide.html">glfw窗口指南</a><a href="https://www.glfw.org/docs/latest/window_guide.html#window_full_screen">https://www.glfw.org/docs/latest/window_guide.html#window_full_screen</a></p>
+<h3 id="glad管理函数指针">glad管理函数指针</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#458;font-weight:bold">bool</span> bLoadSuc <span style="color:#000;font-weight:bold">=</span> gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">if</span>(<span style="color:#000;font-weight:bold">!</span>bLoadSuc){
+</span></span><span style="display:flex;"><span>    std<span style="color:#000;font-weight:bold">::</span>cout <span style="color:#000;font-weight:bold">&lt;&lt;</span> <span style="color:#d14">&#34;Failed glad load glProcAddress!&#34;</span> <span style="color:#000;font-weight:bold">&lt;&lt;</span> std<span style="color:#000;font-weight:bold">::</span>endl;
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">-</span><span style="color:#099">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>glad内部会判断版本（所以上边在下载glad时候，glfw的版本号要选择版本是3.3），然后从加载从1.0到现在版本的所有glfw函数指针。</p>
+<h3 id="主循环">主循环</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 4.主循环
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">while</span> (<span style="color:#000;font-weight:bold">!</span>glfwWindowShouldClose(pWindow)) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#998;font-style:italic">//渲染
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">//draw scene.
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>	<span style="color:#998;font-style:italic">//交换缓存
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>	glfwSwapBuffers(pWindow);
+</span></span><span style="display:flex;"><span>	<span style="color:#998;font-style:italic">//事件处理
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>	glfwPollEvents();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这个代码就是主循环，渲染都是在这里面进行的，将会一直循环到窗口关闭为止。一次循环完成一帧。每一帧的结束进行缓存交换和事件处理。</p>
+<p>glfwWindowShouldClose(GLFWWindows *) 返回窗口是否被关闭。</p>
+<p>glfwSwapBuffers(GLFWWindows *) 交换缓存。默认glfw有两个缓存，一个是正在渲染的窗口，一个是缓存中准备渲染的窗口，这里就是执行两个缓存的交换操作。</p>
+<p>glfwPollEvents() 事件处理。键盘事件、鼠标事件和窗口大小变化事件等（后续再详细写事件相关的内容）。</p>
+<h3 id="资源回收">资源回收</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>glfwTerminate();
+</span></span></code></pre></div><p>主要是执行glfw资源回收，包括自定义对象的内存回收。</p>
+<p>执行结果：</p>
+<p>
+        <a data-fancybox="gallery" href="../assets/image-20211117151351750.png">
+            <img class="mx-auto" alt="image-20211117151351750" src="../assets/image-20211117151351750.png" />
+        </a>
+    </p>
+<p>最基本的OpenGL程序：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#include</span> <span style="color:#999;font-weight:bold;font-style:italic">&lt;iostream&gt;</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">// glad.h 要放在glfw3.h之前
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#999;font-weight:bold;font-style:italic">#include</span> <span style="color:#999;font-weight:bold;font-style:italic">&lt;glad/glad.h&gt;</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#include</span> <span style="color:#999;font-weight:bold;font-style:italic">&#34;GLFW/glfw3.h&#34;</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#define WIN_WINDTH 600
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#define WIN_HEIGHT 600
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">int</span> <span style="color:#900;font-weight:bold">main</span>(){
+</span></span><span style="display:flex;"><span>    std<span style="color:#000;font-weight:bold">::</span>cout<span style="color:#000;font-weight:bold">&lt;&lt;</span><span style="color:#d14">&#34;00_setup_environment2!&#34;</span><span style="color:#000;font-weight:bold">&lt;&lt;</span>std<span style="color:#000;font-weight:bold">::</span>endl;
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">// 1.初始化
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    glfwInit();
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//主版本 3.3.5，所以MAJOR=3,MINOR=3
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, <span style="color:#099">3</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//次版本
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, <span style="color:#099">3</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//使用核心模式
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">// 2.创建窗口 https://www.glfw.org/docs/latest/window_guide.html
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    GLFWwindow<span style="color:#000;font-weight:bold">*</span> pWindow <span style="color:#000;font-weight:bold">=</span> glfwCreateWindow(WIN_WINDTH, WIN_HEIGHT, <span style="color:#d14">&#34;hello opengl中文!&#34;</span>, <span style="color:#000;font-weight:bold">nullptr</span>, <span style="color:#000;font-weight:bold">nullptr</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//上下文设置
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    glfwMakeContextCurrent(pWindow);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">// 3.glad管理函数指针
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    <span style="color:#458;font-weight:bold">bool</span> bLoadSuc <span style="color:#000;font-weight:bold">=</span> gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">if</span>(<span style="color:#000;font-weight:bold">!</span>bLoadSuc){
+</span></span><span style="display:flex;"><span>        std<span style="color:#000;font-weight:bold">::</span>cout <span style="color:#000;font-weight:bold">&lt;&lt;</span> <span style="color:#d14">&#34;Failed glad load glProcAddress!&#34;</span> <span style="color:#000;font-weight:bold">&lt;&lt;</span> std<span style="color:#000;font-weight:bold">::</span>endl;
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">-</span><span style="color:#099">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">// 4.主循环
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">while</span> (<span style="color:#000;font-weight:bold">!</span>glfwWindowShouldClose(pWindow)) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#998;font-style:italic">//渲染
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">//draw scene.
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>        <span style="color:#998;font-style:italic">//交换缓存
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>        glfwSwapBuffers(pWindow);
+</span></span><span style="display:flex;"><span>        <span style="color:#998;font-style:italic">//事件处理
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>        glfwPollEvents();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">// 5.资源回收
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    glfwTerminate();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">return</span> <span style="color:#099">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="imgui">ImGui</h2>
+<p>在后续写渲染器过程中，会涉及到很多UI界面，方便运行中调试、界面设计等待。所以引入ImGui库。</p>
+<p>ImGui全名是 Dear ImGui，开源免费轻量级GUI库，调用简单，而且后期对满足不了的需要可以更改源码。</p>
+<p>地址：https://github.com/ocornut/imgui</p>
+<p>打包下载或git clone下来源码，然后执行下列操作：</p>
+<ol>
+<li>导入源码，包含ImGui头文件和必要的cpp文件；</li>
+<li>修改CMakeLists.txt， 添加一个ImGui的静态链接库；</li>
+<li>修改main.cpp，添加ImGui的初始化和渲染代码；</li>
+</ol>
+<h3 id="包含头文件">包含头文件</h3>
+<ol>
+<li>在%ImGui%/src中找到：</li>
+</ol>
+<pre tabindex="0"><code>imconfig.h
+imgui.cpp
+imgui.h
+imgui_demo.cpp
+imgui_draw.cpp
+imgui_internal.h
+imgui_tables.cpp
+imgui_widgets.cpp
+imstb_rectpack.h
+imstb_textedit.h
+imstb_truetype.h
+</code></pre><ol start="2">
+<li>在%ImGui%/backends中找到：</li>
+</ol>
+<pre tabindex="0"><code>imgui_impl_glfw.h
+imgui_impl_glfw.cpp
+imgui_impl_opengl3.h
+imgui_impl_opengl3.cpp
+imgui_impl_opengl3_loader.h
+</code></pre><p>一共16个源文件，复制到项目目录中的 /include 目录。</p>
+<ol start="3">
+<li>另外，字体文件，打算用ImGui提供的几种默认字体。因此，在项目中创建resouce目录，并将%ImGui%/misc/fonts复制到resource下。</li>
+</ol>
+<pre tabindex="0"><code>.
+├── include #外部头文件
+│	 ├── glfw...
+│	 ├── imgui... #上述16个文件
+├── lib
+├── resource
+│	 ├── fonts
+│	  	  ├── font.ttf... #字体文件
+├── src
+└── CMakeLists.txt
+</code></pre><h3 id="修改cmakeliststxt">修改CMakeLists.txt</h3>
+<p>更新内容带有 update 标识</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cmake" data-lang="cmake"><span style="display:flex;"><span><span style="color:#998;font-style:italic"># 版本号限定 可选
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#0086b3">cmake_minimum_required</span>(<span style="color:#d14">VERSION</span> <span style="color:#d14">3.0</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># 项目名称
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#0086b3">project</span>(<span style="color:#d14">00_setup_environment2</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># 资源文件复制
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#0086b3">file</span>(<span style="color:#d14">COPY</span> <span style="color:#d14">lib/glfw3.dll</span> <span style="color:#d14">DESTINATION</span> <span style="color:#d14">./</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># 字体文件
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#0086b3">file</span>(<span style="color:#d14">COPY</span> <span style="color:#d14">resource</span> <span style="color:#d14">DESTINATION</span> <span style="color:#d14">./</span>) <span style="color:#998;font-style:italic">#update1. 新加的资源操作
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># 源码
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#0086b3">aux_source_directory</span>(<span style="color:#d14">src/</span> <span style="color:#d14">SOURCE</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># 设置包含目录
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#0086b3">set</span>(<span style="color:#d14">DIR_INCLUDES</span> <span style="color:#000;font-weight:bold">${</span><span style="color:#008080">PROJECT_SOURCE_DIR</span><span style="color:#000;font-weight:bold">}</span><span style="color:#d14">/include</span>) <span style="color:#998;font-style:italic">#update2. 这里创建一个变量，包含目录
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#0086b3">include_directories</span>(<span style="color:#000;font-weight:bold">${</span><span style="color:#008080">DIR_INCLUDES</span><span style="color:#000;font-weight:bold">}</span>) <span style="color:#998;font-style:italic">#update3. 包含目录设置
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># 可执行程序
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#0086b3">add_executable</span>(<span style="color:#000;font-weight:bold">${</span><span style="color:#008080">PROJECT_NAME</span><span style="color:#000;font-weight:bold">}</span> <span style="color:#000;font-weight:bold">${</span><span style="color:#008080">SOURCE</span><span style="color:#000;font-weight:bold">}</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># 设置需要的链接库
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#0086b3">link_directories</span>(<span style="color:#000;font-weight:bold">${</span><span style="color:#008080">PROJECT_SOURCE_DIR</span><span style="color:#000;font-weight:bold">}</span><span style="color:#d14">/lib</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic">## Imgui update4.0 添加静态链接库
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#0086b3">add_library</span>(<span style="color:#d14">imgui</span> <span style="color:#d14">STATIC</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">${</span><span style="color:#008080">DIR_INCLUDES</span><span style="color:#000;font-weight:bold">}</span><span style="color:#d14">/imgui/imgui.cpp</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">${</span><span style="color:#008080">DIR_INCLUDES</span><span style="color:#000;font-weight:bold">}</span><span style="color:#d14">/imgui/imgui_impl_glfw.cpp</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">${</span><span style="color:#008080">DIR_INCLUDES</span><span style="color:#000;font-weight:bold">}</span><span style="color:#d14">/imgui/imgui_impl_opengl3.cpp</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">${</span><span style="color:#008080">DIR_INCLUDES</span><span style="color:#000;font-weight:bold">}</span><span style="color:#d14">/imgui/imgui_draw.cpp</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">${</span><span style="color:#008080">DIR_INCLUDES</span><span style="color:#000;font-weight:bold">}</span><span style="color:#d14">/imgui/imgui_demo.cpp</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">${</span><span style="color:#008080">DIR_INCLUDES</span><span style="color:#000;font-weight:bold">}</span><span style="color:#d14">/imgui/imgui_tables.cpp</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">${</span><span style="color:#008080">DIR_INCLUDES</span><span style="color:#000;font-weight:bold">}</span><span style="color:#d14">/imgui/imgui_widgets.cpp</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span>    <span style="color:#0086b3">target_link_libraries</span>(<span style="color:#000;font-weight:bold">${</span><span style="color:#008080">PROJECT_NAME</span><span style="color:#000;font-weight:bold">}</span> <span style="color:#000;font-weight:bold">${</span><span style="color:#008080">PROJECT_SOURCE_DIR</span><span style="color:#000;font-weight:bold">}</span><span style="color:#d14">/lib/glfw3.dll</span> <span style="color:#d14">imgui</span>) <span style="color:#998;font-style:italic">#update5.0 添加imgui库
+</span></span></span></code></pre></div><h3 id="imgui使用">ImGui使用</h3>
+<ol start="0">
+<li>引入</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#include</span> <span style="color:#999;font-weight:bold;font-style:italic">&#34;imgui/imgui.h&#34;</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#include</span> <span style="color:#999;font-weight:bold;font-style:italic">&#34;imgui/imgui_impl_glfw.h&#34;</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#include</span> <span style="color:#999;font-weight:bold;font-style:italic">&#34;imgui/imgui_impl_opengl3.h&#34;</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span></span></span></code></pre></div><ol>
+<li>初始化</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 检查版本
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>IMGUI_CHECKVERSION();
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 上下文
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>ImGui<span style="color:#000;font-weight:bold">::</span>CreateContext();
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 设置黑色主题
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>ImGui<span style="color:#000;font-weight:bold">::</span>StyleColorsDark();
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 嵌入住glfw上下文中
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>ImGui_ImplGlfw_InitForOpenGL(pWindow, <span style="color:#0086b3">true</span>);
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">// OpenGL版本号3.3
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>ImGui_ImplOpenGL3_Init(<span style="color:#d14">&#34;#version 330&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ImGuiIO<span style="color:#000;font-weight:bold">&amp;</span> io <span style="color:#000;font-weight:bold">=</span> ImGui<span style="color:#000;font-weight:bold">::</span>GetIO();
+</span></span><span style="display:flex;"><span>(<span style="color:#458;font-weight:bold">void</span>) io;
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 字体设置
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>io.Fonts<span style="color:#000;font-weight:bold">-&gt;</span>AddFontFromFileTTF(<span style="color:#d14">&#34;resource/fonts/Cousine-Regular.ttf&#34;</span>, <span style="color:#099">13.0f</span>, <span style="color:#0086b3">NULL</span>, io.Fonts<span style="color:#000;font-weight:bold">-&gt;</span>GetGlyphRangesDefault());
+</span></span><span style="display:flex;"><span>io.Fonts<span style="color:#000;font-weight:bold">-&gt;</span>AddFontFromFileTTF(<span style="color:#d14">&#34;resource/fonts/DroidSans.ttf&#34;</span>, <span style="color:#099">13.0f</span>, <span style="color:#0086b3">NULL</span>, io.Fonts<span style="color:#000;font-weight:bold">-&gt;</span>GetGlyphRangesDefault());
+</span></span><span style="display:flex;"><span>io.Fonts<span style="color:#000;font-weight:bold">-&gt;</span>AddFontFromFileTTF(<span style="color:#d14">&#34;resource/fonts/Karla-Regular.ttf&#34;</span>, <span style="color:#099">13.0f</span>, <span style="color:#0086b3">NULL</span>, io.Fonts<span style="color:#000;font-weight:bold">-&gt;</span>GetGlyphRangesDefault());
+</span></span><span style="display:flex;"><span>io.Fonts<span style="color:#000;font-weight:bold">-&gt;</span>AddFontFromFileTTF(<span style="color:#d14">&#34;resource/fonts/ProggyClean.ttf&#34;</span>, <span style="color:#099">13.0f</span>, <span style="color:#0086b3">NULL</span>, io.Fonts<span style="color:#000;font-weight:bold">-&gt;</span>GetGlyphRangesDefault());
+</span></span><span style="display:flex;"><span>io.Fonts<span style="color:#000;font-weight:bold">-&gt;</span>AddFontFromFileTTF(<span style="color:#d14">&#34;resource/fonts/Roboto-Medium.ttf&#34;</span>, <span style="color:#099">13.0f</span>, <span style="color:#0086b3">NULL</span>, io.Fonts<span style="color:#000;font-weight:bold">-&gt;</span>GetGlyphRangesDefault());
+</span></span></code></pre></div><ol start="2">
+<li>渲染</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 1. ImGui渲染操作
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>ImGui_ImplOpenGL3_NewFrame();
+</span></span><span style="display:flex;"><span>ImGui_ImplGlfw_NewFrame();
+</span></span><span style="display:flex;"><span>ImGui<span style="color:#000;font-weight:bold">::</span>NewFrame();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 2. UI准备（这里添加了一个ImGui默认提供的界面，可选）
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#458;font-weight:bold">bool</span> bShowDemoWindow <span style="color:#000;font-weight:bold">=</span> <span style="color:#0086b3">true</span>;<span style="color:#998;font-style:italic">// 控制UI是否渲染
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 显示ImGui自带的demo window
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>ImGui<span style="color:#000;font-weight:bold">::</span>ShowDemoWindow(<span style="color:#000;font-weight:bold">&amp;</span>bShowDemoWindow);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 3. 渲染
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>ImGui<span style="color:#000;font-weight:bold">::</span>Render();
+</span></span><span style="display:flex;"><span>ImGui_ImplOpenGL3_RenderDrawData(ImGui<span style="color:#000;font-weight:bold">::</span>GetDrawData());
+</span></span></code></pre></div><ol start="3">
+<li>资源回收</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>ImGui_ImplOpenGL3_Shutdown();
+</span></span><span style="display:flex;"><span>ImGui_ImplGlfw_Shutdown();
+</span></span><span style="display:flex;"><span>ImGui<span style="color:#000;font-weight:bold">::</span>DestroyContext();
+</span></span></code></pre></div><p>结果：</p>
+<p>
+        <a data-fancybox="gallery" href="../assets/image_16371391968647.png">
+            <img class="mx-auto" alt="ImGui" src="../assets/image_16371391968647.png" />
+        </a>
+    </p>
+<h2 id="结语">结语</h2>
+<p>像开头所说，原本是打算跟前一篇《从零开始写一个渲染器02_C++环境搭建》放在一起的。没想到不小心又写的很啰嗦了。</p>
+<p>另外，如果使用Visual Studio，可以参考 learn-opengl网站中描述来搭。好处就是不用建 include和lib目录了，在VS中包含进来头文件和库即可。</p>
+<p>笔记中的过程都经过反复验证，但也可能存在一些问题。我放了源码在这里，可以交流交流。</p>
+<p>源码地址： <a href="https://gitee.com/xingchen0085/m-render_demo/tree/master/00_setup_environment2">00_setup_environment2</a></p>
+<p><a href="https://gitee.com/xingchen0085/m-render_demo/tree/master/00_setup_environment2">https://gitee.com/xingchen0085/m-render_demo/tree/master/00_setup_environment2</a></p>
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="http://adiosy.com">星尘</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="http://adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">http://adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">OpenGL渲染器02_C&#43;&#43;环境</a></li>
+        
+        <li><a href="/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html">OpenGL渲染器01_开篇</a></li>
+        
+        <li><a href="/posts/opengl_renderer/00_preview.html"> OpenGL渲染器00_预览</a></li>
+        
+        <li><a href="/posts/%E5%A4%9A%E5%B1%82%E8%8F%9C%E5%8D%95%E6%95%B0%E6%8D%AE%E6%9F%A5%E8%AF%A2.html">多层菜单数据查询</a></li>
+        
+        <li><a href="/posts/%E9%82%AE%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8.html">基于Apache james实现的Java邮件服务器</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/opengl%E6%B8%B2%E6%9F%93' target="_blank">OpenGL渲染</a></li>
+                
+                <li><a href='/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6' target="_blank">图形学</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "xingchen0085/doc"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+
+    
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">飞雪无情</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+
+    <br />
+        <div>
+            &copy; 2023 <a href="http://adiosy.com">Adiosy By 星尘</a>
+                
+                | <a rel="nofollow" target="_blank" href="http://beian.miit.gov.cn/">滇ICP备2022000560号-1</a>
+            
+    </div>
+</footer>
+
+
+    
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+            if (!window.Diagram) return;
+            const blocks = document.querySelectorAll('pre code.language-sequence');
+            for (let i = 0; i < blocks.length; i++) {
+                const block = blocks[i];
+                
+                const rootElement = block.parentNode;
+                const container = document.createElement('div');
+                const id = `js-sequence-diag-${i}`;
+                container.id = id;
+                container.className = 'align-center';
+                container.setAttribute("style", "overFlow-x:auto");
+                rootElement.parentNode.replaceChild(container, rootElement);
+
+                const diagram = Diagram.parse(block.childNodes[0].nodeValue);
+                diagram.drawSVG(id, window.sequenceDiagramsOptions
+                    ? window.sequenceDiagramsOptions
+                    : { theme: 'simple' });
+            }
+        })();
+        </script><script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        
+<form id="search" action='http://adiosy.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://adiosy.com">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://adiosy.com/posts/01_monado%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B.html" title="Monado渲染流程" target="_blank">Monado渲染流程</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/00_hello-openxr.html" title="Hello OpenXR - 第一个OpenXR程序" target="_blank">Hello OpenXR - 第一个OpenXR程序</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面" target="_blank">OpenGL渲染器04_绘制点线面</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 " target="_blank">OpenGL渲染器03_OpenGL环境 </a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器02_C&#43;&#43;环境" target="_blank">OpenGL渲染器02_C&#43;&#43;环境</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html" title="OpenGL渲染器01_开篇" target="_blank">OpenGL渲染器01_开篇</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/00_preview.html" title=" OpenGL渲染器00_预览" target="_blank"> OpenGL渲染器00_预览</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/%E5%A4%9A%E5%B1%82%E8%8F%9C%E5%8D%95%E6%95%B0%E6%8D%AE%E6%9F%A5%E8%AF%A2.html" title="多层菜单数据查询" target="_blank">多层菜单数据查询</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/%E9%82%AE%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8.html" title="基于Apache james实现的Java邮件服务器" target="_blank">基于Apache james实现的Java邮件服务器</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/linux%E4%B8%8B%E5%AE%89%E8%A3%85nginx.html" title="Linux下安装Nginx" target="_blank">Linux下安装Nginx</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">微信公众号</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="#" title="我的公众号" target="_blank" style="color:red">
+                
+                    <img src="/posts/assets/qrcode.jpg">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="http://adiosy.com/categories/opengl.html">OpenGL (5)</a></li>
+    
+    <li><a href="http://adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="http://adiosy.com/tags/monado.html">Monado</a>
+    
+    <a href="http://adiosy.com/tags/opengl%E6%B8%B2%E6%9F%93.html">OpenGL渲染</a>
+    
+    <a href="http://adiosy.com/tags/openxr.html">OpenXR</a>
+    
+    <a href="http://adiosy.com/tags/vr/ar.html">VR/AR</a>
+    
+    <a href="http://adiosy.com/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6.html">图形学</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://github.com/xingchen0085" title="Github">Github</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://gitee.com/xingchen0085" title="Gitee">Gitee</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://potatomelon.com" title="土豆社区">土豆社区</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="http://adiosy.com/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

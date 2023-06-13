@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>OpenXR on Adiosy</title>
+    <link>http://adiosy.com/tags/openxr.html</link>
+    <description>Recent content in OpenXR on Adiosy</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Thu, 09 Mar 2023 14:34:07 +0800</lastBuildDate><atom:link href="http://adiosy.com/tags/openxr/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Monado渲染流程</title>
+      <link>http://adiosy.com/posts/01_monado%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B.html</link>
+      <pubDate>Thu, 09 Mar 2023 14:34:07 +0800</pubDate>
+      
+      <guid>http://adiosy.com/posts/01_monado%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B.html</guid>
+      <description>因为渲染流程和Session的生命周期息息相关，所以在进入渲染流程之前，先探讨Session的状态机变化流程。
+1 Session生命周期 1、应用程序调用xrCreateSession创建一个Session，需要指定参数：System和渲染API，新创建的Session默认状态是 IDLE。
+2、应用程序通过XrEventDataSessionStateChanged监测Session的状态变化。
+3、当应用程序准备好呈现XR的内容时，会将Session状态切换到 READY 状态，并通知到应用程序。应用程序准备好渲染内容后，需要调用xrBeginSession，开始渲染循环。</description>
+    </item>
+    
+  </channel>
+</rss>

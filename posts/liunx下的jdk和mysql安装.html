@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Liunx下的JDK和MySQL安装 | Adiosy</title>
+    <meta property="og:title" content="Liunx下的JDK和MySQL安装 - Adiosy">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2017-12-16T14:34:07&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2017-12-16T14:34:07&#43;08:00'>
+        
+    <meta name="Keywords" content="Java,C/C&#43;&#43;,计算机图形学,渲染,动画,几何,物理模拟,公众号,小程序">
+    <meta name="description" content="Liunx下的JDK和MySQL安装">
+        
+    <meta name="author" content="星尘">
+    <meta property="og:url" content="http://adiosy.com/posts/liunx%E4%B8%8B%E7%9A%84jdk%E5%92%8Cmysql%E5%AE%89%E8%A3%85.html">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+        <link href="https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet">
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/custom.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://adiosy.com">
+                        Adiosy
+                    </a>
+                
+                <p class="description">民间图形学爱好者！热爱渲染，几何，物理模拟，游戏引擎。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://adiosy.com">Home</a>
+                    
+                    <a  href="http://adiosy.com/archives.html" title="归档">归档</a>
+                    
+                    <a  href="http://adiosy.com/books.html" title="读书">读书</a>
+                    
+                    <a  href="http://adiosy.com/about.html" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 0px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 20px;
+        word-wrap: break-word;
+        white-space: nowrap;
+        z-index: 999;
+        cursor: pointer;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 13px;
+         
+        filter: drop-shadow(rgb(150, 150, 150) 0px 0px 6px) !important;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+        list-style: none;
+        padding-inline-start: 1px !important;
+    }
+
+    .post-toc .post-toc-content ul {
+        list-style: none;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: inherit;
+    }
+
+    .post-toc .post-toc-content>nav>ul>li{
+        background-color: #fff;
+        border-left: 5px solid #666;
+        padding: 2px 5px 2px 5px;
+    }
+
+    .post-toc .post-toc-content ul li:hover{
+ 
+ 
+    }
+
+    .post-toc .post-toc-content ul li a{
+        display: inline-block;
+        width: 100%;
+    }
+
+    .post-toc .post-toc-content ul li a:hover{
+        background-color: #666;
+        color: #fff;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 153px;">
+    <h2 class="post-toc-title">目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#准备工作">准备工作</a></li>
+    <li><a href="#jdk安装">JDK安装</a></li>
+    <li><a href="#mysql安装">MySQL安装</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 15, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 125,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 125
+                    },
+                };
+
+            var e = $(window).animate({scrollTop: 0}, 600);
+            e < t ? postToc.css(a.start) : postToc.css(a.process);
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+
+    <article class="post">
+        <header>
+            <h1 class="post-title">Liunx下的JDK和MySQL安装</h1>
+        </header>
+        
+  <time datetime="2017-12-16T06:34:07Z" class="post-meta meta-date dt-published">
+    2017-12-16
+  </time>
+
+
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">Table of Contents</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="准备工作">准备工作</h2>
+<p>本次环境配置中，安装的主要环境有：JDK , MySQL</p>
+<p>我的服务器环境版本：</p>
+<ul>
+<li>Linx ： CentOS 6.8  32位机 ；</li>
+<li>JDK ： jdk-8u151-linux-i586 ；</li>
+<li>MySQL：mysql-5.6.35；</li>
+</ul>
+<blockquote>
+<p>重要提醒：环境所需要的安装包需要下载好，<strong>并核对操作系统和软件版本是否一致</strong>，因为很多软件的无法向上兼容。</p>
+</blockquote>
+<h2 id="jdk安装">JDK安装</h2>
+<p>将jdk-8u151-linux-i586.tar.gz使用SSH工具上传至Linx中。</p>
+<blockquote>
+<p>我这边除了mysql之外将所有软件放在 /usr/local/server/目录下，可以更改至其他目录，但因下面将会有很多路径会参照该路径，所以不建议更改。</p>
+</blockquote>
+<p>解压 jdk-8u151-linux-i586.tar.gz</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen server<span style="color:#000;font-weight:bold">]</span> tar -zxvf jdk-8u151-linux-i586.tar.gz
+</span></span></code></pre></div><p>编辑配置文件，配置环境变量</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen server<span style="color:#000;font-weight:bold">]</span> vim /etc/profile
+</span></span></code></pre></div><p>在 profile 末尾加上以下环境变量</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#008080">JAVA_HOME</span><span style="color:#000;font-weight:bold">=</span>/usr/local/server/jdk1.8.0_151
+</span></span><span style="display:flex;"><span><span style="color:#008080">CLASSPATH</span><span style="color:#000;font-weight:bold">=</span><span style="color:#008080">$JAVA_HOME</span>/lib/
+</span></span><span style="display:flex;"><span><span style="color:#008080">PATH</span><span style="color:#000;font-weight:bold">=</span><span style="color:#008080">$PATH</span>:<span style="color:#008080">$JAVA_HOME</span>/bin
+</span></span><span style="display:flex;"><span><span style="color:#0086b3">export</span> PATH JAVA_HOME CLASSPATH
+</span></span></code></pre></div><p>使配置文件立即生效</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen server<span style="color:#000;font-weight:bold">]</span> <span style="color:#0086b3">source</span> /etc/profile
+</span></span></code></pre></div><p>测试是否安装成功</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen server<span style="color:#000;font-weight:bold">]</span> java -version
+</span></span></code></pre></div><p>如果出现以下输出，说明安装成功</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>java version <span style="color:#d14">&#34;1.8.0_151&#34;</span>
+</span></span><span style="display:flex;"><span>Java<span style="color:#000;font-weight:bold">(</span>TM<span style="color:#000;font-weight:bold">)</span> SE Runtime Environment <span style="color:#000;font-weight:bold">(</span>build 1.8.0_151-b12<span style="color:#000;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>Java HotSpot<span style="color:#000;font-weight:bold">(</span>TM<span style="color:#000;font-weight:bold">)</span> Client VM <span style="color:#000;font-weight:bold">(</span>build 25.151-b12, mixed mode<span style="color:#000;font-weight:bold">)</span>
+</span></span></code></pre></div><p>此时，java安装成功。Oh yes！</p>
+<h2 id="mysql安装">MySQL安装</h2>
+<p>首先看看本地是否已经安装过MySQL</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> rpm -qa | grep mysql
+</span></span></code></pre></div><p>有的话通过下面的命令来卸载掉</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> rpm -e mysql <span style="color:#998;font-style:italic">#这里是文件名</span>
+</span></span></code></pre></div><p>注：如果以上方式无法成功删除原MySQL， 可以使用强力删除模式删除 ： rpm -e &ndash;nodeps mysql</p>
+<p>安装编译源码所需的工具和库</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> yum -y install gcc gcc-c++ ncurses-devel bison-devel perl-devel  perl-Module-Install.noarch
+</span></span></code></pre></div><p>安装cmake</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> <span style="color:#0086b3">cd</span> /usr/local/src  
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> wget https://cmake.org/files/v3.5/cmake-3.5.2.tar.gz  
+</span></span></code></pre></div><p>如果wget工具未安装，先安装wget</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> yum -y install wget
+</span></span></code></pre></div><p>不使用wget也可以，就是把下载好的源码包上传到服务器</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> tar -xzf cmake-3.5.2.tar.gz
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> <span style="color:#0086b3">cd</span> cmake-3.5.2  
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> ./bootstrap
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> make
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> make install 
+</span></span></code></pre></div><p>检测cmake是否安装成功</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> cmake -version
+</span></span><span style="display:flex;"><span>cmake version 3.5.2  		<span style="color:#998;font-style:italic">#说明安装成功</span>
+</span></span><span style="display:flex;"><span>CMake suite maintained and supported by Kitware <span style="color:#000;font-weight:bold">(</span>kitware.com/cmake<span style="color:#000;font-weight:bold">)</span>.
+</span></span></code></pre></div><p>安装Mysql</p>
+<p>1.创建mysql的安装目录及数据库存放目录</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> mkdir -p /usr/local/mysql  //安装mysql  
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> mkdir -p /usr/local/mysql/data //存放数据库 
+</span></span></code></pre></div><p>2.开始安装</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> <span style="color:#0086b3">cd</span> /usr/local/src  
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> wget http://mirrors.sohu.com/mysql/MySQL-5.6/mysql-5.6.35.tar.gz  
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> tar -xzf mysql-5.6.35.tar.gz  
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> <span style="color:#0086b3">cd</span> mysql-5.6.35  
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> cmake . -DCMAKE_INSTALL_PREFIX<span style="color:#000;font-weight:bold">=</span>/usr/local/mysql -DMYSQL_DATADIR<span style="color:#000;font-weight:bold">=</span>/usr/local/mysql/data -DDEFAULT_CHARSET<span style="color:#000;font-weight:bold">=</span>utf8 -DDEFAULT_COLLATION<span style="color:#000;font-weight:bold">=</span>utf8_general_ci -DEXTRA_CHARSETS<span style="color:#000;font-weight:bold">=</span>all -DENABLED_LOCAL_INFILE<span style="color:#000;font-weight:bold">=</span><span style="color:#099">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> make  <span style="color:#998;font-style:italic">#这个时间比较长  </span>
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> make install
+</span></span></code></pre></div><p><strong>cmake命令参数说明</strong>：</p>
+<p>​-DENABLED_LOCAL_INFILE=1 //允许从本地导入数据
+-DCMAKE_INSTALL_PREFIX=/usr/local/mysql   //安装目录
+​-DINSTALL_DATADIR=/usr/local/mysql/data   //数据库存放目录
+​-DDEFAULT_CHARSET=utf8//使用utf8字符
+​-DDEFAULT_COLLATION=utf8_general_ci    //校验字符
+​-DEXTRA_CHARSETS=all //安装所有扩展字符集</p>
+<p>注：如果要重新编译，需要清除就得对象和编译信息</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> make clean  
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> rm -f CMakeCache.txt  
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> rm -rf /etc/my.cnf 
+</span></span></code></pre></div><p>mysql配置</p>
+<p>设置目录权限</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> <span style="color:#0086b3">cd</span> /usr/local/mysql
+</span></span></code></pre></div><p>把当前目录中所有文件的所有者所有者设为msyql，所属组为mysql；不要丢掉最后一个‘ . ’</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> chown -R mysql:mysql . 
+</span></span></code></pre></div><p>复制mysql服务启动配置文件到/usr/local/mysql下并重命名为my.cnf，/usr/local/mysql/my.cnf如存在则输入y和回车覆盖配置文件，如果没有的话，MySQL所有的参数将会是默认值。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> cp support-files/my-default.cnf /usr/local/mysql/my.cnf
+</span></span></code></pre></div><p>创建系统数据库的表</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> scripts/mysql_install_db --user<span style="color:#000;font-weight:bold">=</span>mysql  
+</span></span></code></pre></div><p>设置环境变量</p>
+<pre tabindex="0"><code>[root@Xingchen] vi /etc/profile 
+</code></pre><p>在最下面添加下面代码 ,然后保存文件</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#998;font-style:italic">#mysql</span>
+</span></span><span style="display:flex;"><span><span style="color:#0086b3">export</span> <span style="color:#008080">PATH</span><span style="color:#000;font-weight:bold">=</span>/usr/local/mysql/bin:<span style="color:#008080">$PATH</span> 
+</span></span></code></pre></div><p>使文件立即生效，并查看是否生效</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> <span style="color:#0086b3">source</span> /etc/profile  
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> <span style="color:#0086b3">echo</span> <span style="color:#008080">$PATH</span> 
+</span></span></code></pre></div><p>将mysql的启动服务添加到系统服务中</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> cp support-files/mysql.server /etc/init.d/mysql 
+</span></span></code></pre></div><p>这样配置完成之后就可以使用下面的命令启动和停止mysql服务</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> service mysql start //启动  
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> service mysql stop //停止  
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> service mysql restart //重启 
+</span></span></code></pre></div><p>将mysq服务加入开机启动中</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> chkconfig --level <span style="color:#099">35</span> mysql on  
+</span></span></code></pre></div><p>检查mysql服务是否启动</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span>  netstat -tulnp | grep <span style="color:#099">3306</span>   
+</span></span></code></pre></div><p>修改MySQL的root用户的密码
+设置mysql的root用户密码，此处设成123456，此root用户与linux不是一个</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> mysqladmin -u root password <span style="color:#d14">&#39;123456&#39;</span> 
+</span></span></code></pre></div><p>登陆mysql，用刚才设置的密码</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">[</span>root@Xingchen<span style="color:#000;font-weight:bold">]</span> mysql -u root -p
+</span></span><span style="display:flex;"><span>Enter password: 					<span style="color:#998;font-style:italic">#输入密码</span>
+</span></span><span style="display:flex;"><span>Welcome to the MySQL monitor.  Commands end with ; or <span style="color:#d14">\g</span>.
+</span></span><span style="display:flex;"><span>Your MySQL connection id is <span style="color:#099">11</span>
+</span></span><span style="display:flex;"><span>Server version: 5.6.35 Source distribution
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Copyright <span style="color:#000;font-weight:bold">(</span>c<span style="color:#000;font-weight:bold">)</span> 2000, 2016, Oracle and/or its affiliates. All rights reserved.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Oracle is a registered trademark of Oracle Corporation and/or its
+</span></span><span style="display:flex;"><span>affiliates. Other names may be trademarks of their respective
+</span></span><span style="display:flex;"><span>owners.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Type <span style="color:#d14">&#39;help;&#39;</span> or <span style="color:#d14">&#39;\h&#39;</span> <span style="color:#000;font-weight:bold">for</span> help. Type <span style="color:#d14">&#39;\c&#39;</span> to clear the current input statement.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>mysql&gt; 
+</span></span></code></pre></div><p>MySQL安装成功，本机可以使用了。但是很多时候我们需要配置数据库为远程调用，这个配置方法有很多种，这里使用其中一种。如下：</p>
+<p>首先使用root账户登录mysql,然后执行以下语句。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#998;font-style:italic"># 添加一个用户admin并授权可从任何其它主机发起的访问（通配符％）。使用这一条语句即可。something就是远程登录帐号密码</span>
+</span></span><span style="display:flex;"><span>mysql&gt;grant all privileges on *.* to admin@<span style="color:#d14">&#34;%&#34;</span> identified by <span style="color:#d14">&#39;something&#39;</span> with grant option;
+</span></span></code></pre></div><p>至此，MySQL安装完成。</p>
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="http://adiosy.com">星尘</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="http://adiosy.com/posts/liunx%E4%B8%8B%E7%9A%84jdk%E5%92%8Cmysql%E5%AE%89%E8%A3%85.html">http://adiosy.com/posts/liunx%E4%B8%8B%E7%9A%84jdk%E5%92%8Cmysql%E5%AE%89%E8%A3%85.html</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/springboot%E5%92%8Cjpa%E6%90%AD%E5%BB%BAdemo.html">Springboot和JPA搭建demo</a></li>
+        
+        <li><a href="/about.html">关于</a></li>
+        
+        <li><a href="/archives.html">归档</a></li>
+        
+        <li><a href="/search.html">搜索</a></li>
+        
+        <li><a href="/books.html">读书</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            No tags
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "xingchen0085/doc"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+
+    
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">飞雪无情</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+
+    <br />
+        <div>
+            &copy; 2023 <a href="http://adiosy.com">Adiosy By 星尘</a>
+                
+                | <a rel="nofollow" target="_blank" href="http://beian.miit.gov.cn/">滇ICP备2022000560号-1</a>
+            
+    </div>
+</footer>
+
+
+    
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+            if (!window.Diagram) return;
+            const blocks = document.querySelectorAll('pre code.language-sequence');
+            for (let i = 0; i < blocks.length; i++) {
+                const block = blocks[i];
+                
+                const rootElement = block.parentNode;
+                const container = document.createElement('div');
+                const id = `js-sequence-diag-${i}`;
+                container.id = id;
+                container.className = 'align-center';
+                container.setAttribute("style", "overFlow-x:auto");
+                rootElement.parentNode.replaceChild(container, rootElement);
+
+                const diagram = Diagram.parse(block.childNodes[0].nodeValue);
+                diagram.drawSVG(id, window.sequenceDiagramsOptions
+                    ? window.sequenceDiagramsOptions
+                    : { theme: 'simple' });
+            }
+        })();
+        </script><script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        
+<form id="search" action='http://adiosy.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://adiosy.com">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://adiosy.com/posts/01_monado%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B.html" title="Monado渲染流程" target="_blank">Monado渲染流程</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/00_hello-openxr.html" title="Hello OpenXR - 第一个OpenXR程序" target="_blank">Hello OpenXR - 第一个OpenXR程序</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面" target="_blank">OpenGL渲染器04_绘制点线面</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 " target="_blank">OpenGL渲染器03_OpenGL环境 </a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器02_C&#43;&#43;环境" target="_blank">OpenGL渲染器02_C&#43;&#43;环境</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html" title="OpenGL渲染器01_开篇" target="_blank">OpenGL渲染器01_开篇</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/00_preview.html" title=" OpenGL渲染器00_预览" target="_blank"> OpenGL渲染器00_预览</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/%E5%A4%9A%E5%B1%82%E8%8F%9C%E5%8D%95%E6%95%B0%E6%8D%AE%E6%9F%A5%E8%AF%A2.html" title="多层菜单数据查询" target="_blank">多层菜单数据查询</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/%E9%82%AE%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8.html" title="基于Apache james实现的Java邮件服务器" target="_blank">基于Apache james实现的Java邮件服务器</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/linux%E4%B8%8B%E5%AE%89%E8%A3%85nginx.html" title="Linux下安装Nginx" target="_blank">Linux下安装Nginx</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">微信公众号</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="#" title="我的公众号" target="_blank" style="color:red">
+                
+                    <img src="/posts/assets/qrcode.jpg">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="http://adiosy.com/categories/opengl.html">OpenGL (5)</a></li>
+    
+    <li><a href="http://adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="http://adiosy.com/tags/monado.html">Monado</a>
+    
+    <a href="http://adiosy.com/tags/opengl%E6%B8%B2%E6%9F%93.html">OpenGL渲染</a>
+    
+    <a href="http://adiosy.com/tags/openxr.html">OpenXR</a>
+    
+    <a href="http://adiosy.com/tags/vr/ar.html">VR/AR</a>
+    
+    <a href="http://adiosy.com/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6.html">图形学</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://github.com/xingchen0085" title="Github">Github</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://gitee.com/xingchen0085" title="Gitee">Gitee</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://potatomelon.com" title="土豆社区">土豆社区</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="http://adiosy.com/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

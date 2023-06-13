@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>OpenGL渲染器01_开篇 | Adiosy</title>
+    <meta property="og:title" content="OpenGL渲染器01_开篇 - Adiosy">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2021-11-18T14:34:07&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2021-11-18T14:34:07&#43;08:00'>
+        
+    <meta name="Keywords" content="Java,C/C&#43;&#43;,计算机图形学,渲染,动画,几何,物理模拟,公众号,小程序">
+    <meta name="description" content="OpenGL渲染器01_开篇">
+        
+    <meta name="author" content="星尘">
+    <meta property="og:url" content="http://adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+        <link href="https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet">
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/custom.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://adiosy.com">
+                        Adiosy
+                    </a>
+                
+                <p class="description">民间图形学爱好者！热爱渲染，几何，物理模拟，游戏引擎。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://adiosy.com">Home</a>
+                    
+                    <a  href="http://adiosy.com/archives.html" title="归档">归档</a>
+                    
+                    <a  href="http://adiosy.com/books.html" title="读书">读书</a>
+                    
+                    <a  href="http://adiosy.com/about.html" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 0px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 20px;
+        word-wrap: break-word;
+        white-space: nowrap;
+        z-index: 999;
+        cursor: pointer;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 13px;
+         
+        filter: drop-shadow(rgb(150, 150, 150) 0px 0px 6px) !important;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+        list-style: none;
+        padding-inline-start: 1px !important;
+    }
+
+    .post-toc .post-toc-content ul {
+        list-style: none;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: inherit;
+    }
+
+    .post-toc .post-toc-content>nav>ul>li{
+        background-color: #fff;
+        border-left: 5px solid #666;
+        padding: 2px 5px 2px 5px;
+    }
+
+    .post-toc .post-toc-content ul li:hover{
+ 
+ 
+    }
+
+    .post-toc .post-toc-content ul li a{
+        display: inline-block;
+        width: 100%;
+    }
+
+    .post-toc .post-toc-content ul li a:hover{
+        background-color: #666;
+        color: #fff;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 153px;">
+    <h2 class="post-toc-title">目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#概述">概述</a></li>
+    <li><a href="#启蒙">启蒙</a></li>
+    <li><a href="#作为兴趣">作为兴趣</a></li>
+    <li><a href="#初衷">初衷</a></li>
+    <li><a href="#目标">目标</a></li>
+    <li><a href="#任务分拆">任务分拆</a></li>
+    <li><a href="#渲染器概览">渲染器概览</a>
+      <ul>
+        <li><a href="#用到的库">用到的库</a></li>
+        <li><a href="#暂不准备使用的库">暂不准备使用的库</a></li>
+        <li><a href="#结构设计">结构设计</a></li>
+      </ul>
+    </li>
+    <li><a href="#重要的几个对象介绍">重要的几个对象介绍</a>
+      <ul>
+        <li><a href="#buffergeometry-缓冲几何体">BufferGeometry 缓冲几何体</a></li>
+        <li><a href="#object3d-三维物体">Object3D 三维物体</a></li>
+        <li><a href="#scene-场景">Scene 场景</a></li>
+        <li><a href="#camera-相机">Camera 相机</a></li>
+        <li><a href="#mrenderer-渲染器">MRenderer 渲染器</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 15, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 125,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 125
+                    },
+                };
+
+            var e = $(window).animate({scrollTop: 0}, 600);
+            e < t ? postToc.css(a.start) : postToc.css(a.process);
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+
+    <article class="post">
+        <header>
+            <h1 class="post-title">OpenGL渲染器01_开篇</h1>
+        </header>
+        
+  <time datetime="2021-11-18T06:34:07Z" class="post-meta meta-date dt-published">
+    2021-11-18
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/opengl' target="_blank">OpenGL</a>
+  
+</div>
+
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">Table of Contents</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="概述">概述</h2>
+<p>在真正开始之前，我想先说说我的情况，目前我从事软件开发，不过工作上主要语言还是Java。</p>
+<ol>
+<li>编程基础，四年Java编程基础；工作上没用到C++，不过自己业余学习和使用C++大概1.5年左右，差不多是用到了才查，断断续续，没有系统性学习。</li>
+<li>图形学线性代数基础，目前才了解向量、矩阵的基本运算和变换基础，更高级的还没学。</li>
+<li>OpenGL编程的一些基础知识，基础几何绘制、MVP变换、材质、光照等基础。</li>
+<li>还有一点WebGL的经验，实现了基础材质和光照。</li>
+</ol>
+<p>为什么要写关于图形学的内容呢，缘由悠长。这一段可能会有些啰嗦，可以直接略过。</p>
+<h2 id="启蒙">启蒙</h2>
+<p>第一次接触计算机，是在2008年的夏天。那时候小学六年级，学校地处西南偏远山区，一位老师要同时教授多门课程。那时候，我们学习也就语文和数学两门科目，另外的一门科学，我记得小升初的时候都没考试，老师讲的也少。剩下就是音体美课程了，因为都是一个老师，音体美很多时候也就当成自习上课。因此，相比现在的孩子小学三年级开始学习英语，那时我们晚了许多，计算机课程更是不可能了。</p>
+<p>不过，那时候学校还是出现了一台电脑，也不清楚是老师自己买的还是上边分配下来，反正就是出现了，也通了网络。一天晚自习，老师7点左右上来班上说：“等会大家每个人提一个问题，然后下来我办公室，我用电脑给大家查答案。”，之后便走了。我想了很久，最后竟想到个问题：“<strong>恐龙是怎么灭绝的？</strong>”。如果问我小小年纪为啥想到这个，我也不知道，可能是受这方面一些读物或电视的影响吧。想到问题之后，我跟班上同学三三两两到达老师办公室。听到我的问题后，大家都止不住笑，不过最后老师还是查了。搜索引擎我忘了是啥，查到几个视频，大概也就是小行星砸地球的视频，就不赘述了。</p>
+<p>印象较深的是，电脑品牌是方正，长得也很方正，显示器后面有包的大脑袋。搜索完了之后，花闪花闪的屏幕上出现的一排排搜索结果和红色的关键字。在此之后，就没接触过电脑了，一直到了初一，有有了信息技术这门课后，才用上了电脑，不过也是一星期一节课，45分钟，基本上就是听听歌，看看视频结束。</p>
+<h2 id="作为兴趣">作为兴趣</h2>
+<p>到了2014年，我总算拥有了自己的的电脑，显示器也是液晶了。机缘巧合，我当时喜欢上了三维建模，学了学3dsMax。当时对<strong>三维、图形学、物理模拟</strong>非常感兴趣，有时候看一些教程会看到半夜。不过当时感觉建模跟UI设计一样，需要很多艺术细胞，设计这方面我并不擅长。所以当时就学了编程，Java的一些基础知识，用Java写过一些简单的安卓demo，比如四则运算计算器之类的。工作之后一直到现在则是Java EE。</p>
+<p>不过，抛开主业，我从始至终对计算机图形学拥有浓厚兴趣。从2018年开始，利用业余，我断断续续在学习<a href="https://www.unrealengine.com/">UE4引擎</a>。参照网上教程，用C++/蓝图写过FPS、汽车游戏的demo。但UE4太强大了，很多细节藏在内部，还好C++面向对象语言，我C++也写的不多，甚至可以说是拿Java思维来写C++，也是因为这样，我写C++时候会有很多Java的影子，导致的问题也会比较多。除了C++不熟外，就是图形学不熟，写出来的demo内部的向量、矩阵完全照抄，网上很多有趣的内容也实现不了。当我看到自己捣鼓出来的结果跟教程中差不多并且没办法弄出来自己想要的效果的时候，我意识到了问题的严重性：我这完全是照搬照抄啊！</p>
+<p>这太可怕了，因为抄出来的内容完全不进脑子，过不久就忘了。所以，我觉得我得从基础开始，重新理解清楚。这也是我写这几篇笔记的缘由。</p>
+<h2 id="初衷">初衷</h2>
+<ol>
+<li>好记性不如烂笔头；特别是我学习一些数学基础的时候，不手写我可能都理解不了。特别是现在信息爆炸的年代，很多知识不记录就忘了。</li>
+<li>锻炼文字表达能力；真正上手写的时候，才知道把语句写通顺了都是很困难的事，我特别佩服很多技术大佬，技术厉害，思维清晰，写出来的博客文章也是通俗易懂。</li>
+<li>记录过程；跟第一点很像，我更希望是我把目标理好，大纲列出来，然后细化得到小目标，再一步步完成小目标，这样提升就很快了。</li>
+<li>交朋友；如果有志同道合朋友，可以交个朋友，交流交流。</li>
+</ol>
+<h2 id="目标">目标</h2>
+<ol>
+<li>实现一个基于C++的OpenGL渲染器；</li>
+<li>渲染器要实现基本的几何绘制、基本变换、材质、光影（光照和阴影）等；</li>
+<li>利用渲染器学习光照、雾、云、流体和光追等；</li>
+<li>自己实现向量、矩阵和其他一些必要的数学方面内容。</li>
+</ol>
+<h2 id="任务分拆">任务分拆</h2>
+<blockquote>
+<p>后期会更细化任务，详细可以<a href="/posts/opengl_renderer/00_preview.html">访问这里</a>查看，我会一直更新。</p>
+</blockquote>
+<pre tabindex="0"><code>.
+├── OpenGL基础绘制
+│   ├── 绘制点、线、三角形、四边形、三维图形
+│   └── end
+├── mRender设计
+├── 架构搭建
+│   ├── 坐标系,左手还是右手? 矩阵，行矩阵还是列矩阵?
+│   ├── glfw,imgui库
+│   ├── 实现向量、矩阵（这部分具体实现放在对应章节，不细述）
+│   ├── 实现log、file io、string..
+│   ├── 架构搭之后，重新绘制[基础绘制]的内容。
+│   └── end
+├── 物体变换（Model Matrix）
+│   ├── obj模型简单读取
+│   ├── 线性变换 rotate、scale
+│   └── 仿射变换 线性变换+translate
+├── 视图变换 （View Matrix和Projection Matrix）
+│   ├── 实现平行相机
+│   ├── 实现透视相机
+│   ├── 实现多视角
+│   ├── 对象拾取
+│   └── 物体实例化
+├── 材质和光照
+│   ├── 贴图
+│   ├── 光照计算
+│   ├── 多光源、可配置光照强度
+│   ├── 粗糙度、金属度等等参数实现
+│   └── 法线贴图
+├── 阴影
+│   └── 阴影其实没想好，还没看这部分的知识
+├── 高级内容
+│   ├── 立方体贴图
+│   ├── 环境贴图、天空盒
+│   ├── 蒙皮
+│   ├── 雾
+│   ├── 文字渲染
+│   └── 粒子、精灵
+└── 接下来的还没想好... 学无止境
+</code></pre><h2 id="渲染器概览">渲染器概览</h2>
+<h3 id="用到的库">用到的库</h3>
+<ol>
+<li>glfw/glad，这两帮我创建出来窗口和opengl的指针管理，这个我就不实现了，太难了..</li>
+<li>ImGui，全名应该叫 Dear ImGui，就是提供UI，直接放到glfw窗口中去，这个库用着太舒服了；</li>
+<li>没有了，至少目前我不打算引用其他的库了。</li>
+</ol>
+<h3 id="暂不准备使用的库">暂不准备使用的库</h3>
+<ol>
+<li>glm，数学库，很强大，直接可以提供仿射变换矩阵、透视矩阵等等一系列内容，这个我打算自己实现，不过会参考。</li>
+</ol>
+<h3 id="结构设计">结构设计</h3>
+<p>几大对象，我参照的是<a href="https://threejs.org/">three.js</a>，从程序入口进入后，由Renderer提供一个渲染窗口，构建好场景后，使用Renderer渲染场景。但因为three.js是js语言的原因，内部一些结构差距还是比较大。</p>
+<p>伪代码：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">main</span> (){
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">// 首先获得渲染器对象，初始化glfw、ImGui等，提供一个窗口
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    Renderer <span style="color:#000;font-weight:bold">*</span>renderer <span style="color:#000;font-weight:bold">=</span> Renderer<span style="color:#000;font-weight:bold">::</span>getInstance(<span style="color:#d14">&#34;mRender&#34;</span>, <span style="color:#099">800</span>, <span style="color:#099">800</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">// 初始化一个场景
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    Scene <span style="color:#000;font-weight:bold">*</span>scene <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> Scene();
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">// 给场景添加物体. 比如物体、灯光...
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    scene<span style="color:#000;font-weight:bold">-&gt;</span>addSomeObject();
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">// 渲染此场景
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    render<span style="color:#000;font-weight:bold">-&gt;</span>render(scene);
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//内存回收
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    SAFE_DELETE(scene);
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>类图设计：</p>
+<p>
+        <a data-fancybox="gallery" href="../assets/mRender%E7%B1%BB%E5%9B%BE.jpg">
+            <img class="mx-auto" alt="mRender类图" src="../assets/mRender%E7%B1%BB%E5%9B%BE.jpg" />
+        </a>
+    </p>
+<h2 id="重要的几个对象介绍">重要的几个对象介绍</h2>
+<h3 id="buffergeometry-缓冲几何体">BufferGeometry 缓冲几何体</h3>
+<p>这个类是所有几何体的基类，类主要的作用是存储几何体的顶点vertices、顶点颜色vertices color、顶点索引indices、顶点纹理坐标uvs和顶点法线normals。完成VAO、VBO和EBO的创建并给顶点着色器已定义的attribute变量赋值，VBO等数据缓存到一个map中保存，在绘制时绑定对应的VBO或者EBO后进行绘制操作。</p>
+<p>举例：
+如果要绘制一个彩色三角形，可以这样初始化：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#998;font-style:italic">//内存回收内部会做，这里不用处理。后期可能要考虑把内存管理做的更完善一点！
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>BufferGeometry <span style="color:#000;font-weight:bold">*</span>bufferGeometry <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> BufferGeometry(); 
+</span></span><span style="display:flex;"><span>bufferGeometry<span style="color:#000;font-weight:bold">-&gt;</span>vertices <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#099">0.0f</span>, <span style="color:#099">0.5f</span>, <span style="color:#099">0.0f</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">-</span><span style="color:#099">0.5f</span>, <span style="color:#099">0.0f</span>, <span style="color:#099">0.0f</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#099">0.5f</span>, <span style="color:#099">0.0f</span>, <span style="color:#099">0.0f</span>
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>bufferGeometry<span style="color:#000;font-weight:bold">-&gt;</span>colors <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#099">1.0f</span>, <span style="color:#099">0.0f</span>, <span style="color:#099">0.0f</span>, <span style="color:#099">1.0f</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#099">0.0f</span>, <span style="color:#099">1.0f</span>, <span style="color:#099">0.0f</span>, <span style="color:#099">1.0f</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#099">0.0f</span>, <span style="color:#099">0.0f</span>, <span style="color:#099">1.0f</span>, <span style="color:#099">1.0f</span>
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">//几何体不直接添加到场景中，需要一个物体对象，所以创建一个Object3D
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">//同上，内存回收内部会做，这里不用处理。
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>Object3D <span style="color:#000;font-weight:bold">*</span> colorfulTriangle <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> Object3D();
+</span></span><span style="display:flex;"><span>colorfulTriangle<span style="color:#000;font-weight:bold">-&gt;</span>geometries.push_back(bufferGeometry);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">//场景中添加此物体
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>scene<span style="color:#000;font-weight:bold">-&gt;</span>add(colorfulTriangle);
+</span></span></code></pre></div><p>渲染结果应该是这样的：</p>
+<p>
+        <a data-fancybox="gallery" href="../assets/colorfulTriangle.png">
+            <img class="mx-auto" alt="彩色三角形" src="../assets/colorfulTriangle.png" />
+        </a>
+    </p>
+<h3 id="object3d-三维物体">Object3D 三维物体</h3>
+<p>所有的三维物体都继承自Object3D。</p>
+<p>Object3D中，定义了物体的几何构造、材质和变换信息。</p>
+<ul>
+<li>几何构造BufferGeometry，几何构造是一个列表，没有先后关系和位置关系，这里后期可能要改。类似于很多引擎中的Attechment，并用位移、选择、缩放等局部变换完成关联。类似于，FPS游戏中，将武器的几何体关联到角色的手上。这里还是TODO，方案还没想好。</li>
+<li>材质信息Material，材质相关的内容还没写多少，其实材质考虑是满足物体基色、贴图、光泽度、法线偏移、光照等等这些真实感渲染的。材质相关目前还是1%，才把基色写好，材质还没加。</li>
+<li>变换信息Transform，记录了物体的位置、旋转和缩放信息，并保存当前物体的世界坐标矩阵ModelMarix。</li>
+</ul>
+<p>
+        <a data-fancybox="gallery" href="../assets/object3dpreview.png">
+            <img class="mx-auto" alt="Object3D" src="../assets/object3dpreview.png" />
+        </a>
+    </p>
+<h3 id="scene-场景">Scene 场景</h3>
+<p>场景继承自Object3D，它主要工作是维护整棵场景树。调用scene.add(Object3D object)，把object3d放到场景中去。然后由场景来管理Object3D，完成初始化init；在渲染时，场景完成自身的矩阵计算后，传给字对象，并调用子对象的render。以此链路完成场景中物体的初始化、渲染等操作。</p>
+<blockquote>
+<p>目前子对象列表的维护还是使用vector，后期优化需要换成其他数据结构存储。</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 初始化一个场景
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>Scene <span style="color:#000;font-weight:bold">*</span>scene <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> Scene();
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">// 给场景添加Object3D,比如相机、物体、灯光...
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>scene<span style="color:#000;font-weight:bold">-&gt;</span>addSomeObject();
+</span></span></code></pre></div><h3 id="camera-相机">Camera 相机</h3>
+<p>相机继承自Object3D，主要的目的是提供场景中的裁剪矩阵和视图矩阵。也就是大名鼎鼎的MVP矩阵中的P和V。</p>
+<p>相机的分类，目前是分了平行相机和透视相机，我看了three.js中还有相机数组，来做场景的各个视角等等，这个后期用到了我再考虑要不要加上。</p>
+<p>在场景中添加相机，也是添加一个3d对象，代码长这样：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>Camera <span style="color:#000;font-weight:bold">*</span>perspCamera <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> PerspCamera();
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">//位置的一些调整
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>perspCamera<span style="color:#000;font-weight:bold">-&gt;</span>location.y <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">2.0f</span>;
+</span></span><span style="display:flex;"><span>perspCamera<span style="color:#000;font-weight:bold">-&gt;</span>location.z <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">10.0f</span>;
+</span></span><span style="display:flex;"><span>scene<span style="color:#000;font-weight:bold">-&gt;</span>add(perspCamera);
+</span></span></code></pre></div><p>运行过程中，如果要切换视角，也就是换到另一个相机中去，可以这样使用(暂时还没考虑下高级切换，比如平滑切换等等)：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>scene<span style="color:#000;font-weight:bold">-&gt;</span>setActiveCamera(Camera<span style="color:#000;font-weight:bold">*</span>);
+</span></span></code></pre></div><p>另外，类似很多引擎的一样，显示相机的预览，可以把相机中属性bPreview改为true，界面即可显示相机预览。
+
+        <a data-fancybox="gallery" href="../assets/camerapreview.png">
+            <img class="mx-auto" alt="相机预览" src="../assets/camerapreview.png" />
+        </a>
+    </p>
+<h3 id="mrenderer-渲染器">MRenderer 渲染器</h3>
+<p>渲染器，是把glfw窗口管理起来，初始化、主循环、退出和按键、鼠标事件都是MRenderer来做，并把具体实现给到具体的对象中去。比如，负责设置opengl状态、渲染场景、渲染GUI操作。</p>
+<h2 id="结语">结语</h2>
+<p>本文只是大概介绍了我要做一件什么事，然后预览了一个大概。接下来我根据大纲列出的一样，从零开始搭建。包括结构设计，后续笔记中会详细介绍。</p>
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="http://adiosy.com">星尘</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="http://adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html">http://adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/opengl_renderer/00_preview.html"> OpenGL渲染器00_预览</a></li>
+        
+        <li><a href="/posts/%E5%A4%9A%E5%B1%82%E8%8F%9C%E5%8D%95%E6%95%B0%E6%8D%AE%E6%9F%A5%E8%AF%A2.html">多层菜单数据查询</a></li>
+        
+        <li><a href="/posts/%E9%82%AE%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8.html">基于Apache james实现的Java邮件服务器</a></li>
+        
+        <li><a href="/posts/linux%E4%B8%8B%E5%AE%89%E8%A3%85nginx.html">Linux下安装Nginx</a></li>
+        
+        <li><a href="/posts/liunx%E4%B8%8B%E7%9A%84jdk%E5%92%8Cmysql%E5%AE%89%E8%A3%85.html">Liunx下的JDK和MySQL安装</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/opengl%E6%B8%B2%E6%9F%93' target="_blank">OpenGL渲染</a></li>
+                
+                <li><a href='/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6' target="_blank">图形学</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "xingchen0085/doc"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+
+    
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">飞雪无情</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+
+    <br />
+        <div>
+            &copy; 2023 <a href="http://adiosy.com">Adiosy By 星尘</a>
+                
+                | <a rel="nofollow" target="_blank" href="http://beian.miit.gov.cn/">滇ICP备2022000560号-1</a>
+            
+    </div>
+</footer>
+
+
+    
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+            if (!window.Diagram) return;
+            const blocks = document.querySelectorAll('pre code.language-sequence');
+            for (let i = 0; i < blocks.length; i++) {
+                const block = blocks[i];
+                
+                const rootElement = block.parentNode;
+                const container = document.createElement('div');
+                const id = `js-sequence-diag-${i}`;
+                container.id = id;
+                container.className = 'align-center';
+                container.setAttribute("style", "overFlow-x:auto");
+                rootElement.parentNode.replaceChild(container, rootElement);
+
+                const diagram = Diagram.parse(block.childNodes[0].nodeValue);
+                diagram.drawSVG(id, window.sequenceDiagramsOptions
+                    ? window.sequenceDiagramsOptions
+                    : { theme: 'simple' });
+            }
+        })();
+        </script><script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        
+<form id="search" action='http://adiosy.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://adiosy.com">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://adiosy.com/posts/01_monado%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B.html" title="Monado渲染流程" target="_blank">Monado渲染流程</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/00_hello-openxr.html" title="Hello OpenXR - 第一个OpenXR程序" target="_blank">Hello OpenXR - 第一个OpenXR程序</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面" target="_blank">OpenGL渲染器04_绘制点线面</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 " target="_blank">OpenGL渲染器03_OpenGL环境 </a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器02_C&#43;&#43;环境" target="_blank">OpenGL渲染器02_C&#43;&#43;环境</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html" title="OpenGL渲染器01_开篇" target="_blank">OpenGL渲染器01_开篇</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/00_preview.html" title=" OpenGL渲染器00_预览" target="_blank"> OpenGL渲染器00_预览</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/%E5%A4%9A%E5%B1%82%E8%8F%9C%E5%8D%95%E6%95%B0%E6%8D%AE%E6%9F%A5%E8%AF%A2.html" title="多层菜单数据查询" target="_blank">多层菜单数据查询</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/%E9%82%AE%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8.html" title="基于Apache james实现的Java邮件服务器" target="_blank">基于Apache james实现的Java邮件服务器</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/linux%E4%B8%8B%E5%AE%89%E8%A3%85nginx.html" title="Linux下安装Nginx" target="_blank">Linux下安装Nginx</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">微信公众号</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="#" title="我的公众号" target="_blank" style="color:red">
+                
+                    <img src="/posts/assets/qrcode.jpg">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="http://adiosy.com/categories/opengl.html">OpenGL (5)</a></li>
+    
+    <li><a href="http://adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="http://adiosy.com/tags/monado.html">Monado</a>
+    
+    <a href="http://adiosy.com/tags/opengl%E6%B8%B2%E6%9F%93.html">OpenGL渲染</a>
+    
+    <a href="http://adiosy.com/tags/openxr.html">OpenXR</a>
+    
+    <a href="http://adiosy.com/tags/vr/ar.html">VR/AR</a>
+    
+    <a href="http://adiosy.com/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6.html">图形学</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://github.com/xingchen0085" title="Github">Github</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://gitee.com/xingchen0085" title="Gitee">Gitee</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://potatomelon.com" title="土豆社区">土豆社区</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="http://adiosy.com/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

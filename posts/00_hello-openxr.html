@@ -1,0 +1,1535 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Hello OpenXR - 第一个OpenXR程序 | Adiosy</title>
+    <meta property="og:title" content="Hello OpenXR - 第一个OpenXR程序 - Adiosy">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2023-03-07T14:34:07&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2023-03-07T14:34:07&#43;08:00'>
+        
+    <meta name="Keywords" content="Java,C/C&#43;&#43;,计算机图形学,渲染,动画,几何,物理模拟,公众号,小程序">
+    <meta name="description" content="Hello OpenXR - 第一个OpenXR程序">
+        
+    <meta name="author" content="星尘">
+    <meta property="og:url" content="http://adiosy.com/posts/00_hello-openxr.html">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+        <link href="https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet">
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/custom.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://adiosy.com">
+                        Adiosy
+                    </a>
+                
+                <p class="description">民间图形学爱好者！热爱渲染，几何，物理模拟，游戏引擎。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://adiosy.com">Home</a>
+                    
+                    <a  href="http://adiosy.com/archives.html" title="归档">归档</a>
+                    
+                    <a  href="http://adiosy.com/books.html" title="读书">读书</a>
+                    
+                    <a  href="http://adiosy.com/about.html" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 0px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 20px;
+        word-wrap: break-word;
+        white-space: nowrap;
+        z-index: 999;
+        cursor: pointer;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 13px;
+         
+        filter: drop-shadow(rgb(150, 150, 150) 0px 0px 6px) !important;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+        list-style: none;
+        padding-inline-start: 1px !important;
+    }
+
+    .post-toc .post-toc-content ul {
+        list-style: none;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: inherit;
+    }
+
+    .post-toc .post-toc-content>nav>ul>li{
+        background-color: #fff;
+        border-left: 5px solid #666;
+        padding: 2px 5px 2px 5px;
+    }
+
+    .post-toc .post-toc-content ul li:hover{
+ 
+ 
+    }
+
+    .post-toc .post-toc-content ul li a{
+        display: inline-block;
+        width: 100%;
+    }
+
+    .post-toc .post-toc-content ul li a:hover{
+        background-color: #666;
+        color: #fff;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 153px;">
+    <h2 class="post-toc-title">目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-概要">1 概要</a></li>
+    <li><a href="#2-环境准备">2 环境准备</a>
+      <ul>
+        <li><a href="#21-monado">2.1 Monado</a></li>
+        <li><a href="#22-openxr-sdk">2.2 OpenXR SDK</a></li>
+        <li><a href="#23-glfw">2.3 GLFW</a></li>
+        <li><a href="#24-glad">2.4 glad</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-工程框架">3 工程框架</a>
+      <ul>
+        <li><a href="#31-初始化">3.1 初始化</a></li>
+        <li><a href="#32-主循环">3.2 主循环</a></li>
+        <li><a href="#33-回收">3.3 回收</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-总结">4 总结</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 15, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 125,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 125
+                    },
+                };
+
+            var e = $(window).animate({scrollTop: 0}, 600);
+            e < t ? postToc.css(a.start) : postToc.css(a.process);
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+
+    <article class="post">
+        <header>
+            <h1 class="post-title">Hello OpenXR - 第一个OpenXR程序</h1>
+        </header>
+        
+  <time datetime="2023-03-07T06:34:07Z" class="post-meta meta-date dt-published">
+    2023-03-07
+  </time>
+
+
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">Table of Contents</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="1-概要">1 概要</h2>
+<p>本文目标是实现一个最小化OpenXR应用程序，只渲染一个三角形，渲染库采用的是OpenGL，窗口管理使用<a href="https://link.zhihu.com/?target=https%3A//www.glfw.org/">GLFW</a>，OpenXR Runtime使用的是<a href="https://link.zhihu.com/?target=https%3A//monado.dev/">Monado</a>。因为Monado目前支持的是安卓和Linux平台，本人测试使用的是<strong>Ubuntu系统</strong>，所以这个DEMO可以在Ubuntu系统下正常运行，但别的系统还没有经过严格测试。</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20230309142522812.png">
+            <img class="mx-auto" alt="image-20230309142522812" src="./assets/image-20230309142522812.png" />
+        </a>
+    </p>
+<h2 id="2-环境准备">2 环境准备</h2>
+<p>点击<a href="https://cmake.org/download/">下载cmake</a>，如果使用apt安装，可能版本号过低。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#0086b3">cd</span> cmake-xxxx
+</span></span><span style="display:flex;"><span>sudo apt install -y libssl-dev
+</span></span><span style="display:flex;"><span>sudo ./configure
+</span></span><span style="display:flex;"><span>sudo make -j8
+</span></span><span style="display:flex;"><span>sudo make install
+</span></span></code></pre></div><p>Monado安装需要的第三方库。</p>
+<p><strong>glslang</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>git clone https://github.com/KhronosGroup/glslang
+</span></span><span style="display:flex;"><span>mkdir build
+</span></span><span style="display:flex;"><span><span style="color:#0086b3">cd</span> build
+</span></span><span style="display:flex;"><span>make
+</span></span><span style="display:flex;"><span>sudo make install
+</span></span></code></pre></div><p><strong>Eigen3</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>git clone https://gitlab.com/libeigen/eigen.git
+</span></span><span style="display:flex;"><span>mkdir build
+</span></span><span style="display:flex;"><span><span style="color:#0086b3">cd</span> build
+</span></span><span style="display:flex;"><span>make
+</span></span><span style="display:flex;"><span>sudo make install
+</span></span></code></pre></div><h3 id="21-monado">2.1 Monado</h3>
+<p>clone Monado并启动Monado-Service</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>git clone https://gitlab.freedesktop.org/monado/monado.git
+</span></span></code></pre></div><p>clone成功后，进入Monado源码目录，创建build文件夹</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#0086b3">cd</span> monado/
+</span></span><span style="display:flex;"><span>mkdir build
+</span></span><span style="display:flex;"><span><span style="color:#0086b3">cd</span> build
+</span></span></code></pre></div><p>执行make</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cmake ..
+</span></span><span style="display:flex;"><span>make
+</span></span><span style="display:flex;"><span>sudo make install
+</span></span></code></pre></div><p>如果安装成功，会有下面类似的输出</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>-- Installing OpenXR runtime manifest with JSON-relative path to runtime
+</span></span><span style="display:flex;"><span>-- Installing: /usr/local/share/openxr/1/openxr_monado.json
+</span></span><span style="display:flex;"><span>-- Installing: /usr/local/lib/libopenxr_monado.so
+</span></span><span style="display:flex;"><span>-- Installing: /usr/local/bin/monado-cli
+</span></span><span style="display:flex;"><span>-- Installing: /usr/local/bin/monado-gui
+</span></span><span style="display:flex;"><span>-- Installing: /usr/local/bin/monado-ctl
+</span></span><span style="display:flex;"><span>-- Installing: /usr/local/bin/monado-service
+</span></span><span style="display:flex;"><span>-- Up-to-date: /usr/local/share/steamvr-monado
+</span></span><span style="display:flex;"><span>-- Up-to-date: /usr/local/share/steamvr-monado/resources
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><p>那么在启动OpenXR应用程序的时候，只需要配置<code>XR_RUNTIME_JSON=/usr/local/share/openxr/1/openxr_monado.json</code>的环境变量就可以启动并使用Monado作为Runtime。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#008080">XR_RUNTIME_JSON</span><span style="color:#000;font-weight:bold">=</span>/usr/local/share/openxr/1/openxr_monado.json ./hello_openxr_demo
+</span></span></code></pre></div><p>在CLion中启动。</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20230308234232061.png">
+            <img class="mx-auto" alt="image-20230308234232061" src="./assets/image-20230308234232061.png" />
+        </a>
+    </p>
+<p>不过，<strong>在启动OpenXR应用程序之前，应先启动monado-service服务。</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>monado-service
+</span></span></code></pre></div><p><strong>注意：如果启动成功，你敲击回车键就会结束monado-service进程，记住不要回车。也正因如此，只有回车才能正常结束，如果是其他方式结束，可能导致退出不干净，出现以下错误：</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>ERROR <span style="color:#000;font-weight:bold">[</span>create_listen_socket<span style="color:#000;font-weight:bold">]</span> Could not <span style="color:#0086b3">bind</span> socket to path /run/user/1000/monado_comp_ipc: Address already in use. Is the service running already?
+</span></span><span style="display:flex;"><span>ERROR <span style="color:#000;font-weight:bold">[</span>create_listen_socket<span style="color:#000;font-weight:bold">]</span> If monado-service is not running, delete /run/user/1000/monado_comp_ipc before starting a new instance
+</span></span><span style="display:flex;"><span>ERROR <span style="color:#000;font-weight:bold">[</span>init_all<span style="color:#000;font-weight:bold">]</span> Failed to init ipc main loop!
+</span></span></code></pre></div><p>这种情况执行<code>rm -rf /run/user/1000/monado_comp_ipc</code>就可以重新启动monado-service。</p>
+<h3 id="22-openxr-sdk">2.2 OpenXR SDK</h3>
+<p>Clone下来OpenXR SDK source源码</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>git clone https://github.com/KhronosGroup/OpenXR-SDK-Source.git
+</span></span></code></pre></div><p>和上述Monado安装一样，创建build文件夹并执行<code>make install</code></p>
+<h3 id="23-glfw">2.3 GLFW</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo apt install libglfw3-dev
+</span></span></code></pre></div><h3 id="24-glad">2.4 glad</h3>
+<p>下载地址：https://glad.dav1d.de</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">配置</th>
+<th style="text-align:left">值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Language</td>
+<td style="text-align:left">C/C++</td>
+</tr>
+<tr>
+<td style="text-align:left">Specification</td>
+<td style="text-align:left">OpenGL</td>
+</tr>
+<tr>
+<td style="text-align:left">API.gl</td>
+<td style="text-align:left">Verson4.4</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>可以参考我之前写过的文章，<a href="opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">03_OpenGL环境搭建</a></p>
+</blockquote>
+<h2 id="3-工程框架">3 工程框架</h2>
+<p>项目名，我起一个叫<code>hello_openxr_demo</code>，把glad引入之后，创建一个<code>CMakeLists.txt</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>/
+</span></span><span style="display:flex;"><span>hello_openxr_demo/
+</span></span><span style="display:flex;"><span>├── CMakeLists.txt
+</span></span><span style="display:flex;"><span>├── glad.c
+</span></span><span style="display:flex;"><span>├── include
+</span></span><span style="display:flex;"><span>│   ├── glad
+</span></span><span style="display:flex;"><span>│   │   └── glad.h
+</span></span><span style="display:flex;"><span>│   └── KHR
+</span></span><span style="display:flex;"><span>│       └── khrplatform.h
+</span></span><span style="display:flex;"><span>└── main.cpp
+</span></span></code></pre></div><p><code>CMakeLists.txt</code>内容</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cmake" data-lang="cmake"><span style="display:flex;"><span><span style="color:#0086b3">cmake_minimum_required</span>(<span style="color:#d14">VERSION</span> <span style="color:#d14">3.24</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#0086b3">project</span>(<span style="color:#d14">hello_openxr_demo</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#0086b3">set</span>(<span style="color:#d14">CMAKE_CXX_STANDARD</span> <span style="color:#d14">14</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#0086b3">include_directories</span>(<span style="color:#d14">&#34;include&#34;</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#0086b3">add_executable</span>(<span style="color:#d14">hello_openxr_demo</span> <span style="color:#d14">main.cpp</span> <span style="color:#d14">glad.c</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># OpenGL
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#0086b3">find_package</span>(<span style="color:#d14">OpenGL</span> <span style="color:#d14">REQUIRED</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># X11
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#0086b3">find_package</span>(<span style="color:#d14">X11</span> <span style="color:#d14">REQUIRED</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#0086b3">SET</span>(<span style="color:#d14">LINUX_LIBS</span> <span style="color:#d14">&#34;Xrandr ${X11_LIBRARIES}&#34;</span> <span style="color:#d14">m</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># OpenXR
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#0086b3">find_package</span>(<span style="color:#d14">OpenXR</span> <span style="color:#d14">REQUIRED</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#0086b3">target_include_directories</span>(<span style="color:#d14">hello_openxr_demo</span> <span style="color:#d14">PRIVATE</span> <span style="color:#d14">OpenXR::Headers</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#0086b3">target_link_libraries</span>(<span style="color:#d14">hello_openxr_demo</span> <span style="color:#d14">PRIVATE</span> <span style="color:#d14">OpenXR::openxr_loader</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># glfw3
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#0086b3">find_package</span>(<span style="color:#d14">glfw3</span> <span style="color:#d14">REQUIRED</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#0086b3">target_link_libraries</span>(<span style="color:#d14">hello_openxr_demo</span> <span style="color:#d14">PRIVATE</span> <span style="color:#d14">glfw</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span><span style="display:flex;"><span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic">#xlib
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#0086b3">target_link_libraries</span>(<span style="color:#d14">hello_openxr_demo</span> <span style="color:#d14">PRIVATE</span> <span style="color:#000;font-weight:bold">${</span><span style="color:#008080">LINUX_LIBS</span><span style="color:#000;font-weight:bold">}</span> <span style="color:#000;font-weight:bold">${</span><span style="color:#008080">OPENGL_LIBRARIES</span><span style="color:#000;font-weight:bold">}</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></span></span></code></pre></div><p>目前<code>main.cpp</code>是最基础的代码内容</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#include</span> <span style="color:#999;font-weight:bold;font-style:italic">&lt;cstring&gt;</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#include</span> <span style="color:#999;font-weight:bold;font-style:italic">&#34;glad/glad.h&#34;</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#include</span> <span style="color:#999;font-weight:bold;font-style:italic">&lt;GL/glext.h&gt;</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#include</span> <span style="color:#999;font-weight:bold;font-style:italic">&lt;X11/Xlib.h&gt;</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#include</span> <span style="color:#999;font-weight:bold;font-style:italic">&lt;GL/glx.h&gt;</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#include</span> <span style="color:#999;font-weight:bold;font-style:italic">&lt;iostream&gt;</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#define XR_USE_PLATFORM_XLIB </span><span style="color:#998;font-style:italic">//指定平台
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#999;font-weight:bold;font-style:italic">#define XR_USE_GRAPHICS_API_OPENGL </span><span style="color:#998;font-style:italic">//指定渲染API
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#999;font-weight:bold;font-style:italic">#define XR_EXTENSION_PROTOTYPES
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#include</span> <span style="color:#999;font-weight:bold;font-style:italic">&lt;openxr/openxr.h&gt;</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#include</span> <span style="color:#999;font-weight:bold;font-style:italic">&lt;openxr/openxr_platform.h&gt;</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">#include</span> <span style="color:#999;font-weight:bold;font-style:italic">&lt;GLFW/glfw3.h&gt;</span><span style="color:#999;font-weight:bold;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">int</span> <span style="color:#900;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>    std<span style="color:#000;font-weight:bold">::</span>cout <span style="color:#000;font-weight:bold">&lt;&lt;</span> <span style="color:#d14">&#34;Hello, OpenXR demo!&#34;</span> <span style="color:#000;font-weight:bold">&lt;&lt;</span> std<span style="color:#000;font-weight:bold">::</span>endl;
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">return</span> EXIT_SUCCESS;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>主要流程分为三个</strong></p>
+<p>1、初始化</p>
+<p>2、主循环</p>
+<p>3、回收</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">init</span>();
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">frame</span>();
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">cleanUp</span>();
+</span></span></code></pre></div><h3 id="31-初始化">3.1 初始化</h3>
+<p>1、创建OpenXR instance</p>
+<p>2、创建OpenXR Session</p>
+<p>3、创建局部坐标系</p>
+<p>4、创建交换链</p>
+<p>5、初始化视图</p>
+<p>6、初始化OpenGL</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">init</span>(){
+</span></span><span style="display:flex;"><span>    createInstance();
+</span></span><span style="display:flex;"><span>    createSession();
+</span></span><span style="display:flex;"><span>    createSpace();
+</span></span><span style="display:flex;"><span>    createSwapchain();
+</span></span><span style="display:flex;"><span>    initViews();
+</span></span><span style="display:flex;"><span>    initGl();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="311-创建xrinstance"><strong>3.1.1 创建XrInstance</strong></h4>
+<p>所有和OpenXR有关的函数，基本上都遵循以下规律：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>XxxInstance xxx;
+</span></span><span style="display:flex;"><span>XrXxxCreateInfo createInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>    .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_XXXX_CREATE_INFO,
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//...
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>xrCreateXxx(XXX, <span style="color:#000;font-weight:bold">&amp;</span>createInfo, <span style="color:#000;font-weight:bold">&amp;</span>xxx);
+</span></span></code></pre></div><p>其中有两个重要对象，一个是要创建的对象本身，比如XrInstance、XrSession、XrSpace等等，另一个是创建该对象的配置对象CreateInfo，比如XrInstanceCreateInfo、XrSessionCreateInfo&hellip;</p>
+<p>所以，我们要创建一个OpenXR对象，首先想到的就是上面这个规律。</p>
+<blockquote>
+<p>其实Vulkan的API也是这个规律。</p>
+</blockquote>
+<p>另外，很多调用OpenXR API返回的是XrResult，我们可以判断XrResult是否是XR_SUCEESS，从而决定是否继续下面的逻辑。在这DEMO中，我定义一个宏来处理。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#998;font-style:italic">//判断openxr接口调用情况
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#999;font-weight:bold;font-style:italic">#define CALL_XR(result) {           \
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">     if(XR_SUCCESS != result){      \
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">            std::string info;       \
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">            info += __FILE__;                       \
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">            info += &#34;[&#34; + std::to_string(__LINE__) + &#34;]&#34;;\
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">            info += &#34;: call openxr function error~&#34;;     \
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">            throw std::runtime_error(info.c_str());      \
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">     }                                                   \
+</span></span></span><span style="display:flex;"><span><span style="color:#999;font-weight:bold;font-style:italic">}
+</span></span></span></code></pre></div><p>创建XrInstance就可以这样实现：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">createInstance</span>(){
+</span></span><span style="display:flex;"><span>    XrInstanceCreateInfo createInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#998;font-style:italic">//TODO
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    };
+</span></span><span style="display:flex;"><span>    CALL_XR(xrCreateInstance(<span style="color:#000;font-weight:bold">&amp;</span>createInfo, <span style="color:#000;font-weight:bold">&amp;</span>instance)); <span style="color:#998;font-style:italic">//可以定义全局变量，instance
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>}
+</span></span></code></pre></div><p>现在重点就是组装<code>XrInstanceCreateInfo</code>对象了。</p>
+<p>在组装CreateInfo对象的过程中，如果没有组装必填参数，会返回以下报错。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>Error <span style="color:#000;font-weight:bold">[</span>GENERAL | xrCreateInstance | OpenXR-Loader<span style="color:#000;font-weight:bold">]</span> : VUID-XrApplicationInfo-engineName-parameter: application name can not be empty.
+</span></span><span style="display:flex;"><span>Error <span style="color:#000;font-weight:bold">[</span>SPEC | xrCreateInstance | VUID-XrInstanceCreateInfo-applicationInfo-parameter<span style="color:#000;font-weight:bold">]</span> : info-&gt;applicationInfo is not valid.
+</span></span></code></pre></div><p>我们可以根据报错找到哪些参数必填，在这个DEMO中我尽量只填必不可少的参数。</p>
+<p>所以，application的组装如下:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>XrApplicationInfo applicationInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>        .applicationName <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;hello openxr&#34;</span>,
+</span></span><span style="display:flex;"><span>        .applicationVersion <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">1</span>,
+</span></span><span style="display:flex;"><span>        .engineName <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;no engine&#34;</span>,
+</span></span><span style="display:flex;"><span>        .engineVersion <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>,
+</span></span><span style="display:flex;"><span>        .apiVersion <span style="color:#000;font-weight:bold">=</span> XR_CURRENT_API_VERSION,
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>另外，我们需要添加<code>XR_KHR_OPENGL_ENABLE_EXTENSION_NAME</code>支持OpenGL的扩展。</p>
+<blockquote>
+<p>扩展相关可以参考OpenXR官方的<a href="https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#extensions">扩展说明</a></p>
+</blockquote>
+<p>现在<code>create_instance</code>的实现如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>XrInstance instance;<span style="color:#998;font-style:italic">//全局变量
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">createInstance</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">const</span> <span style="color:#458;font-weight:bold">char</span> <span style="color:#000;font-weight:bold">*</span>extensions[] <span style="color:#000;font-weight:bold">=</span> { XR_KHR_OPENGL_ENABLE_EXTENSION_NAME };
+</span></span><span style="display:flex;"><span>    <span style="color:#458;font-weight:bold">int</span> extension_count <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">sizeof</span>(extensions) <span style="color:#000;font-weight:bold">/</span> <span style="color:#000;font-weight:bold">sizeof</span>(extensions[<span style="color:#099">0</span>]);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    XrApplicationInfo applicationInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>            .applicationName <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;hello openxr&#34;</span>,
+</span></span><span style="display:flex;"><span>            .applicationVersion <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">1</span>,
+</span></span><span style="display:flex;"><span>            .engineName <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;no engine&#34;</span>,
+</span></span><span style="display:flex;"><span>            .engineVersion <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>,
+</span></span><span style="display:flex;"><span>            .apiVersion <span style="color:#000;font-weight:bold">=</span> XR_CURRENT_API_VERSION,
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    XrInstanceCreateInfo createInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>        .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_INSTANCE_CREATE_INFO,
+</span></span><span style="display:flex;"><span>        .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>        .createFlags <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>,
+</span></span><span style="display:flex;"><span>        .applicationInfo <span style="color:#000;font-weight:bold">=</span> applicationInfo,
+</span></span><span style="display:flex;"><span>        .enabledApiLayerCount <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>,
+</span></span><span style="display:flex;"><span>        .enabledApiLayerNames <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>        .enabledExtensionCount <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">static_cast</span><span style="color:#000;font-weight:bold">&lt;</span><span style="color:#458;font-weight:bold">uint32_t</span><span style="color:#000;font-weight:bold">&gt;</span>(extension_count),
+</span></span><span style="display:flex;"><span>        .enabledExtensionNames <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">reinterpret_cast</span><span style="color:#000;font-weight:bold">&lt;</span><span style="color:#000;font-weight:bold">const</span> <span style="color:#458;font-weight:bold">char</span> <span style="color:#000;font-weight:bold">*</span><span style="color:#000;font-weight:bold">const</span> <span style="color:#000;font-weight:bold">*&gt;</span>(extensions),
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    CALL_XR(xrCreateInstance(<span style="color:#000;font-weight:bold">&amp;</span>createInfo, <span style="color:#000;font-weight:bold">&amp;</span>instance));
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="312-创建session">3.1.2 创建Session</h4>
+<p>同理，先搭建结构。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>XrSession session;<span style="color:#998;font-style:italic">//全局变量
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">createSession</span>(){
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    XrSessionCreateInfo sessionCreateInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>        .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_SESSION_CREATE_INFO
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    CALL_XR(xrCreateSession(instance, <span style="color:#000;font-weight:bold">&amp;</span>sessionCreateInfo, <span style="color:#000;font-weight:bold">&amp;</span>session));
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>组装参数，分为 4 个步骤：</p>
+<p>1、获得System信息</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>XrSystemId systemId;<span style="color:#998;font-style:italic">//全局变量
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>XrSystemGetInfo systemGetInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>        .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_SYSTEM_GET_INFO,
+</span></span><span style="display:flex;"><span>        .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#998;font-style:italic">//XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY: 跟踪显示器连接到用户的头部。用户不能触摸显示器本身。VR头显就是这种形式的一个例子。
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">//XR_FORM_FACTOR_HANDHELD_DISPLAY：跟踪显示是在用户的手中，独立于用户的头部。用户可以触摸显示器，允许使用屏幕空间的UI。使用直通视频运行AR体验的手机就是这种形式因素的一个例子。
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>        .formFactor <span style="color:#000;font-weight:bold">=</span> XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY,
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>CALL_XR(xrGetSystem(instance, <span style="color:#000;font-weight:bold">&amp;</span>systemGetInfo, <span style="color:#000;font-weight:bold">&amp;</span>systemId));
+</span></span></code></pre></div><p>2、查询渲染API的需求条件</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>PFN_xrGetOpenGLGraphicsRequirementsKHR pfnXrGetOpenGlGraphicsRequirementsKhr;
+</span></span><span style="display:flex;"><span>CALL_XR(xrGetInstanceProcAddr(instance, <span style="color:#d14">&#34;xrGetOpenGLGraphicsRequirementsKHR&#34;</span>,
+</span></span><span style="display:flex;"><span>                      <span style="color:#000;font-weight:bold">reinterpret_cast</span><span style="color:#000;font-weight:bold">&lt;</span>PFN_xrVoidFunction<span style="color:#000;font-weight:bold">*&gt;</span>(<span style="color:#000;font-weight:bold">&amp;</span>pfnXrGetOpenGlGraphicsRequirementsKhr)));
+</span></span><span style="display:flex;"><span>XrGraphicsRequirementsOpenGLKHR graphicsRequirements <span style="color:#000;font-weight:bold">=</span> {XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR};
+</span></span><span style="display:flex;"><span>CALL_XR(pfnXrGetOpenGlGraphicsRequirementsKhr(instance, systemId, <span style="color:#000;font-weight:bold">&amp;</span>graphicsRequirements));
+</span></span></code></pre></div><p>3、渲染API绑定</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>XrGraphicsBindingOpenGLXlibKHR graphicsBinding <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>        .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR,
+</span></span><span style="display:flex;"><span>        .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#998;font-style:italic">//... 在 initWindow() 中初始化
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>};
+</span></span></code></pre></div><p>4、初始化窗口</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>GLFWwindow<span style="color:#000;font-weight:bold">*</span> pWindow;
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">initWindow</span>(XrGraphicsBindingOpenGLXlibKHR<span style="color:#000;font-weight:bold">*</span> graphicsBinding){
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">if</span>(<span style="color:#000;font-weight:bold">!</span>glfwInit()){
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">throw</span> std<span style="color:#000;font-weight:bold">::</span>runtime_error(<span style="color:#d14">&#34;failed to init glfw.&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, <span style="color:#099">4</span>);<span style="color:#998;font-style:italic">// 主版本
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, <span style="color:#099">0</span>);<span style="color:#998;font-style:italic">// 次版本
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);<span style="color:#998;font-style:italic">//使用核心模式
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    pWindow <span style="color:#000;font-weight:bold">=</span> glfwCreateWindow(WIDTH, HEIGHT, <span style="color:#d14">&#34;hello openxr&#34;</span>, <span style="color:#000;font-weight:bold">nullptr</span>, <span style="color:#000;font-weight:bold">nullptr</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">if</span>(<span style="color:#000;font-weight:bold">!</span>pWindow){
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">throw</span> std<span style="color:#000;font-weight:bold">::</span>runtime_error(<span style="color:#d14">&#34;failed to create window.&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    glfwMakeContextCurrent(pWindow);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#458;font-weight:bold">bool</span> bLoadSuc <span style="color:#000;font-weight:bold">=</span> gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">if</span>(<span style="color:#000;font-weight:bold">!</span>bLoadSuc){
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">throw</span> std<span style="color:#000;font-weight:bold">::</span>runtime_error(<span style="color:#d14">&#34;failed glad load glProcAddress!&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//debug
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    glEnable(GL_DEBUG_OUTPUT);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//设置值
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    graphicsBinding<span style="color:#000;font-weight:bold">-&gt;</span>xDisplay <span style="color:#000;font-weight:bold">=</span> XOpenDisplay(<span style="color:#000;font-weight:bold">nullptr</span>);
+</span></span><span style="display:flex;"><span>    graphicsBinding<span style="color:#000;font-weight:bold">-&gt;</span>glxContext <span style="color:#000;font-weight:bold">=</span> glXGetCurrentContext();
+</span></span><span style="display:flex;"><span>    graphicsBinding<span style="color:#000;font-weight:bold">-&gt;</span>glxDrawable <span style="color:#000;font-weight:bold">=</span> glXGetCurrentDrawable();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>最终获得<code>XrGraphicsBindingOpenGLXlibKHR</code>对象，将其赋值给<code>XrSessionCreateInfo</code>的next字段。然后调用<code>xrCreatSession()</code>。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#998;font-style:italic">//... 渲染API绑定
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">//初始化窗口
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>initWindow(<span style="color:#000;font-weight:bold">&amp;</span>graphicsBinding);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">//创建session
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>XrSessionCreateInfo sessionCreateInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>    .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_SESSION_CREATE_INFO,
+</span></span><span style="display:flex;"><span>    .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">reinterpret_cast</span><span style="color:#000;font-weight:bold">&lt;</span><span style="color:#000;font-weight:bold">const</span> XrBaseInStructure<span style="color:#000;font-weight:bold">*&gt;</span>(<span style="color:#000;font-weight:bold">&amp;</span>graphicsBinding),
+</span></span><span style="display:flex;"><span>    .createFlags <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>,
+</span></span><span style="display:flex;"><span>    .systemId <span style="color:#000;font-weight:bold">=</span> systemId
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>CALL_XR(xrCreateSession(instance, <span style="color:#000;font-weight:bold">&amp;</span>sessionCreateInfo, <span style="color:#000;font-weight:bold">&amp;</span>session));
+</span></span></code></pre></div><p>此时，运行可以看到一个窗口一闪而过。</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20230308204548667.png">
+            <img class="mx-auto" alt="image-20230308204548667" src="./assets/image-20230308204548667.png" />
+        </a>
+    </p>
+<h4 id="313-创建referencespace">3.1.3 创建ReferenceSpace</h4>
+<p>ReferenceSpace，参考空间。包括视图(VIEW)、本地（LOCAL）和舞台（STAGE），向OpenXR接口传递坐标时，需要向函数传递一个参考系；返回坐标时，也会带上一个XrSpace来表示这些坐标的参照系，应用程序可以使用他们进行空间转换。</p>
+<p>创建参考空间的代码结构。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>XrSpace appSpace;<span style="color:#998;font-style:italic">//全局变量
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>XrPosef identity <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>        .orientation <span style="color:#000;font-weight:bold">=</span> {<span style="color:#099">0</span>, <span style="color:#099">0</span>, <span style="color:#099">0</span>, <span style="color:#099">1</span>},
+</span></span><span style="display:flex;"><span>        .position <span style="color:#000;font-weight:bold">=</span> {<span style="color:#099">0</span>, <span style="color:#099">0</span>, <span style="color:#099">0</span>},
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">createSpace</span>(){
+</span></span><span style="display:flex;"><span>    XrReferenceSpaceCreateInfo createInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>        .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_REFERENCE_SPACE_CREATE_INFO,
+</span></span><span style="display:flex;"><span>        .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#998;font-style:italic">//暂时使用本地参考系
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>        .referenceSpaceType <span style="color:#000;font-weight:bold">=</span> XR_REFERENCE_SPACE_TYPE_LOCAL,
+</span></span><span style="display:flex;"><span>        .poseInReferenceSpace <span style="color:#000;font-weight:bold">=</span> identity
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    CALL_XR(xrCreateReferenceSpace(session, <span style="color:#000;font-weight:bold">&amp;</span>createInfo, <span style="color:#000;font-weight:bold">&amp;</span>appSpace));
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="314-创建交换链">3.1.4 创建交换链</h4>
+<p>代码结构</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">createSwapchain</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//1、查询交换链支持的格式
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    xrEnumerateSwapchainFormats()
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//2、查询视图数量
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    xrEnumerateViewConfigurationViews()
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//3、每个视图分别创建swapchain和设置swapchain images
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">for</span>(viewConfigs) {
+</span></span><span style="display:flex;"><span>        xrCreateSwapchain();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>1、查询交换链支持格式，选择合适格式。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#458;font-weight:bold">uint32_t</span> formatCountOutput;
+</span></span><span style="display:flex;"><span>CALL_XR(xrEnumerateSwapchainFormats(session, <span style="color:#099">0</span>, <span style="color:#000;font-weight:bold">&amp;</span>formatCountOutput, <span style="color:#000;font-weight:bold">nullptr</span>));
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">if</span>(formatCountOutput <span style="color:#000;font-weight:bold">&lt;=</span> <span style="color:#099">0</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">throw</span> std<span style="color:#000;font-weight:bold">::</span>runtime_error(<span style="color:#d14">&#34;can not find swapchain support formats!&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">int64_t</span> formats[formatCountOutput];
+</span></span><span style="display:flex;"><span>CALL_XR(xrEnumerateSwapchainFormats(session, formatCountOutput, <span style="color:#000;font-weight:bold">&amp;</span>formatCountOutput, formats));
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">//color format
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#458;font-weight:bold">int64_t</span>  colorFormat <span style="color:#000;font-weight:bold">=</span> chooseFormat(formats, formatCountOutput, GL_SRGB8_ALPHA8_EXT, <span style="color:#0086b3">true</span>);
+</span></span></code></pre></div><p>格式选择，可以支持降级，如果没有找到合适的支持格式，就选择第一个格式。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#998;font-style:italic">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"> * @param array 格式列表
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"> * @param arrayCount 格式列表数量
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"> * @param shouldChoose 最佳选择
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"> * @param fallback 是否降级
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"> * @return 选择的格式
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">int64_t</span> <span style="color:#900;font-weight:bold">chooseFormat</span>(<span style="color:#000;font-weight:bold">const</span> <span style="color:#458;font-weight:bold">int64_t</span><span style="color:#000;font-weight:bold">*</span> array, <span style="color:#458;font-weight:bold">uint32_t</span> arrayCount, <span style="color:#458;font-weight:bold">int64_t</span> shouldChoose, <span style="color:#458;font-weight:bold">bool</span> fallback) {
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">if</span>(arrayCount <span style="color:#000;font-weight:bold">&lt;=</span> <span style="color:#099">0</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">throw</span> std<span style="color:#000;font-weight:bold">::</span>runtime_error(<span style="color:#d14">&#34;arrayCount is required!&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#458;font-weight:bold">int64_t</span> chooseFormat <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">-</span><span style="color:#099">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">for</span>(<span style="color:#458;font-weight:bold">int</span> i <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>; i <span style="color:#000;font-weight:bold">&lt;</span> arrayCount; i<span style="color:#000;font-weight:bold">++</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">if</span>(shouldChoose <span style="color:#000;font-weight:bold">==</span> array[i]){
+</span></span><span style="display:flex;"><span>            chooseFormat <span style="color:#000;font-weight:bold">=</span> array[i];
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">if</span>(chooseFormat <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">-</span><span style="color:#099">1</span> <span style="color:#000;font-weight:bold">&amp;&amp;</span> fallback){
+</span></span><span style="display:flex;"><span>        chooseFormat <span style="color:#000;font-weight:bold">=</span> array[<span style="color:#099">0</span>];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">return</span> chooseFormat;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>2、查询视图数量</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>std<span style="color:#000;font-weight:bold">::</span>vector<span style="color:#000;font-weight:bold">&lt;</span>XrViewConfigurationView<span style="color:#000;font-weight:bold">&gt;</span> configurationViews;<span style="color:#998;font-style:italic">//全局变量
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">uint32_t</span> configViewCount;
+</span></span><span style="display:flex;"><span>CALL_XR(xrEnumerateViewConfigurationViews(instance, systemId, XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
+</span></span><span style="display:flex;"><span>                                          <span style="color:#099">0</span>, <span style="color:#000;font-weight:bold">&amp;</span>configViewCount,<span style="color:#000;font-weight:bold">nullptr</span>));
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">if</span>(configViewCount <span style="color:#000;font-weight:bold">&lt;=</span> <span style="color:#099">0</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">throw</span> std<span style="color:#000;font-weight:bold">::</span>runtime_error(<span style="color:#d14">&#34;can not find config views!&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>configurationViews.resize(configViewCount);
+</span></span><span style="display:flex;"><span>CALL_XR(xrEnumerateViewConfigurationViews(instance, systemId, XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
+</span></span><span style="display:flex;"><span>                                          <span style="color:#099">0</span>, <span style="color:#000;font-weight:bold">&amp;</span>configViewCount, configurationViews.data()));
+</span></span></code></pre></div><p>3、创建swapchain和设置swapchain images</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>std<span style="color:#000;font-weight:bold">::</span>vector<span style="color:#000;font-weight:bold">&lt;</span>XrSwapchain<span style="color:#000;font-weight:bold">&gt;</span> swapchains;<span style="color:#998;font-style:italic">//全局变量
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>swapchains.resize(configViewCount);
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">for</span>(<span style="color:#458;font-weight:bold">int</span> i <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>; i <span style="color:#000;font-weight:bold">&lt;</span> configViewCount; i<span style="color:#000;font-weight:bold">++</span>){
+</span></span><span style="display:flex;"><span>    XrSwapchainCreateInfo createInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>        .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_SWAPCHAIN_CREATE_INFO,
+</span></span><span style="display:flex;"><span>        .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>        .createFlags <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>,
+</span></span><span style="display:flex;"><span>        .usageFlags <span style="color:#000;font-weight:bold">=</span> XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT <span style="color:#000;font-weight:bold">|</span> XR_SWAPCHAIN_USAGE_SAMPLED_BIT,
+</span></span><span style="display:flex;"><span>        .format <span style="color:#000;font-weight:bold">=</span> colorFormat,
+</span></span><span style="display:flex;"><span>        .sampleCount <span style="color:#000;font-weight:bold">=</span> configurationViews[i].maxSwapchainSampleCount,
+</span></span><span style="display:flex;"><span>        .width <span style="color:#000;font-weight:bold">=</span> WIDTH,
+</span></span><span style="display:flex;"><span>        .height <span style="color:#000;font-weight:bold">=</span> HEIGHT,
+</span></span><span style="display:flex;"><span>        .faceCount <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">1</span>,
+</span></span><span style="display:flex;"><span>        .arraySize <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">1</span>,
+</span></span><span style="display:flex;"><span>        .mipCount <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">1</span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    CALL_XR(xrCreateSwapchain(session, <span style="color:#000;font-weight:bold">&amp;</span>createInfo, <span style="color:#000;font-weight:bold">&amp;</span>swapchains[i]));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#458;font-weight:bold">uint32_t</span> imageCountOutput;
+</span></span><span style="display:flex;"><span>    CALL_XR(xrEnumerateSwapchainImages(swapchains[i], <span style="color:#099">0</span>, <span style="color:#000;font-weight:bold">&amp;</span>imageCountOutput, <span style="color:#000;font-weight:bold">nullptr</span>));
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">if</span>(imageCountOutput <span style="color:#000;font-weight:bold">&gt;</span> <span style="color:#099">0</span>){
+</span></span><span style="display:flex;"><span>        swapchainImages.resize(imageCountOutput);
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">for</span> (<span style="color:#000;font-weight:bold">auto</span> <span style="color:#000;font-weight:bold">&amp;</span><span style="color:#900;font-weight:bold">item</span>: swapchainImages) {
+</span></span><span style="display:flex;"><span>            item.type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        CALL_XR(xrEnumerateSwapchainImages(swapchains[i], <span style="color:#099">0</span>, <span style="color:#000;font-weight:bold">&amp;</span>imageCountOutput,
+</span></span><span style="display:flex;"><span>                                           <span style="color:#000;font-weight:bold">reinterpret_cast</span><span style="color:#000;font-weight:bold">&lt;</span>XrSwapchainImageBaseHeader <span style="color:#000;font-weight:bold">*&gt;</span>(swapchainImages.data())));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="315-初始化视图">3.1.5 初始化视图</h4>
+<p>我们先根据配置视图数量创建投影视图<code>XrCompositionLayerProjectionView</code>即可。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>std<span style="color:#000;font-weight:bold">::</span>vector<span style="color:#000;font-weight:bold">&lt;</span>XrCompositionLayerProjectionView<span style="color:#000;font-weight:bold">&gt;</span> projectionViews;<span style="color:#998;font-style:italic">//全局变量
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>XrFovf identityFov <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>        .angleLeft <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>,
+</span></span><span style="display:flex;"><span>        .angleRight <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>,
+</span></span><span style="display:flex;"><span>        .angleUp <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>,
+</span></span><span style="display:flex;"><span>        .angleDown <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>,
+</span></span><span style="display:flex;"><span>};<span style="color:#998;font-style:italic">//全局变量
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>std<span style="color:#000;font-weight:bold">::</span>vector<span style="color:#000;font-weight:bold">&lt;</span>XrView<span style="color:#000;font-weight:bold">&gt;</span> views;<span style="color:#998;font-style:italic">//全局变量
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">initViews</span>(){
+</span></span><span style="display:flex;"><span>    views.resize(configurationViews.size());
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">for</span> (<span style="color:#000;font-weight:bold">auto</span> <span style="color:#000;font-weight:bold">&amp;</span><span style="color:#900;font-weight:bold">item</span>: views) {
+</span></span><span style="display:flex;"><span>        item.type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_VIEW;
+</span></span><span style="display:flex;"><span>        item.next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#458;font-weight:bold">uint32_t</span> size <span style="color:#000;font-weight:bold">=</span> configurationViews.size();
+</span></span><span style="display:flex;"><span>    projectionViews.resize(size);
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">for</span>(<span style="color:#458;font-weight:bold">int</span> i <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>; i <span style="color:#000;font-weight:bold">&lt;</span> size; i<span style="color:#000;font-weight:bold">++</span>){
+</span></span><span style="display:flex;"><span>        projectionViews[i].type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
+</span></span><span style="display:flex;"><span>        projectionViews[i].next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>;
+</span></span><span style="display:flex;"><span>        projectionViews[i].pose <span style="color:#000;font-weight:bold">=</span> identity;
+</span></span><span style="display:flex;"><span>        projectionViews[i].fov <span style="color:#000;font-weight:bold">=</span> identityFov;
+</span></span><span style="display:flex;"><span>        projectionViews[i].subImage.swapchain <span style="color:#000;font-weight:bold">=</span> swapchains[i];
+</span></span><span style="display:flex;"><span>        projectionViews[i].subImage.imageRect.offset <span style="color:#000;font-weight:bold">=</span> {<span style="color:#099">0</span>, <span style="color:#099">0</span>};
+</span></span><span style="display:flex;"><span>        projectionViews[i].subImage.imageRect.extent <span style="color:#000;font-weight:bold">=</span> {WIDTH, HEIGHT};
+</span></span><span style="display:flex;"><span>        projectionViews[i].subImage.imageArrayIndex <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="316-初始化gl">3.1.6 初始化GL</h4>
+<p>1、我们先定义一个顶点着色器和片元着色器，暂时只是最简单的显示顶点颜色。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">const</span> <span style="color:#458;font-weight:bold">char</span><span style="color:#000;font-weight:bold">*</span> vertexshader <span style="color:#000;font-weight:bold">=</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#d14">&#34;#version 330 core</span><span style="color:#d14">\n</span><span style="color:#d14">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#d14">&#34;layout(location = 0) in vec3 aPos;</span><span style="color:#d14">\n</span><span style="color:#d14">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#d14">&#34;layout(location = 1) in vec4 aColor;</span><span style="color:#d14">\n</span><span style="color:#d14">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#d14">&#34;out vec4 vertexColor;</span><span style="color:#d14">\n</span><span style="color:#d14">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#d14">&#34;void main() {</span><span style="color:#d14">\n</span><span style="color:#d14">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#d14">&#34;	gl_Position = vec4(aPos, 1.0);</span><span style="color:#d14">\n</span><span style="color:#d14">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#d14">&#34;	vertexColor = aColor;</span><span style="color:#d14">\n</span><span style="color:#d14">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#d14">&#34;}</span><span style="color:#d14">\n</span><span style="color:#d14">&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">const</span> <span style="color:#458;font-weight:bold">char</span><span style="color:#000;font-weight:bold">*</span> fragmentshader <span style="color:#000;font-weight:bold">=</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#d14">&#34;#version 330 core</span><span style="color:#d14">\n</span><span style="color:#d14">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#d14">&#34;in vec4 vertexColor;</span><span style="color:#d14">\n</span><span style="color:#d14">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#d14">&#34;out vec4 FragColor;</span><span style="color:#d14">\n</span><span style="color:#d14">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#d14">&#34;void main() {</span><span style="color:#d14">\n</span><span style="color:#d14">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#d14">&#34;	FragColor = vertexColor;</span><span style="color:#d14">\n</span><span style="color:#d14">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#d14">&#34;}</span><span style="color:#d14">\n</span><span style="color:#d14">&#34;</span>;
+</span></span></code></pre></div><p>2、创建<code>Geometry</code>结构体，然后根据配置视图数量，创建<code>FrameBuffer</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">struct</span> <span style="color:#458;font-weight:bold">Geometry</span> {
+</span></span><span style="display:flex;"><span>    GLuint shaderProgramId; <span style="color:#998;font-style:italic">//着色器程序
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    std<span style="color:#000;font-weight:bold">::</span>vector<span style="color:#000;font-weight:bold">&lt;</span>GLuint<span style="color:#000;font-weight:bold">&gt;</span> frameBuffers;<span style="color:#998;font-style:italic">//帧缓冲列表
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    GLuint VAO;<span style="color:#998;font-style:italic">//顶点数组对象
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>};
+</span></span><span style="display:flex;"><span>Geometry geometry;<span style="color:#998;font-style:italic">//全局变量
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">initGl</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#458;font-weight:bold">uint32_t</span> size <span style="color:#000;font-weight:bold">=</span> configurationViews.size();
+</span></span><span style="display:flex;"><span>    geometry.frameBuffers.resize(size);
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">for</span>(<span style="color:#458;font-weight:bold">int</span> i <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>; i <span style="color:#000;font-weight:bold">&lt;</span> size; i<span style="color:#000;font-weight:bold">++</span>){
+</span></span><span style="display:flex;"><span>        glGenFramebuffers(<span style="color:#099">1</span>, <span style="color:#000;font-weight:bold">&amp;</span>geometry.frameBuffers[i]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>3、编译着色器，获得着色器程序</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#998;font-style:italic">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"> * 编译着色器
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"> * @param type 类型
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"> * @param source 源码
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"> * @return 着色器id，如果失败抛出runtime_error
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"> */</span>
+</span></span><span style="display:flex;"><span>GLuint <span style="color:#900;font-weight:bold">compileShader</span>(GLuint type, <span style="color:#000;font-weight:bold">const</span> <span style="color:#458;font-weight:bold">char</span><span style="color:#000;font-weight:bold">*</span> source){
+</span></span><span style="display:flex;"><span>    GLuint rt <span style="color:#000;font-weight:bold">=</span> glCreateShader(type);
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">const</span> GLchar<span style="color:#000;font-weight:bold">*</span> glCharSource[] <span style="color:#000;font-weight:bold">=</span> {source};
+</span></span><span style="display:flex;"><span>    glShaderSource(rt, <span style="color:#099">1</span>, glCharSource, <span style="color:#000;font-weight:bold">nullptr</span>);
+</span></span><span style="display:flex;"><span>    glCompileShader(rt);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    GLint suc;
+</span></span><span style="display:flex;"><span>    glGetShaderiv(rt, GL_COMPILE_STATUS, <span style="color:#000;font-weight:bold">&amp;</span>suc);
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">if</span>(suc <span style="color:#000;font-weight:bold">&lt;</span> <span style="color:#099">0</span>){
+</span></span><span style="display:flex;"><span>        GLchar log[<span style="color:#099">512</span>];
+</span></span><span style="display:flex;"><span>        glGetShaderInfoLog(rt, <span style="color:#099">512</span>, <span style="color:#000;font-weight:bold">nullptr</span>, log);
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">throw</span> std<span style="color:#000;font-weight:bold">::</span>runtime_error(log);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">return</span> rt;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">initGl</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#458;font-weight:bold">uint32_t</span> size <span style="color:#000;font-weight:bold">=</span> configurationViews.size();
+</span></span><span style="display:flex;"><span>    geometry.frameBuffers.resize(size);
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">for</span>(<span style="color:#458;font-weight:bold">int</span> i <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>; i <span style="color:#000;font-weight:bold">&lt;</span> size; i<span style="color:#000;font-weight:bold">++</span>){
+</span></span><span style="display:flex;"><span>        glGenFramebuffers(<span style="color:#099">1</span>, <span style="color:#000;font-weight:bold">&amp;</span>geometry.frameBuffers[i]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//编译着色器
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    GLuint vsId <span style="color:#000;font-weight:bold">=</span> compileShader(GL_VERTEX_SHADER, vertexShaderSource);
+</span></span><span style="display:flex;"><span>    GLuint fsId <span style="color:#000;font-weight:bold">=</span> compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+</span></span><span style="display:flex;"><span>    geometry.shaderProgramId <span style="color:#000;font-weight:bold">=</span> glCreateProgram();
+</span></span><span style="display:flex;"><span>    glAttachShader(geometry.shaderProgramId, vsId);
+</span></span><span style="display:flex;"><span>    glAttachShader(geometry.shaderProgramId, fsId);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    glDeleteShader(vsId);
+</span></span><span style="display:flex;"><span>    glDeleteShader(fsId);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    glLinkProgram(geometry.shaderProgramId);
+</span></span><span style="display:flex;"><span>    GLint suc;
+</span></span><span style="display:flex;"><span>    glGetProgramiv(geometry.shaderProgramId, GL_LINK_STATUS, <span style="color:#000;font-weight:bold">&amp;</span>suc);
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">if</span>(suc <span style="color:#000;font-weight:bold">&lt;</span> <span style="color:#099">0</span>){
+</span></span><span style="display:flex;"><span>        GLchar log[<span style="color:#099">512</span>];
+</span></span><span style="display:flex;"><span>        glGetProgramInfoLog(geometry.shaderProgramId, <span style="color:#099">512</span>, <span style="color:#000;font-weight:bold">nullptr</span>, log);
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">throw</span> std<span style="color:#000;font-weight:bold">::</span>runtime_error(log);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>4、设置顶点数组对象VAO，这里只简单设置位置和颜色。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#998;font-style:italic">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"> * 设置顶点数组对象
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"> * @param vao Vertex Array Object
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">setVAO</span>(GLuint<span style="color:#000;font-weight:bold">*</span> vao){
+</span></span><span style="display:flex;"><span>    <span style="color:#458;font-weight:bold">float</span> vertices[] <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#099">0.0f</span>, <span style="color:#099">0.5f</span>, <span style="color:#099">0.0f</span>, <span style="color:#998;font-style:italic">//第一个顶点
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>            <span style="color:#099">0.0f</span>, <span style="color:#099">0.0f</span>, <span style="color:#099">0.0f</span>, <span style="color:#998;font-style:italic">//第二个顶点
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>            <span style="color:#099">0.5f</span>, <span style="color:#099">0.0f</span>, <span style="color:#099">0.0f</span>, <span style="color:#998;font-style:italic">//第三个顶点
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#458;font-weight:bold">float</span> colors[] <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#099">1.0f</span>, <span style="color:#099">0.0f</span>, <span style="color:#099">0.0f</span>, <span style="color:#099">1.0f</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#099">0.0f</span>, <span style="color:#099">1.0f</span>, <span style="color:#099">0.0f</span>, <span style="color:#099">1.0f</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#099">0.0f</span>, <span style="color:#099">0.0f</span>, <span style="color:#099">1.0f</span>, <span style="color:#099">0.0f</span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    glGenVertexArrays(<span style="color:#099">1</span>, vao);
+</span></span><span style="display:flex;"><span>    glBindVertexArray(<span style="color:#000;font-weight:bold">*</span>vao);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    GLuint vbos[<span style="color:#099">2</span>];
+</span></span><span style="display:flex;"><span>    glGenBuffers(<span style="color:#099">2</span>, vbos);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    glBindBuffer(GL_ARRAY_BUFFER, vbos[<span style="color:#099">0</span>]);
+</span></span><span style="display:flex;"><span>    glBufferData(GL_ARRAY_BUFFER, <span style="color:#000;font-weight:bold">sizeof</span>(vertices), vertices, GL_STATIC_DRAW);
+</span></span><span style="display:flex;"><span>    glEnableVertexAttribArray(<span style="color:#099">0</span>);
+</span></span><span style="display:flex;"><span>    glVertexAttribPointer(<span style="color:#099">0</span>, <span style="color:#099">3</span>, GL_FLOAT, GL_FALSE, <span style="color:#099">0</span>, <span style="color:#000;font-weight:bold">nullptr</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    glBindBuffer(GL_ARRAY_BUFFER, vbos[<span style="color:#099">1</span>]);
+</span></span><span style="display:flex;"><span>    glBufferData(GL_ARRAY_BUFFER, <span style="color:#000;font-weight:bold">sizeof</span>(colors), colors, GL_STATIC_DRAW);
+</span></span><span style="display:flex;"><span>    glEnableVertexAttribArray(<span style="color:#099">1</span>);
+</span></span><span style="display:flex;"><span>    glVertexAttribPointer(<span style="color:#099">1</span>, <span style="color:#099">4</span>, GL_FLOAT, GL_FALSE, <span style="color:#099">0</span>, <span style="color:#000;font-weight:bold">nullptr</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    glBindVertexArray(<span style="color:#099">0</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>5、然后，在<code>void initGl()</code>中调用。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">initGl</span>() {
+</span></span><span style="display:flex;"><span>	...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">if</span>(suc <span style="color:#000;font-weight:bold">&lt;</span> <span style="color:#099">0</span>){
+</span></span><span style="display:flex;"><span>        GLchar log[<span style="color:#099">512</span>];
+</span></span><span style="display:flex;"><span>        glGetProgramInfoLog(geometry.shaderProgramId, <span style="color:#099">512</span>, <span style="color:#000;font-weight:bold">nullptr</span>, log);
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">throw</span> std<span style="color:#000;font-weight:bold">::</span>runtime_error(log);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    setVAO(<span style="color:#000;font-weight:bold">&amp;</span>geometry.VAO);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="32-主循环">3.2 主循环</h3>
+<p>初始化的工作已经完毕，我们得到了instance、session、space、swapchain、view，还初始化了OpenGL和集合体（目前就是三个顶点构成的三角形）对象。</p>
+<p>接下来，我们之前的<code>void frame()</code>函数就要开始工作了，这个函数的主要任务就是循环渲染。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">pollXrEvents</span>(<span style="color:#458;font-weight:bold">bool</span><span style="color:#000;font-weight:bold">*</span> quitLoop, <span style="color:#458;font-weight:bold">bool</span><span style="color:#000;font-weight:bold">*</span> shouldRender){}
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">rendFrame</span>(){}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">frame</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#458;font-weight:bold">bool</span> quitLoop <span style="color:#000;font-weight:bold">=</span> <span style="color:#0086b3">false</span>; <span style="color:#998;font-style:italic">//标识是否结束循环
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    <span style="color:#458;font-weight:bold">bool</span> shouldRender;<span style="color:#998;font-style:italic">//是否可以渲染
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">while</span> (<span style="color:#000;font-weight:bold">!</span>quitLoop) {
+</span></span><span style="display:flex;"><span>        glfwPollEvents();
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">if</span>(glfwWindowShouldClose(pWindow)) {
+</span></span><span style="display:flex;"><span>            quitLoop <span style="color:#000;font-weight:bold">=</span> <span style="color:#0086b3">true</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        pollXrEvents(<span style="color:#000;font-weight:bold">&amp;</span>quitLoop, <span style="color:#000;font-weight:bold">&amp;</span>shouldRender);
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">if</span>(quitLoop){
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">break</span>;<span style="color:#998;font-style:italic">//退出循环
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#998;font-style:italic">//渲染
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">if</span>(shouldRender) {
+</span></span><span style="display:flex;"><span>            rendFrame();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>所以现在目标就是实现<code>pollXrEvents()</code>和<code>rendFrame()</code>。</p>
+<h4 id="321-处理openxr事件">3.2.1 处理OpenXR事件</h4>
+<p>为了简化，我们只处理两种事件：</p>
+<p>XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING：丢失连接</p>
+<p>XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED：session状态变化</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">pollXrEvents</span>(<span style="color:#458;font-weight:bold">bool</span><span style="color:#000;font-weight:bold">*</span> quitLoop, <span style="color:#458;font-weight:bold">bool</span><span style="color:#000;font-weight:bold">*</span> shouldRender){
+</span></span><span style="display:flex;"><span>    XrEventDataBuffer eventDataBuffer <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>        .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_EVENT_DATA_BUFFER,
+</span></span><span style="display:flex;"><span>        .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    XrResult result <span style="color:#000;font-weight:bold">=</span> xrPollEvent(instance, <span style="color:#000;font-weight:bold">&amp;</span>eventDataBuffer);
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">if</span>(result <span style="color:#000;font-weight:bold">!=</span> XR_SUCCESS){
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">return</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//处理事件
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">switch</span> (eventDataBuffer.type) {
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">default</span><span style="color:#000;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>            std<span style="color:#000;font-weight:bold">::</span>cout <span style="color:#000;font-weight:bold">&lt;&lt;</span> <span style="color:#d14">&#34;do not dispose this event: &#34;</span> <span style="color:#000;font-weight:bold">&lt;&lt;</span> eventDataBuffer.type <span style="color:#000;font-weight:bold">&lt;&lt;</span> std<span style="color:#000;font-weight:bold">::</span>endl;
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING</span>: <span style="color:#998;font-style:italic">//丢失连接
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>            std<span style="color:#000;font-weight:bold">::</span>cout <span style="color:#000;font-weight:bold">&lt;&lt;</span> <span style="color:#d14">&#34;instance_loss_pending&#34;</span> <span style="color:#000;font-weight:bold">&lt;&lt;</span> std<span style="color:#000;font-weight:bold">::</span>endl;
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">*</span>quitLoop <span style="color:#000;font-weight:bold">=</span> <span style="color:#0086b3">true</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED</span>: <span style="color:#998;font-style:italic">//session状态变化
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>            std<span style="color:#000;font-weight:bold">::</span>cout <span style="color:#000;font-weight:bold">&lt;&lt;</span> <span style="color:#d14">&#34;session_state_changed&#34;</span> <span style="color:#000;font-weight:bold">&lt;&lt;</span> std<span style="color:#000;font-weight:bold">::</span>endl;
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">auto</span><span style="color:#000;font-weight:bold">*</span> event <span style="color:#000;font-weight:bold">=</span> (XrEventDataSessionStateChanged<span style="color:#000;font-weight:bold">*</span>) <span style="color:#000;font-weight:bold">&amp;</span>eventDataBuffer;
+</span></span><span style="display:flex;"><span>            onSessionStateChangedEvent(event, quitLoop, shouldRender);
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>其中，session生命周期和渲染息息相关，所以我们单独抽取了一个<code>onSessionStateChangedEvent()</code>。</p>
+<p>可以参考我写的这篇文章：<a href="http://adiosy.com/posts/open_xr/01_Monado%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B/#1-session">Session的生命周期</a></p>
+<p>现在我们只处理这几种状态：</p>
+<p>1、<strong>未知或者空闲状态</strong>，此时未知session状态，暂停渲染循环，即<code>shouldRender=false</code>；</p>
+<p>2、FOCUSED、SYNCHRONIZED、VISIBLE表示正在循环中，此时正常渲染，即<code>shouldRender=true</code>；</p>
+<p>3、READY就绪状态，此时表示session已经就绪，需要调用<code>xrBeginSession</code>，并开启渲染循环<code>shouldRender=true</code>；</p>
+<p>4、STOPPING停止状态，此时表示Session停止，需要调用<code>xrEndSession</code>，并停止渲染循环<code>shouldRender=false</code>；</p>
+<p>5、LOSS_PENDING或EXITING，此时丢失连接或退出Session，需要调用<code>xrDestroySession</code>，并退出和停止循环，即<code>quitLoop=true &amp;&amp; shouldRender=false </code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#458;font-weight:bold">bool</span> isSessionRunning;<span style="color:#998;font-style:italic">//全局变量
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>XrSessionState sessionState;<span style="color:#998;font-style:italic">//全局变量
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">//仅为输出测试
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">static</span> std<span style="color:#000;font-weight:bold">::</span>string print_session_state(<span style="color:#458;font-weight:bold">int64_t</span> state){
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">switch</span> (state) {
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_UNKNOWN</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">return</span> <span style="color:#d14">&#34;unknown&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_IDLE</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">return</span> <span style="color:#d14">&#34;idle&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_READY</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">return</span> <span style="color:#d14">&#34;ready&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_SYNCHRONIZED</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">return</span> <span style="color:#d14">&#34;synchronized&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_VISIBLE</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">return</span> <span style="color:#d14">&#34;visible&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_FOCUSED</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">return</span> <span style="color:#d14">&#34;focused&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_STOPPING</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">return</span> <span style="color:#d14">&#34;stopping&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_LOSS_PENDING</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">return</span> <span style="color:#d14">&#34;loss_pending&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_EXITING</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">return</span> <span style="color:#d14">&#34;exiting&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_MAX_ENUM</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">return</span> <span style="color:#d14">&#34;MAX_ENUM～～it is a bug!&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">return</span> <span style="color:#d14">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">onSessionStateChangedEvent</span>(XrEventDataSessionStateChanged<span style="color:#000;font-weight:bold">*</span> event, <span style="color:#458;font-weight:bold">bool</span><span style="color:#000;font-weight:bold">*</span> quitLoop, <span style="color:#458;font-weight:bold">bool</span><span style="color:#000;font-weight:bold">*</span> shouldRender){
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">auto</span> state <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">static_cast</span><span style="color:#000;font-weight:bold">&lt;</span>XrSessionState<span style="color:#000;font-weight:bold">&gt;</span>(event<span style="color:#000;font-weight:bold">-&gt;</span>state);
+</span></span><span style="display:flex;"><span>    std<span style="color:#000;font-weight:bold">::</span>cout <span style="color:#000;font-weight:bold">&lt;&lt;</span> <span style="color:#d14">&#34;监测到session状态变化，从&#34;</span> <span style="color:#000;font-weight:bold">&lt;&lt;</span> print_session_state(sessionState) <span style="color:#000;font-weight:bold">&lt;&lt;</span> <span style="color:#d14">&#34;变化到：&#34;</span> <span style="color:#000;font-weight:bold">&lt;&lt;</span> print_session_state(state) <span style="color:#000;font-weight:bold">&lt;&lt;</span> std<span style="color:#000;font-weight:bold">::</span>endl;
+</span></span><span style="display:flex;"><span>    sessionState <span style="color:#000;font-weight:bold">=</span> state;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    XrSessionBeginInfo beginInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>            .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_SESSION_BEGIN_INFO,
+</span></span><span style="display:flex;"><span>            .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>            .primaryViewConfigurationType <span style="color:#000;font-weight:bold">=</span> XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">switch</span> (state) {
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_MAX_ENUM</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_IDLE</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_UNKNOWN</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">*</span>shouldRender <span style="color:#000;font-weight:bold">=</span> <span style="color:#0086b3">true</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_FOCUSED</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_SYNCHRONIZED</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_VISIBLE</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">*</span>shouldRender <span style="color:#000;font-weight:bold">=</span> <span style="color:#0086b3">false</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_READY</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">if</span>(<span style="color:#000;font-weight:bold">!</span>isSessionRunning) {
+</span></span><span style="display:flex;"><span>                CALL_XR(xrBeginSession(session, <span style="color:#000;font-weight:bold">&amp;</span>beginInfo));
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">*</span>shouldRender <span style="color:#000;font-weight:bold">=</span> <span style="color:#0086b3">true</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_STOPPING</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">if</span>(isSessionRunning) {
+</span></span><span style="display:flex;"><span>                CALL_XR(xrEndSession(session));
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">*</span>shouldRender <span style="color:#000;font-weight:bold">=</span> <span style="color:#0086b3">false</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_EXITING</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">case</span> <span style="color:#900;font-weight:bold">XR_SESSION_STATE_LOSS_PENDING</span>:
+</span></span><span style="display:flex;"><span>            CALL_XR(xrDestroySession(session));
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">*</span>shouldRender <span style="color:#000;font-weight:bold">=</span> <span style="color:#0086b3">false</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">*</span>quitLoop <span style="color:#000;font-weight:bold">=</span> <span style="color:#0086b3">true</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#000;font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="322-帧渲染">3.2.2 帧渲染</h4>
+<p>渲染分为以下7个步骤：</p>
+<p>1、<code>xrWaitFrame()</code> 等待Frame，需要和xrBeginFrame一起使用</p>
+<p>2、<code>xrBeginFrame()</code> 开始Frame</p>
+<p>3、<code>xrAcquireSwapchainImage()</code> 从交换链中获取贴图</p>
+<p>4、renderImage() 绘制</p>
+<p>5、<code>xrReleaseSwapchainImage()</code>释放交换链中贴图</p>
+<p>6、<code>xrxrLocateViews()</code>获得视图位置</p>
+<p>7、提交Layers，并执行<code>xrEndFrame()</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">renderImage</span>(<span style="color:#458;font-weight:bold">int</span> viewIndex, GLuint frameBuffer, <span style="color:#000;font-weight:bold">const</span> XrSwapchainImageOpenGLKHR<span style="color:#000;font-weight:bold">&amp;</span> image){}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">rendFrame</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//1.waitFrame， 注意需要和 beginFrame成对出现
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    XrFrameWaitInfo waitInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>            .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_FRAME_WAIT_INFO,
+</span></span><span style="display:flex;"><span>            .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    XrFrameState frameState <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>            .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_FRAME_STATE,
+</span></span><span style="display:flex;"><span>            .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    CALL_XR(xrWaitFrame(session, <span style="color:#000;font-weight:bold">&amp;</span>waitInfo, <span style="color:#000;font-weight:bold">&amp;</span>frameState));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//2.beginFrame
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    XrFrameBeginInfo beginInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>            .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_FRAME_BEGIN_INFO,
+</span></span><span style="display:flex;"><span>            .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    CALL_XR(xrBeginFrame(session, <span style="color:#000;font-weight:bold">&amp;</span>beginInfo));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">if</span>(frameState.shouldRender){
+</span></span><span style="display:flex;"><span>        <span style="color:#000;font-weight:bold">for</span>(<span style="color:#458;font-weight:bold">int</span> i <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>; i <span style="color:#000;font-weight:bold">&lt;</span> configurationViews.size(); i<span style="color:#000;font-weight:bold">++</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#998;font-style:italic">//3. TODO 获取交换链中图片
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>            <span style="color:#998;font-style:italic">//4. 绘制
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>            renderImage(...);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#998;font-style:italic">//5. TODO 释放交换链中贴图
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//6. 获得视图位置
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    <span style="color:#458;font-weight:bold">uint32_t</span> viewCountOutput;
+</span></span><span style="display:flex;"><span>    XrViewState viewState <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>            .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_VIEW_STATE,
+</span></span><span style="display:flex;"><span>            .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>            .viewStateFlags <span style="color:#000;font-weight:bold">=</span> XR_VIEW_STATE_POSITION_VALID_BIT
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    XrViewLocateInfo locateInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>            .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_VIEW_LOCATE_INFO,
+</span></span><span style="display:flex;"><span>            .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>            .viewConfigurationType <span style="color:#000;font-weight:bold">=</span> XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
+</span></span><span style="display:flex;"><span>            .displayTime <span style="color:#000;font-weight:bold">=</span> frameState.predictedDisplayTime,
+</span></span><span style="display:flex;"><span>            .space <span style="color:#000;font-weight:bold">=</span> appSpace,
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    xrLocateViews(session, <span style="color:#000;font-weight:bold">&amp;</span>locateInfo, <span style="color:#000;font-weight:bold">&amp;</span>viewState, <span style="color:#099">0</span>, <span style="color:#000;font-weight:bold">&amp;</span>viewCountOutput, views.data());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//7.提交Layers，并执行xrEndFrame()
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    XrFrameEndInfo endInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>            .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_FRAME_END_INFO,
+</span></span><span style="display:flex;"><span>            .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>            .displayTime <span style="color:#000;font-weight:bold">=</span> frameState.predictedDisplayTime,
+</span></span><span style="display:flex;"><span>            .environmentBlendMode <span style="color:#000;font-weight:bold">=</span> XR_ENVIRONMENT_BLEND_MODE_OPAQUE,
+</span></span><span style="display:flex;"><span>            .layerCount <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>,
+</span></span><span style="display:flex;"><span>            .layers <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    CALL_XR(xrEndFrame(session, <span style="color:#000;font-weight:bold">&amp;</span>endInfo));
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>现在重点实现 <strong>3.获取交换链中图片</strong> ，还是熟悉的结构。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">for</span>(<span style="color:#458;font-weight:bold">int</span> i <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>; i <span style="color:#000;font-weight:bold">&lt;</span> configurationViews.size(); i<span style="color:#000;font-weight:bold">++</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//3. 获取交换链中图片
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    XrSwapchainImageAcquireInfo acquireInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>            .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO,
+</span></span><span style="display:flex;"><span>            .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    <span style="color:#458;font-weight:bold">uint32_t</span> imgIndex;
+</span></span><span style="display:flex;"><span>    CALL_XR(xrAcquireSwapchainImage(swapchains[i], <span style="color:#000;font-weight:bold">&amp;</span>acquireInfo, <span style="color:#000;font-weight:bold">&amp;</span>imgIndex));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    XrSwapchainImageWaitInfo imageWaitInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>            .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO,
+</span></span><span style="display:flex;"><span>            .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>            .timeout <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">1000</span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    xrWaitSwapchainImage(swapchains[i], <span style="color:#000;font-weight:bold">&amp;</span>imageWaitInfo);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#998;font-style:italic">//4. 绘制
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    renderImage(i, geometry.frameBuffers[i], swapchainImages[i]);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>还有释放交换链图像。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">//5. 释放交换链中贴图
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>XrSwapchainImageReleaseInfo releaseInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>        .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO,
+</span></span><span style="display:flex;"><span>        .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>xrReleaseSwapchainImage(swapchains[i], <span style="color:#000;font-weight:bold">&amp;</span>releaseInfo);
+</span></span></code></pre></div><p>在<code>renderImage(...)</code>中，我们使用正常的<a href="https://learnopengl-cn.github.io/04%20Advanced%20OpenGL/05%20Framebuffers/">渲染到帧缓冲</a>的方式进行渲染。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">renderImage</span>(<span style="color:#458;font-weight:bold">int</span> viewIndex, GLuint frameBuffer, <span style="color:#000;font-weight:bold">const</span> XrSwapchainImageOpenGLKHR<span style="color:#000;font-weight:bold">&amp;</span> image){
+</span></span><span style="display:flex;"><span>    glBindFramebuffer(<span style="color:#099">1</span>, frameBuffer);
+</span></span><span style="display:flex;"><span>    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, image.image, <span style="color:#099">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    glViewport(<span style="color:#099">0</span>, <span style="color:#099">0</span>, WIDTH, HEIGHT);
+</span></span><span style="display:flex;"><span>    glScissor(<span style="color:#099">0</span>, <span style="color:#099">0</span>, WIDTH, HEIGHT);<span style="color:#998;font-style:italic">//裁剪
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    glClearColor(<span style="color:#099">0.0f</span>, <span style="color:#099">0.0f</span>, <span style="color:#099">0.2f</span>, <span style="color:#099">1.0f</span>);
+</span></span><span style="display:flex;"><span>    glClear(GL_COLOR_BUFFER_BIT);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    glUseProgram(geometry.shaderProgramId);
+</span></span><span style="display:flex;"><span>    glBindVertexArray(geometry.VAO);
+</span></span><span style="display:flex;"><span>    glPointSize(<span style="color:#099">5</span>);
+</span></span><span style="display:flex;"><span>    glDrawArrays(GL_TRIANGLES, <span style="color:#099">0</span>, <span style="color:#099">3</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">if</span> (viewIndex <span style="color:#000;font-weight:bold">==</span> <span style="color:#099">0</span>) {
+</span></span><span style="display:flex;"><span>        glBlitNamedFramebuffer((GLuint)frameBuffer,             <span style="color:#998;font-style:italic">// readFramebuffer
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>                               (GLuint)<span style="color:#099">0</span>,                       <span style="color:#998;font-style:italic">// backbuffer     // drawFramebuffer
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>                               (GLint)<span style="color:#099">0</span>,                        <span style="color:#998;font-style:italic">// srcX0
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>                               (GLint)<span style="color:#099">0</span>,                        <span style="color:#998;font-style:italic">// srcY0
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>                               (GLint)WIDTH,                    <span style="color:#998;font-style:italic">// srcX1
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>                               (GLint)HEIGHT,                   <span style="color:#998;font-style:italic">// srcY1
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>                               (GLint)<span style="color:#099">0</span>,                        <span style="color:#998;font-style:italic">// dstX0
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>                               (GLint)<span style="color:#099">0</span>,                        <span style="color:#998;font-style:italic">// dstY0
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>                               (GLint)WIDTH,                    <span style="color:#998;font-style:italic">// dstX1
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>                               (GLint)HEIGHT,                   <span style="color:#998;font-style:italic">// dstY1
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>                               (GLbitfield)GL_COLOR_BUFFER_BIT, <span style="color:#998;font-style:italic">// mask
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>                               (GLenum)GL_LINEAR);              <span style="color:#998;font-style:italic">// filter
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    glBindFramebuffer(GL_FRAMEBUFFER, <span style="color:#099">0</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>接下来，我们需要修改以下第7个步骤，可以渲染时，需要在<code>xrEndFrame</code>时提交一个Layer。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>xrLocateViews(session, <span style="color:#000;font-weight:bold">&amp;</span>locateInfo, <span style="color:#000;font-weight:bold">&amp;</span>viewState, <span style="color:#099">0</span>, <span style="color:#000;font-weight:bold">&amp;</span>viewCountOutput, views.data());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#458;font-weight:bold">int</span> submittedLayerCount <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">1</span>;
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">const</span> XrCompositionLayerBaseHeader<span style="color:#000;font-weight:bold">*</span> submittedLayers[] <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>        (<span style="color:#000;font-weight:bold">const</span> XrCompositionLayerBaseHeader<span style="color:#000;font-weight:bold">*</span> <span style="color:#000;font-weight:bold">const</span>)<span style="color:#000;font-weight:bold">&amp;</span>projectionViews};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">//如果view State 返回 orientation_valid_bit，就不提交Layer了
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">if</span> ((viewState.viewStateFlags <span style="color:#000;font-weight:bold">&amp;</span> XR_VIEW_STATE_ORIENTATION_VALID_BIT) <span style="color:#000;font-weight:bold">==</span> <span style="color:#099">0</span>) {
+</span></span><span style="display:flex;"><span>    submittedLayerCount <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">//如果不能渲染，也不提交Layer了
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">if</span> (<span style="color:#000;font-weight:bold">!</span>frameState.shouldRender) {
+</span></span><span style="display:flex;"><span>    submittedLayerCount <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic">//7.提交Layers，并执行xrEndFrame()
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>XrFrameEndInfo endInfo <span style="color:#000;font-weight:bold">=</span> {
+</span></span><span style="display:flex;"><span>        .type <span style="color:#000;font-weight:bold">=</span> XR_TYPE_FRAME_END_INFO,
+</span></span><span style="display:flex;"><span>        .next <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">nullptr</span>,
+</span></span><span style="display:flex;"><span>        .displayTime <span style="color:#000;font-weight:bold">=</span> frameState.predictedDisplayTime,
+</span></span><span style="display:flex;"><span>        .environmentBlendMode <span style="color:#000;font-weight:bold">=</span> XR_ENVIRONMENT_BLEND_MODE_OPAQUE,
+</span></span><span style="display:flex;"><span>        .layerCount <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">static_cast</span><span style="color:#000;font-weight:bold">&lt;</span><span style="color:#458;font-weight:bold">uint32_t</span><span style="color:#000;font-weight:bold">&gt;</span>(submittedLayerCount),
+</span></span><span style="display:flex;"><span>        .layers <span style="color:#000;font-weight:bold">=</span> submittedLayers,
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>CALL_XR(xrEndFrame(session, <span style="color:#000;font-weight:bold">&amp;</span>endInfo));
+</span></span><span style="display:flex;"><span>glfwSwapBuffers(pWindow)
+</span></span></code></pre></div><h3 id="33-回收">3.3 回收</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">cleanUp</span>(){
+</span></span><span style="display:flex;"><span>    glDeleteVertexArrays(<span style="color:#099">1</span>, <span style="color:#000;font-weight:bold">&amp;</span>geometry.VAO);
+</span></span><span style="display:flex;"><span>    glDeleteProgram(geometry.shaderProgramId);
+</span></span><span style="display:flex;"><span>    glDeleteFramebuffers(geometry.frameBuffers.size(), geometry.frameBuffers.data());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">for</span> (<span style="color:#000;font-weight:bold">const</span> <span style="color:#000;font-weight:bold">auto</span> <span style="color:#000;font-weight:bold">&amp;</span><span style="color:#900;font-weight:bold">item</span>: swapchains) {
+</span></span><span style="display:flex;"><span>        xrDestroySwapchain(item);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    xrDestroySpace(appSpace);
+</span></span><span style="display:flex;"><span>    glfwDestroyWindow(pWindow);
+</span></span><span style="display:flex;"><span>    glfwTerminate();
+</span></span><span style="display:flex;"><span>    xrDestroySession(session);
+</span></span><span style="display:flex;"><span>    xrDestroyInstance(instance);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>点击运行，应该就可以看到开篇的那个彩色三角形了。</p>
+<h2 id="4-总结">4 总结</h2>
+<p>在搭建好OpenXR开发的环境后，将初始化、主循环和回收三大流程慢慢拆分，就可以发现OpenXR应用端程序的规律。有很多我想要使用的对象，都得先构造一个<code>createInfo</code>，传递给OpenXR接口，也就是<code>xrXxxxCreate(...)</code>，就可以获得对象。文中穿插了OpenGL渲染的一些内容，比如VAO、VBO、FBO等等，会发现其实OpenXR和OpenGL在结构和调用方面还是有相似之处的。</p>
+<p>本文是OpenXR应用程序开篇，后续我的计划是研究基于Monado的OpenXR Runtime、OpenXR和Runtime之间的通信流程等等，后续也会尝试使用Vulkan实现OpenXR绘制、安卓应用绘制等。</p>
+<p>本文涉及源码连接：https://gitee.com/xingchen0085/hello_openxr_demo</p>
+<p><strong>参考</strong></p>
+<p><a href="https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html">The OpenXR Specification</a></p>
+<p><a href="https://monado.dev/">Monado官网</a></p>
+<p><a href="https://gitlab.freedesktop.org/monado/monado">Monado源码</a></p>
+<p><a href="https://monado.freedesktop.org">Monado文档</a></p>
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="http://adiosy.com">星尘</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="http://adiosy.com/posts/00_hello-openxr.html">http://adiosy.com/posts/00_hello-openxr.html</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html">OpenGL渲染器04_绘制点线面</a></li>
+        
+        <li><a href="/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">OpenGL渲染器03_OpenGL环境 </a></li>
+        
+        <li><a href="/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">OpenGL渲染器02_C&#43;&#43;环境</a></li>
+        
+        <li><a href="/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html">OpenGL渲染器01_开篇</a></li>
+        
+        <li><a href="/posts/opengl_renderer/00_preview.html"> OpenGL渲染器00_预览</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            No tags
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "xingchen0085/doc"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+
+    
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">飞雪无情</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+
+    <br />
+        <div>
+            &copy; 2023 <a href="http://adiosy.com">Adiosy By 星尘</a>
+                
+                | <a rel="nofollow" target="_blank" href="http://beian.miit.gov.cn/">滇ICP备2022000560号-1</a>
+            
+    </div>
+</footer>
+
+
+    
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+            if (!window.Diagram) return;
+            const blocks = document.querySelectorAll('pre code.language-sequence');
+            for (let i = 0; i < blocks.length; i++) {
+                const block = blocks[i];
+                
+                const rootElement = block.parentNode;
+                const container = document.createElement('div');
+                const id = `js-sequence-diag-${i}`;
+                container.id = id;
+                container.className = 'align-center';
+                container.setAttribute("style", "overFlow-x:auto");
+                rootElement.parentNode.replaceChild(container, rootElement);
+
+                const diagram = Diagram.parse(block.childNodes[0].nodeValue);
+                diagram.drawSVG(id, window.sequenceDiagramsOptions
+                    ? window.sequenceDiagramsOptions
+                    : { theme: 'simple' });
+            }
+        })();
+        </script><script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        
+<form id="search" action='http://adiosy.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://adiosy.com">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://adiosy.com/posts/01_monado%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B.html" title="Monado渲染流程" target="_blank">Monado渲染流程</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/00_hello-openxr.html" title="Hello OpenXR - 第一个OpenXR程序" target="_blank">Hello OpenXR - 第一个OpenXR程序</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面" target="_blank">OpenGL渲染器04_绘制点线面</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 " target="_blank">OpenGL渲染器03_OpenGL环境 </a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器02_C&#43;&#43;环境" target="_blank">OpenGL渲染器02_C&#43;&#43;环境</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html" title="OpenGL渲染器01_开篇" target="_blank">OpenGL渲染器01_开篇</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/opengl_renderer/00_preview.html" title=" OpenGL渲染器00_预览" target="_blank"> OpenGL渲染器00_预览</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/%E5%A4%9A%E5%B1%82%E8%8F%9C%E5%8D%95%E6%95%B0%E6%8D%AE%E6%9F%A5%E8%AF%A2.html" title="多层菜单数据查询" target="_blank">多层菜单数据查询</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/%E9%82%AE%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8.html" title="基于Apache james实现的Java邮件服务器" target="_blank">基于Apache james实现的Java邮件服务器</a>
+    </li>
+    
+    <li>
+        <a href="http://adiosy.com/posts/linux%E4%B8%8B%E5%AE%89%E8%A3%85nginx.html" title="Linux下安装Nginx" target="_blank">Linux下安装Nginx</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">微信公众号</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="#" title="我的公众号" target="_blank" style="color:red">
+                
+                    <img src="/posts/assets/qrcode.jpg">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="http://adiosy.com/categories/opengl.html">OpenGL (5)</a></li>
+    
+    <li><a href="http://adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="http://adiosy.com/tags/monado.html">Monado</a>
+    
+    <a href="http://adiosy.com/tags/opengl%E6%B8%B2%E6%9F%93.html">OpenGL渲染</a>
+    
+    <a href="http://adiosy.com/tags/openxr.html">OpenXR</a>
+    
+    <a href="http://adiosy.com/tags/vr/ar.html">VR/AR</a>
+    
+    <a href="http://adiosy.com/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6.html">图形学</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://github.com/xingchen0085" title="Github">Github</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://gitee.com/xingchen0085" title="Gitee">Gitee</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://potatomelon.com" title="土豆社区">土豆社区</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="http://adiosy.com/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
