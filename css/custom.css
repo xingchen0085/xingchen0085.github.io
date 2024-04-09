@@ -8,10 +8,6 @@ code{
 	    padding: 28px 0 0 !important;
 }
 
-#logo{
-	font-family: "STCaiyun";
-}
-
 #nav-menu{
 	margin: 0 0 -1px;
     padding: 0;
@@ -21,9 +17,18 @@ code{
 	padding-top: 15px !important;
 }
 
-.post-content ul{
-	margin: 0.35em 0 !important;
+/*************************************************  custom  ***************************************/
+
+.post-content ul {
+    padding: 0.0em 2.0em !important;
+    margin: 0.3em 0 !important;
 }
+
+.post-content ul li p {
+    margin: 0.3em 0 !important;
+}
+
+/*************************************************  custom  ***************************************/
 
 blockquote{
 	margin: 0.65em 0;
@@ -46,10 +51,6 @@ ol{
 	padding-inline-start: 15px !important;
 }
 
-.post-content ul{
-	padding: 0 1em !important;
-}
-
 blockquote {
     background-color: #f8f8f8;
     border-left: 3px solid #ba3925;
@@ -64,6 +65,3 @@ blockquote::before{
 	content: none;
 }
 
-img{
-	/*filter: drop-shadow(rgb(150, 150, 150) 0px 0px 6px) !important;*/
-}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Vulkan on Adiosy&#39;s blog</title>
+    <link>http://www.adiosy.com/tags/vulkan.html</link>
+    <description>Recent content in Vulkan on Adiosy&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 13 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://www.adiosy.com/tags/vulkan/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Learn Vulkan00_三角形</title>
+      <link>http://www.adiosy.com/posts/learn_vulkan/learn-vulkan00_%E4%B8%89%E8%A7%92%E5%BD%A2.html</link>
+      <pubDate>Tue, 13 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.adiosy.com/posts/learn_vulkan/learn-vulkan00_%E4%B8%89%E8%A7%92%E5%BD%A2.html</guid>
+      <description>1 概述 本文将描述一个基于C++/Vulkan渲染彩色三角形的案例。因为Vulkan API较为底层，对象也繁多，所以我尽可能只保留必要内容，目的是梳理出来一个Vulkan程序的基础框架，也是对Vulkan各个对象的初步理解。当然也出于这个关系，本文不会对每个API参数都进行详细解释。
+1.1 Vulkan的概念 Vulkan是一套渲染图形API，于2015由Khronos组织发布，另外OpenGL也是这个组织发布的图形API。</description>
+    </item>
+    
+  </channel>
+</rss>
