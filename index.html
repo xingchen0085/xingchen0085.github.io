@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta name="generator" content="Hugo 0.112.3">
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Adiosy&#39;s blog | 民间图形学爱好者.</title>
+    <meta property="og:title" content="Adiosy&#39;s blog | 民间图形学爱好者.">
+    <meta property="og:type" content="website">
+    <meta name="Keywords" content="C/C&#43;&#43;,Java,计算机图形学,渲染,动画">
+    <meta name="description" content="Adiosy&#39;s blog">
+    <meta property="og:url" content="http://www.adiosy.com/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <link rel="alternate" type="application/rss+xml" href="http://www.adiosy.com/index.xml" title="Adiosy's blog" />
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+        <link href="https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet">
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/custom.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <h1>
+                        <a id="logo" href="http://www.adiosy.com">
+                            Adiosy&#39;s blog
+                        </a>
+                    </h1>
+                
+                <p class="description">民间图形学爱好者.</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://www.adiosy.com">Home</a>
+                    
+                    <a  href="http://www.adiosy.com/archives.html" title="归档">归档</a>
+                    
+                    <a  href="http://www.adiosy.com/books.html" title="读书">读书</a>
+                    
+                    <a  href="http://www.adiosy.com/about.html" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html" title="Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境" target="_blank">Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境</a>
+            </h1>
+        </header>
+        
+  <time datetime="2024-04-11T00:00:00Z" class="post-meta meta-date dt-published">
+    2024-04-11
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/vulkan' target="_blank">Vulkan</a>
+  
+</div>
+
+
+        <div class="post-content">
+            前言 在上一篇文章讨论了工程的基本结构，接下来要把Vulkan、日志系统和窗口系统植入到本框架。
+以下是准备使用的版本约定：
+第三方库 版本号 描述 spdlog 1.……
+        </div>
+        <p class="readmore"><a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html" target="_blank">Continue reading</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html" title="OpenGL或Vulkan渲染YUV格式数据" target="_blank">OpenGL或Vulkan渲染YUV格式数据</a>
+            </h1>
+        </header>
+        
+  <time datetime="2024-04-10T07:43:59Z" class="post-meta meta-date dt-published">
+    2024-04-10
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/yuv' target="_blank">YUV</a>
+  
+</div>
+
+
+        <div class="post-content">
+            1 概述 YUV是一种广泛应用于视频和图像处理的颜色空间格式，它通过将亮度和色度分离来表示颜色信息，以提高压缩效率和适应人眼感知。为了深入了解YUV格式及其应用，本文将分为几个部分来讨论。首先，我们将探讨YUV格式的采样方式和存储格式，以及不同采样方式对图像质量和压缩效率的影响。其次，我们将研究RGB到YUV和YUV到RGB的转换方法，包括转换公式和矩阵运算，以便在不同颜色空间之间进行准确的转换。最后会介绍如何利用OpenGL或Vulkan 来处理和渲染YUV格式的图像或视频数据，将讨论使用着色器程序和纹理贴图技术来实现YUV数据的采样、转换和渲染的方法。
+2 YUV介绍 YUV，“Y” 表示明亮度（Luminance），也就是像素的灰阶值，还含有较多的绿色通道量。因此需要单纯的 Y 分量就可以显示出完整的黑白图像。“U” 和 “V” 分别表示色度（Chrominance）和浓度（Chroma），用于描述色彩饱和度，U 分量是蓝色通道与 Y（亮度）的差值，V 分量是红色通道与 Y（亮度）的差值。……
+        </div>
+        <p class="readmore"><a href="http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html" target="_blank">Continue reading</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan02_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E5%BC%80%E7%AF%87.html" title="Learn_Vulkan02_渲染框架实现_开篇" target="_blank">Learn_Vulkan02_渲染框架实现_开篇</a>
+            </h1>
+        </header>
+        
+  <time datetime="2024-04-07T00:00:00Z" class="post-meta meta-date dt-published">
+    2024-04-07
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/vulkan' target="_blank">Vulkan</a>
+  
+</div>
+
+
+        <div class="post-content">
+            前言 距离上一次认真写一点东西，又过了1年之久，深感自己拖延症愈加严重，每次定好的计划总是无法做到真正的执行，这期间也可以给自己找个借口，那就是工作很忙，但也有大部分原因是因为感觉自己经验尚浅，想着要后面会不会推翻当下的方案，后面就是不知道从哪开始记录了，最后就进入了焦虑 -&gt; 躺平 -&gt; 焦虑的恶性循环。……
+        </div>
+        <p class="readmore"><a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan02_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E5%BC%80%E7%AF%87.html" target="_blank">Continue reading</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html" title="Learn_Vulkan01_重要对象浅析" target="_blank">Learn_Vulkan01_重要对象浅析</a>
+            </h1>
+        </header>
+        
+  <time datetime="2023-06-15T00:00:00Z" class="post-meta meta-date dt-published">
+    2023-06-15
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/vulkan' target="_blank">Vulkan</a>
+  
+</div>
+
+
+        <div class="post-content">
+            1 概述 前面一篇文章是Learn_Vulkan00_第一个三角形，渲染出来了第一个彩色三角形。学习新事物的是一个很枯燥的过程，所以我们应该每个阶段想办法获得一些成就感，比如上一篇的三角形，先用最快的方式得到效果，能看到效果就能给我们带来进一步的学习动力。
+上一个案例中用到的对象我只是列了一个列表，简单描述了各个对象的作用。但描述还是较为简短，在进入更复杂的Vulkan程序之前，还是想把几个重要对象梳理一遍。
+层和扩展 实例 窗口表面 物理设备和队列族 逻辑设备和队列 交换链 说明：本文中的代码就是上篇文章中的代码，编程环境是Windows，如果要在Linux/MacOS中运行，还需要修改配置文件。……
+        </div>
+        <p class="readmore"><a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html" target="_blank">Continue reading</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html" title="Learn_Vulkan00_第一个三角形" target="_blank">Learn_Vulkan00_第一个三角形</a>
+            </h1>
+        </header>
+        
+  <time datetime="2023-06-13T00:00:00Z" class="post-meta meta-date dt-published">
+    2023-06-13
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/vulkan' target="_blank">Vulkan</a>
+  
+</div>
+
+
+        <div class="post-content">
+            1 概述 本文将描述一个基于C++/Vulkan渲染彩色三角形的案例。因为Vulkan API较为底层，对象也繁多，所以我尽可能只保留必要内容，目的是梳理出来一个Vulkan程序的基础框架，也是对Vulkan各个对象的初步理解。当然也出于这个关系，本文不会对每个API参数都进行详细解释。
+1.1 Vulkan的概念 Vulkan是一套渲染图形API，于2015由Khronos组织发布，另外OpenGL也是这个组织发布的图形API。……
+        </div>
+        <p class="readmore"><a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html" target="_blank">Continue reading</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="http://www.adiosy.com/posts/hello-openxr-%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html" title="Hello OpenXR - 第一个OpenXR程序" target="_blank">Hello OpenXR - 第一个OpenXR程序</a>
+            </h1>
+        </header>
+        
+  <time datetime="2023-03-07T06:34:07Z" class="post-meta meta-date dt-published">
+    2023-03-07
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/openxr' target="_blank">OpenXR</a>
+  
+</div>
+
+
+        <div class="post-content">
+            1 概要 本文目标是实现一个最小化OpenXR应用程序，只渲染一个三角形，渲染库采用的是OpenGL，窗口管理使用GLFW，OpenXR Runtime使用的是Monado。因为Monado目前支持的是安卓和Linux平台，本人测试使用的是Ubuntu系统，所以这个DEMO可以在Ubuntu系统下正常运行，但别的系统还没有经过严格测试。
+2 环境准备 点击下载cmake，如果使用apt安装，可能版本号过低。……
+        </div>
+        <p class="readmore"><a href="http://www.adiosy.com/posts/hello-openxr-%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html" target="_blank">Continue reading</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面" target="_blank">OpenGL渲染器04_绘制点线面</a>
+            </h1>
+        </header>
+        
+  <time datetime="2021-11-29T06:34:07Z" class="post-meta meta-date dt-published">
+    2021-11-29
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/opengl' target="_blank">OpenGL</a>
+  
+</div>
+
+
+        <div class="post-content">
+            回顾 上一篇《OpenGL环境搭建》给接下来的内容创造了基础，我们拥有了glfw提供的窗口，也有了ImGui提供的GUI，接下来就磨刀霍霍向猪羊，准备大干一场。
+不过，最开始，我们还只能绘制简单的东西：点、线、三角形和四边形。
+目标 各种华丽的二维、三维图形，虚拟现实，都是由点线面基本图元构成的。如果接触过Maya、Blender等建模工具，会发现，模型的基础就是点线面，建模就是构建点线面，然后挤出立体，从而形成三维。
+然而最简单的面就是拥有三个顶点的面：三角形。所以目标就是：……
+        </div>
+        <p class="readmore"><a href="http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" target="_blank">Continue reading</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 " target="_blank">OpenGL渲染器03_OpenGL环境 </a>
+            </h1>
+        </header>
+        
+  <time datetime="2021-11-23T06:34:07Z" class="post-meta meta-date dt-published">
+    2021-11-23
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/opengl' target="_blank">OpenGL</a>
+  
+</div>
+
+
+        <div class="post-content">
+            目标 原本计划是OpenGL环境就放在上一节（C++环境搭建）中一起记录的，后面发现内容太多了，所以就分开记录。
+使用glfw、glad和ImGui完成OpenGL环境的搭建； 创建第一个glfw窗口； 使用ImGui，显示ImGui的demo窗口。 计算机图形学 计算机图形学是使用数学算法将二维或三维图形转化计算机显示的栅格形式的科学，计算机图形学的主要研究内容就是研究如何在计算机中表示图形、以及利用计算机进行图形的计算、处理和显示的相关原理和算法。……
+        </div>
+        <p class="readmore"><a href="http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" target="_blank">Continue reading</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="http://www.adiosy.com/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器02_C&#43;&#43;环境" target="_blank">OpenGL渲染器02_C&#43;&#43;环境</a>
+            </h1>
+        </header>
+        
+  <time datetime="2021-11-19T06:34:07Z" class="post-meta meta-date dt-published">
+    2021-11-19
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/opengl' target="_blank">OpenGL</a>
+  
+</div>
+
+
+        <div class="post-content">
+            目标 使用CMake+MinGW搭建C++编译环境。 使用CLion搭建C++开发环境，实现C++程序开发、生成、编译、运行； 构建和编译 C++源码“转译”为机器语言，就是编译过程。最常用的编译器是GNU的C/C++编译器。也就是gcc/g++。
+如果我们要编译和运行C++程序，下载安装g++后：……
+        </div>
+        <p class="readmore"><a href="http://www.adiosy.com/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" target="_blank">Continue reading</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="http://www.adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html" title="OpenGL渲染器01_开篇" target="_blank">OpenGL渲染器01_开篇</a>
+            </h1>
+        </header>
+        
+  <time datetime="2021-11-18T06:34:07Z" class="post-meta meta-date dt-published">
+    2021-11-18
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/opengl' target="_blank">OpenGL</a>
+  
+</div>
+
+
+        <div class="post-content">
+            概述 在真正开始之前，我想先说说我的情况，目前我从事软件开发，不过工作上主要语言还是Java。
+编程基础，四年Java编程基础；工作上没用到C++，不过自己业余学习和使用C++大概1.5年左右，差不多是用到了才查，断断续续，没有系统性学习。 图形学线性代数基础，目前才了解向量、矩阵的基本运算和变换基础，更高级的还没学。 OpenGL编程的一些基础知识，基础几何绘制、MVP变换、材质、光照等基础。 还有一点WebGL的经验，实现了基础材质和光照。 为什么要写关于图形学的内容呢，缘由悠长。这一段可能会有些啰嗦，可以直接略过。……
+        </div>
+        <p class="readmore"><a href="http://www.adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html" target="_blank">Continue reading</a></p>
+    </article>
+    
+    
+    
+
+
+
+<ol class="page-navigator">
+    
+
+    
+    <li  class="current">
+        <a href="http://www.adiosy.com/">1</a>
+    </li>
+    
+    <li >
+        <a href="http://www.adiosy.com/page/2.html">2</a>
+    </li>
+    
+
+    
+    <li class="next">
+        <a href="http://www.adiosy.com/page/2.html">Next</a>
+    </li>
+    
+</ol>
+
+
+
+</div>
+
+                    <footer id="footer">
+
+    
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">飞雪无情</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+
+    <br />
+        
+        <div>
+            <span id="busuanzi_container_site_uv" style="font-family: auto;">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+            </span>
+            &copy; 2024 <a href="http://www.adiosy.com">Adiosy&#39;s blog By xingchen</a>
+                
+                | <a rel="nofollow" target="_blank" href="http://beian.miit.gov.cn/">滇ICP备2022000560号-1</a>
+            
+    </div>
+</footer>
+
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        
+<form id="search" action='http://www.adiosy.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://www.adiosy.com">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html" title="Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境" target="_blank">Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html" title="OpenGL或Vulkan渲染YUV格式数据" target="_blank">OpenGL或Vulkan渲染YUV格式数据</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan02_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E5%BC%80%E7%AF%87.html" title="Learn_Vulkan02_渲染框架实现_开篇" target="_blank">Learn_Vulkan02_渲染框架实现_开篇</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html" title="Learn_Vulkan01_重要对象浅析" target="_blank">Learn_Vulkan01_重要对象浅析</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html" title="Learn_Vulkan00_第一个三角形" target="_blank">Learn_Vulkan00_第一个三角形</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/hello-openxr-%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html" title="Hello OpenXR - 第一个OpenXR程序" target="_blank">Hello OpenXR - 第一个OpenXR程序</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面" target="_blank">OpenGL渲染器04_绘制点线面</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 " target="_blank">OpenGL渲染器03_OpenGL环境 </a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器02_C&#43;&#43;环境" target="_blank">OpenGL渲染器02_C&#43;&#43;环境</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html" title="OpenGL渲染器01_开篇" target="_blank">OpenGL渲染器01_开篇</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">微信公众号</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="#" title="微信公众号" target="_blank" style="color:red">
+                
+                    <img src="/posts/assets/qrcode.jpg">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="http://www.adiosy.com/categories/opengl.html">OpenGL (4)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/vulkan.html">Vulkan (4)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/yuv.html">YUV (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="http://www.adiosy.com/tags/monado.html">Monado</a>
+    
+    <a href="http://www.adiosy.com/tags/opengl.html">OpenGL</a>
+    
+    <a href="http://www.adiosy.com/tags/opengl%E6%B8%B2%E6%9F%93.html">OpenGL渲染</a>
+    
+    <a href="http://www.adiosy.com/tags/openxr.html">OpenXR</a>
+    
+    <a href="http://www.adiosy.com/tags/vr/ar.html">VR/AR</a>
+    
+    <a href="http://www.adiosy.com/tags/vulkan.html">Vulkan</a>
+    
+    <a href="http://www.adiosy.com/tags/yuv.html">YUV</a>
+    
+    <a href="http://www.adiosy.com/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6.html">图形学</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://github.com/xingchen0085" title="我的Github">我的Github</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://gitee.com/xingchen0085" title="我的Gitee">我的Gitee</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://potatomelon.com" title="土豆社区">土豆社区</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="http://www.adiosy.com/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

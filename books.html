@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>读书 | Adiosy&#39;s blog</title>
+    <meta property="og:title" content="读书 - Adiosy&#39;s blog">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="C/C&#43;&#43;,Java,计算机图形学,渲染,动画">
+    <meta name="description" content="野生的图形开发攻城狮">
+        
+    <meta name="author" content="xingchen">
+    <meta property="og:url" content="http://www.adiosy.com/books.html">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+        <link href="https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet">
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/custom.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://www.adiosy.com">
+                        Adiosy&#39;s blog
+                    </a>
+                
+                <p class="description">民间图形学爱好者.</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="" href="http://www.adiosy.com">Home</a>
+                    
+                    <a  href="http://www.adiosy.com/archives.html" title="归档">归档</a>
+                    
+                    <a class="current" href="http://www.adiosy.com/books.html" title="读书">读书</a>
+                    
+                    <a  href="http://www.adiosy.com/about.html" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 0px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 20px;
+        word-wrap: break-word;
+        white-space: nowrap;
+        z-index: 999;
+        cursor: pointer;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 13px;
+         
+        filter: drop-shadow(rgb(150, 150, 150) 0px 0px 6px) !important;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+        list-style: none;
+        padding-inline-start: 1px !important;
+    }
+
+    .post-toc .post-toc-content ul {
+        list-style: none;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: inherit;
+    }
+
+    .post-toc .post-toc-content>nav>ul>li{
+        background-color: #fff;
+        border-left: 5px solid #666;
+        padding: 2px 5px 2px 5px;
+    }
+
+    .post-toc .post-toc-content ul li:hover{
+ 
+ 
+    }
+
+    .post-toc .post-toc-content ul li a{
+        display: inline-block;
+        width: 100%;
+    }
+
+    .post-toc .post-toc-content ul li a:hover{
+        background-color: #666;
+        color: #fff;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 153px;">
+    <h2 class="post-toc-title">目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#纪录片宇宙时空之旅cosmos-a-spacetime-odyssey">纪录片《宇宙时空之旅》(Cosmos: A Spacetime Odyssey)</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 15, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 125,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 125
+                    },
+                };
+
+            var e = $(window).animate({scrollTop: 0}, 600);
+            e < t ? postToc.css(a.start) : postToc.css(a.process);
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+
+    <article class="post">
+        <header>
+            <h1 class="post-title">读书</h1>
+        </header>
+        
+
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="post-content">
+            <p>要到书林中徜徉。中外古今的文明成果，我们都应有分析、有鉴别、有批判地加以继承和发扬。—刘心武</p>
+<h2 id="纪录片宇宙时空之旅cosmos-a-spacetime-odyssey">纪录片《宇宙时空之旅》(Cosmos: A Spacetime Odyssey)</h2>
+<p>在那里，那是家园，那是我们。在那里，你爱的每个人，你认识的每个人，你听说过的每个人，在这世上存在过的每个人，度过了自己的一生。</p>
+<p>
+        <a data-fancybox="gallery" href="../assets/image-20240412143432844.png">
+            <img class="mx-auto" alt="image-20240412143432844" src="../assets/image-20240412143432844.png" />
+        </a>
+    </p>
+<p><strong>聚集在这里的，是我们的欢乐和痛苦，是成千上万的宗教信仰、意识形态，和经济学说。每个猎手与觅食者，每个英雄与懦夫，每个文明的创立者和毁灭者，每个国王与农夫，每对年轻的爱侣，每一个母亲与父亲、充满希望的孩子们，发明家与探险家，每一位高尚的教师、每一位贪腐的政客，每一位超级明星、每一位最高领袖，人类史上的每一位圣人和罪人，都生活在这里， 如一粒微尘，悬浮在一束阳光之中</strong>。地球是一个很小的舞台，在浩瀚的宇宙背景下，想想过去的血流成河，那为帝王将相而流的血，只为让他们在光荣和胜利中，成为瞬间的伟人，占有那一个小点中…那一小部分。想想那无尽的残酷，图像里那一个像素点的某个角落的民众，每天把这残酷施加到与他们没什么区别的另一个角落的民众身上。他们为何常常误解，他们为何渴望杀死对方，他们的憎恨为何如此狂热。</p>
+<p>我们在装模做样，我们自以为很重要，妄想着我们人类地位特殊，在宇宙中与众不同，这一切，都因这泛着苍白蓝光的小点而动摇。我们的星球，不过是一粒孤独的微尘，笼罩在伟大的宇宙黑暗之中。</p>
+<p>我们默默无闻，沉浸在无尽的浩瀚里，没有一丝线索显示，除了我们自己， 还有谁能拯救我们。地球是目前已知唯一有生命的世界，生命再无其他去处，至少在不久的将来，亦是如此。没有外星球，供人类迁移，只可参观，不能定居。不管你喜欢与否，现在，只有地球供我们立足。据说研习天文，可以让人谦卑，塑造人心，磨炼个性，也许再没有更好的方法能比这遥远的画面更好地显示出人类的自负与愚蠢。</p>
+<p>对我而言，它强调了我们的责任，要对人更友善，懂得珍惜与爱护，这泛着苍白蓝光的小点是我们知道的唯一的家园。 我们是如何在这一粒微尘上居住的渺小生物 ，是如何千方百计地把宇宙飞船送入银河的星星之间？ 就在几百年前，也就是宇宙历中的几秒时间，我们尚不知道自己身在何方，时为何时， 对宇宙的其他部分一无所知。我们身居囚笼，活在自己的小宇宙里， 困在坚壳之中 ，我们是如何逃出囚笼？ 是因为世世代代探索者的不懈努力，他们发自内心地遵从5条简单规则 ： 质疑权威 ；不轻信人言 ，包括我在内； 独立思考；自我质疑；不因自己想要相信，而相信任何事情。相信不代表能成为现实 ，以实证检验想法，依靠观察与实验 ， 如果自己喜欢的想法没有通过全面的检验，它就是错的，乐观一点 ，遵循证据，无论它指向哪里，如果没有证据，不妄下定论 ，也许最重要的规则就是&hellip;要记住，你也会犯错，即使是最优秀的科学家 ， 也曾经在某些事情上犯错 ，牛顿，爱因斯坦，还有历史上每一位伟大的科学家，他们都犯过错。 这很正常，是人都会犯错 ，科学让我们不再欺骗自己，欺骗别人。科学家们有罪吗？</p>
+<p>有的 。</p>
+<p>我们曾滥用科学，就像手边的工具一样随意使用 ，因此我们不能把科学放在少数的掌权者手中 。当科学更多的属于全人类时 ， 它就越不会被乱用 。</p>
+<p>科学的价值能阻止狂热与知，毕竟 宇宙的大部分是黑暗的，只有点点的星光点缀着。 了解了地球的年龄，恒星的距离， 生命的演变，这会让世界有什么区别？</p>
+<p>嗯，这取决于你愿意生活在多大的宇宙里，有些人喜欢小宙，没关系，完全可以理解，但我喜欢大的宇宙， 当我把这一切放在我的心里，我的脑海里，我会感到心情振奋 。 当这种感觉涌起，我希望看到它是真实，而不仅仅是我脑海中的想象。 因为这就是真相， 而我们的想象 与自然中令人惊叹的现实比，根本不算什么。</p>
+<p><strong>我想要知道，在那黑暗的地方有什么，在创世大爆炸之前发生了什么，我想要知道，在宇宙的视界之外是什么，生命又是如何起源的 ，宇宙中有没有个地方 ，物质和能量在那里被赋予 生命和意识</strong>？</p>
+<p>我想要了解我们的先祖， 了解他们每一个人，我想要成为一个美好而强大的联接， 联系世世代代的人类。我想要保护我的孩子们 以及未来的子孙后代。</p>
+<p>我们，代表着宇宙在这个世界的耳目，代表着宇宙在这个世界的想法与情感， 我们开始了解人类的起源， 思考繁星的故事，物质的演化。 回溯意识起源之前那条漫长的道路 ， 我们与这个星球上的其他生物 ， 携带着宇宙进化的遗产跨越了数十亿年。如果我们将这些知识铭记于心，如果我们了解并热爱大自然的本质 ， 我们的子孙们一定会记住我们，因为我们是生命之链中美好而强大的一环。 我们的子孙们也会继续这神圣的探索 ， 薪火相传，不断开拓， 发现我们做梦都想不到的奇迹， 就在这宇宙之中。</p>
+<p>
+        <a data-fancybox="gallery" href="../assets/a66f233eaf2261d96dc483133cea25f4_r.jpg">
+            <img class="mx-auto" alt="img" src="../assets/a66f233eaf2261d96dc483133cea25f4_r.jpg" />
+        </a>
+    </p>
+
+        </div>
+
+        
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html">Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境</a></li>
+        
+        <li><a href="/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html">OpenGL或Vulkan渲染YUV格式数据</a></li>
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan02_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E5%BC%80%E7%AF%87.html">Learn_Vulkan02_渲染框架实现_开篇</a></li>
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html">Learn_Vulkan01_重要对象浅析</a></li>
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html">Learn_Vulkan00_第一个三角形</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            No tags
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "xingchen0085/doc"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+
+    
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">飞雪无情</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+
+    <br />
+        
+        <div>
+            <span id="busuanzi_container_site_uv" style="font-family: auto;">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+            </span>
+            &copy; 2024 <a href="http://www.adiosy.com">Adiosy&#39;s blog By xingchen</a>
+                
+                | <a rel="nofollow" target="_blank" href="http://beian.miit.gov.cn/">滇ICP备2022000560号-1</a>
+            
+    </div>
+</footer>
+
+
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.2.8/raphael.min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/flowchart/1.12.2/flowchart.min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+                if (!window.flowchart) return;
+                const blocks = document.querySelectorAll('pre code.language-flowchart, pre code.language-flow');
+                for (let i = 0; i < blocks.length; i++) {
+                    const block = blocks[i];
+                    const rootElement = block.parentNode;
+                    const container = document.createElement('div');
+                    const id = `js-flowchart-diagrams-${i}`;
+                    container.id = id;
+                    container.className = 'align-center';
+                    container.setAttribute("style", "overFlow-x:auto");
+                    rootElement.parentNode.replaceChild(container, rootElement);
+                    const diagram = flowchart.parse(block.childNodes[0].nodeValue);
+                    diagram.drawSVG(id, window.flowchartDiagramsOptions ? window.flowchartDiagramsOptions : {});
+                }
+            })();
+        </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+            if (!window.Diagram) return;
+            const blocks = document.querySelectorAll('pre code.language-sequence');
+            for (let i = 0; i < blocks.length; i++) {
+                const block = blocks[i];
+                
+                const rootElement = block.parentNode;
+                const container = document.createElement('div');
+                const id = `js-sequence-diag-${i}`;
+                container.id = id;
+                container.className = 'align-center';
+                container.setAttribute("style", "overFlow-x:auto");
+                rootElement.parentNode.replaceChild(container, rootElement);
+
+                const diagram = Diagram.parse(block.childNodes[0].nodeValue);
+                diagram.drawSVG(id, window.sequenceDiagramsOptions
+                    ? window.sequenceDiagramsOptions
+                    : { theme: 'simple' });
+            }
+        })();
+        </script><script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        
+<form id="search" action='http://www.adiosy.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://www.adiosy.com">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html" title="Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境" target="_blank">Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html" title="OpenGL或Vulkan渲染YUV格式数据" target="_blank">OpenGL或Vulkan渲染YUV格式数据</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan02_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E5%BC%80%E7%AF%87.html" title="Learn_Vulkan02_渲染框架实现_开篇" target="_blank">Learn_Vulkan02_渲染框架实现_开篇</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html" title="Learn_Vulkan01_重要对象浅析" target="_blank">Learn_Vulkan01_重要对象浅析</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html" title="Learn_Vulkan00_第一个三角形" target="_blank">Learn_Vulkan00_第一个三角形</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/hello-openxr-%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html" title="Hello OpenXR - 第一个OpenXR程序" target="_blank">Hello OpenXR - 第一个OpenXR程序</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面" target="_blank">OpenGL渲染器04_绘制点线面</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 " target="_blank">OpenGL渲染器03_OpenGL环境 </a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器02_C&#43;&#43;环境" target="_blank">OpenGL渲染器02_C&#43;&#43;环境</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html" title="OpenGL渲染器01_开篇" target="_blank">OpenGL渲染器01_开篇</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">微信公众号</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="#" title="微信公众号" target="_blank" style="color:red">
+                
+                    <img src="/posts/assets/qrcode.jpg">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="http://www.adiosy.com/categories/opengl.html">OpenGL (4)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/vulkan.html">Vulkan (4)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/yuv.html">YUV (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="http://www.adiosy.com/tags/monado.html">Monado</a>
+    
+    <a href="http://www.adiosy.com/tags/opengl.html">OpenGL</a>
+    
+    <a href="http://www.adiosy.com/tags/opengl%E6%B8%B2%E6%9F%93.html">OpenGL渲染</a>
+    
+    <a href="http://www.adiosy.com/tags/openxr.html">OpenXR</a>
+    
+    <a href="http://www.adiosy.com/tags/vr/ar.html">VR/AR</a>
+    
+    <a href="http://www.adiosy.com/tags/vulkan.html">Vulkan</a>
+    
+    <a href="http://www.adiosy.com/tags/yuv.html">YUV</a>
+    
+    <a href="http://www.adiosy.com/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6.html">图形学</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://github.com/xingchen0085" title="我的Github">我的Github</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://gitee.com/xingchen0085" title="我的Gitee">我的Gitee</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://potatomelon.com" title="土豆社区">土豆社区</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="http://www.adiosy.com/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
