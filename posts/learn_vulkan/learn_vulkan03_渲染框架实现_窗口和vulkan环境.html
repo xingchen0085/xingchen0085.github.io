@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境 | Adiosy&#39;s blog</title>
+    <meta property="og:title" content="Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境 - Adiosy&#39;s blog">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2024-04-11T00:00:00&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2024-04-11T00:00:00&#43;08:00'>
+        
+    <meta name="Keywords" content="C/C&#43;&#43;,Java,计算机图形学,渲染,动画">
+    <meta name="description" content="Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境">
+        
+    <meta name="author" content="xingchen">
+    <meta property="og:url" content="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+        <link href="https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet">
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/custom.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://www.adiosy.com">
+                        Adiosy&#39;s blog
+                    </a>
+                
+                <p class="description">民间图形学爱好者.</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://www.adiosy.com">Home</a>
+                    
+                    <a  href="http://www.adiosy.com/archives.html" title="归档">归档</a>
+                    
+                    <a  href="http://www.adiosy.com/books.html" title="读书">读书</a>
+                    
+                    <a  href="http://www.adiosy.com/about.html" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 0px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 20px;
+        word-wrap: break-word;
+        white-space: nowrap;
+        z-index: 999;
+        cursor: pointer;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 13px;
+         
+        filter: drop-shadow(rgb(150, 150, 150) 0px 0px 6px) !important;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+        list-style: none;
+        padding-inline-start: 1px !important;
+    }
+
+    .post-toc .post-toc-content ul {
+        list-style: none;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: inherit;
+    }
+
+    .post-toc .post-toc-content>nav>ul>li{
+        background-color: #fff;
+        border-left: 5px solid #666;
+        padding: 2px 5px 2px 5px;
+    }
+
+    .post-toc .post-toc-content ul li:hover{
+ 
+ 
+    }
+
+    .post-toc .post-toc-content ul li a{
+        display: inline-block;
+        width: 100%;
+    }
+
+    .post-toc .post-toc-content ul li a:hover{
+        background-color: #666;
+        color: #fff;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 153px;">
+    <h2 class="post-toc-title">目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#spdlog">spdlog</a></li>
+    <li><a href="#窗口系统">窗口系统</a></li>
+    <li><a href="#vulkan">Vulkan</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 15, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 125,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 125
+                    },
+                };
+
+            var e = $(window).animate({scrollTop: 0}, 600);
+            e < t ? postToc.css(a.start) : postToc.css(a.process);
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+
+    <article class="post">
+        <header>
+            <h1 class="post-title">Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境</h1>
+        </header>
+        
+  <time datetime="2024-04-11T00:00:00Z" class="post-meta meta-date dt-published">
+    2024-04-11
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/vulkan' target="_blank">Vulkan</a>
+  
+</div>
+
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">Table of Contents</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="前言">前言</h2>
+<p>在上一篇文章讨论了工程的基本结构，接下来要把Vulkan、日志系统和窗口系统植入到本框架。</p>
+<p>以下是准备使用的版本约定：</p>
+<table>
+<thead>
+<tr>
+<th>第三方库</th>
+<th>版本号</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>spdlog</td>
+<td>1.13.0</td>
+<td>日志系统. <!-- raw HTML omitted -->Very fast, header-only/compiled, C++ logging library</td>
+</tr>
+<tr>
+<td>glfw</td>
+<td>3.3.8</td>
+<td>窗口系统</td>
+</tr>
+<tr>
+<td>Vulkan</td>
+<td>1.3.204</td>
+<td>渲染API</td>
+</tr>
+</tbody>
+</table>
+<p>该工程的源码管理地址：<a href="https://gitee.com/xingchen0085/adiosy_engine">https://gitee.com/xingchen0085/adiosy_engine</a></p>
+<p>本文TAG：<a href="https://gitee.com/xingchen0085/adiosy_engine/tree/TAG_01.00">TAG_01.00</a></p>
+<p>第三方库全部放在<code>Platform/External</code>目录下。</p>
+<h2 id="spdlog">spdlog</h2>
+<p>从github下载spdlog 1.13.0版本。<a href="https://github.com/gabime/spdlog">https://github.com/gabime/spdlog</a>。</p>
+<p>因为spdlog支持Header-only，所以将<code>include</code>目录下的头文件加到我们的第三方库目录就可使用。</p>
+<p>为了方便使用，我添加了一个<code>AdLog</code>的类来维护日志相关信息，然后使用宏来完成日志输出。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//Platform/Public/AdLog.h
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#ifndef ADLOG_H
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#define ADLOG_H
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;AdEngine.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;spdlog/spdlog.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">namespace</span> <span style="color:#000">ade</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdLog</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">public</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">AdLog</span>() <span style="color:#000">=</span> <span style="color:#a90d91">delete</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">AdLog</span>(<span style="color:#a90d91">const</span> <span style="color:#000">AdLog</span><span style="color:#000">&amp;</span>) <span style="color:#000">=</span> <span style="color:#a90d91">delete</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">AdLog</span> <span style="color:#000">&amp;</span><span style="color:#a90d91">operator</span><span style="color:#000">=</span>(<span style="color:#a90d91">const</span> <span style="color:#000">AdLog</span><span style="color:#000">&amp;</span>) <span style="color:#000">=</span> <span style="color:#a90d91">delete</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">static</span> <span style="color:#a90d91">void</span> <span style="color:#000">Init</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">static</span> <span style="color:#000">spdlog</span><span style="color:#000">::</span><span style="color:#000">logger</span><span style="color:#000">*</span> <span style="color:#000">GetLoggerInstance</span>(){
+</span></span><span style="display:flex;"><span>            <span style="color:#000">assert</span>(<span style="color:#000">sLoggerInstance</span> <span style="color:#000">&amp;&amp;</span> <span style="color:#c41a16">&#34;Logger instance is null, maybe you have not execute AdLog::Init().&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">return</span> <span style="color:#000">sLoggerInstance</span>.<span style="color:#000">get</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">private</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">static</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">shared_ptr</span><span style="color:#000">&lt;</span><span style="color:#000">spdlog</span><span style="color:#000">::</span><span style="color:#000">logger</span><span style="color:#000">&gt;</span> <span style="color:#000">sLoggerInstance</span>;
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#define LOG_T(...) SPDLOG_LOGGER_TRACE(ade::AdLog::GetLoggerInstance(), __VA_ARGS__)
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#define LOG_D(...) SPDLOG_LOGGER_DEBUG(ade::AdLog::GetLoggerInstance(), __VA_ARGS__)
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#define LOG_I(...) SPDLOG_LOGGER_INFO(ade::AdLog::GetLoggerInstance(), __VA_ARGS__)
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#define LOG_W(...) SPDLOG_LOGGER_WARN(ade::AdLog::GetLoggerInstance(), __VA_ARGS__)
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#define LOG_E(...) SPDLOG_LOGGER_ERROR(ade::AdLog::GetLoggerInstance(), __VA_ARGS__)
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#endif
+</span></span></span></code></pre></div><p>具体的日志配置放在.cpp文件中：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//Platform/Private/AdLog.cpp
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;AdLog.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;spdlog/sinks/stdout_color_sinks.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;spdlog/async.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">namespace</span> <span style="color:#000">ade</span>{
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">shared_ptr</span><span style="color:#000">&lt;</span><span style="color:#000">spdlog</span><span style="color:#000">::</span><span style="color:#000">logger</span><span style="color:#000">&gt;</span> <span style="color:#000">AdLog</span><span style="color:#000">::</span><span style="color:#000">sLoggerInstance</span>{};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">void</span> <span style="color:#000">AdLog</span><span style="color:#000">::</span><span style="color:#000">Init</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#000">sLoggerInstance</span> <span style="color:#000">=</span> <span style="color:#000">spdlog</span><span style="color:#000">::</span><span style="color:#000">stdout_color_mt</span><span style="color:#000">&lt;</span><span style="color:#000">spdlog</span><span style="color:#000">::</span><span style="color:#000">async_factory</span><span style="color:#000">&gt;</span>(<span style="color:#c41a16">&#34;async_logger&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">sLoggerInstance</span><span style="color:#000">-&gt;</span><span style="color:#000">set_level</span>(<span style="color:#000">spdlog</span><span style="color:#000">::</span><span style="color:#000">level</span><span style="color:#000">::</span><span style="color:#000">trace</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">sLoggerInstance</span><span style="color:#000">-&gt;</span><span style="color:#000">set_pattern</span>(<span style="color:#c41a16">&#34;%^%H:%M:%S:%e [%P-%t] [%1!L] [%20s:%-4#] - %v%$&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这里的<code>AdEngine.h</code>是公共头引入。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//Platform/Public/AdEngine.h
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#ifndef AD_ENGINE_H
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#define AD_ENGINE_H
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;iostream&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;cassert&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;memory&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;algorithm&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;functional&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;string&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;sstream&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;fstream&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;filesystem&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;vector&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;stack&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;queue&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;deque&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;set&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;unordered_map&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#ifdef AD_ENGINE_PLATFORM_WIN32
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span><span style="color:#177500">//Windows
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#633820">#define VK_USE_PLATFORM_WIN32_KHR
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#elif AD_ENGINE_PLATFORM_MACOS
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span><span style="color:#177500">//Macos
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#633820">#define VK_USE_PLATFORM_MACOS_MVK
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#elif AD_ENGINE_PLATFORM_LINUX
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span><span style="color:#177500">// Linux
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#633820">#define VK_USE_PLATFORM_XCB_KHR
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#else
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>    <span style="color:#633820">#error Unsuppots this Platform
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#endif
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#define AD_ENGINE_GRAPHIC_API_VULKAN
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#endif
+</span></span></span></code></pre></div><p>日志输出测试：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//Sample/SandBox/Main.cpp
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;iostream&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;AdLog.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">int</span> <span style="color:#000">main</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">cout</span> <span style="color:#000">&lt;&lt;</span> <span style="color:#c41a16">&#34;Hello adiosy engine.&#34;</span> <span style="color:#000">&lt;&lt;</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">endl</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdLog</span><span style="color:#000">::</span><span style="color:#000">Init</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#000">LOG_T</span>(<span style="color:#c41a16">&#34;Log system debug... {0}, {1}, {2}&#34;</span>, <span style="color:#1c01ce">1</span>, <span style="color:#1c01ce">0.1f</span>, <span style="color:#c41a16">&#34;abc&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">return</span> <span style="color:#000">EXIT_SUCCESS</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>运行结果：</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240411151321600.png">
+            <img class="mx-auto" alt="image-20240411151321600" src="./assets/image-20240411151321600.png" />
+        </a>
+    </p>
+<h2 id="窗口系统">窗口系统</h2>
+<p>从github下载glfw 3.38版本。https://github.com/glfw/glfw/releases/tag/3.3.8。</p>
+<p>可以选择编译安装到本地，然后使用链接库。但我这里想用一个比较浪费编译时间的方法，就是将源码拷贝到<code>Platform/External</code>目录下，方便查看源码。如下图：</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240411152102872.png">
+            <img class="mx-auto" alt="image-20240411152102872" src="./assets/image-20240411152102872.png" />
+        </a>
+    </p>
+<p>然后在<code>CMakeLists.txt</code>通过<code>add_subdirectory()</code>作为一个子项目来管理。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cmake" data-lang="cmake"><span style="display:flex;"><span><span style="color:#177500">#Platform/CMakeLists.txt
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#000">
+</span></span></span><span style="display:flex;"><span><span style="color:#000"></span><span style="color:#177500">#GLFW
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#a90d91">add_subdirectory</span>(<span style="color:#c41a16">External/glfw</span>)<span style="color:#000">
+</span></span></span><span style="display:flex;"><span><span style="color:#000"></span><span style="color:#a90d91">target_link_libraries</span>(<span style="color:#c41a16">adiosy_platform</span> <span style="color:#c41a16">PUBLIC</span> <span style="color:#c41a16">glfw</span>)<span style="color:#000">
+</span></span></span></code></pre></div><p>接下来就是创建我们的窗口。在<code>Platform</code>中的实现，我设计为是一个父类，然后根据宏控制使用不同的子类。所以先创建一个抽象的窗口类。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//Platform/Public/AdWindow.h
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#ifndef AD_WINDOW_H
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#define AD_WINDOW_H
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;AdEngine.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">namespace</span> <span style="color:#000">ade</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdWindow</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">public</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">AdWindow</span>(<span style="color:#a90d91">const</span> <span style="color:#000">AdWindow</span><span style="color:#000">&amp;</span>) <span style="color:#000">=</span> <span style="color:#a90d91">delete</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">AdWindow</span> <span style="color:#000">&amp;</span><span style="color:#a90d91">operator</span><span style="color:#000">=</span>(<span style="color:#a90d91">const</span> <span style="color:#000">AdWindow</span><span style="color:#000">&amp;</span>) <span style="color:#000">=</span> <span style="color:#a90d91">delete</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">virtual</span> <span style="color:#000">~</span><span style="color:#000">AdWindow</span>() <span style="color:#000">=</span> <span style="color:#a90d91">default</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">static</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">unique_ptr</span><span style="color:#000">&lt;</span><span style="color:#000">AdWindow</span><span style="color:#000">&gt;</span> <span style="color:#000">Create</span>(<span style="color:#a90d91">uint32_t</span> <span style="color:#000">width</span>, <span style="color:#a90d91">uint32_t</span> <span style="color:#000">height</span>, <span style="color:#a90d91">const</span> <span style="color:#a90d91">char</span> <span style="color:#000">*</span><span style="color:#000">title</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">virtual</span> <span style="color:#a90d91">bool</span> <span style="color:#000">ShouldClose</span>() <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">virtual</span> <span style="color:#a90d91">void</span> <span style="color:#000">PollEvents</span>() <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">virtual</span> <span style="color:#a90d91">void</span> <span style="color:#000">SwapBuffer</span>() <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">protected</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">AdWindow</span>() <span style="color:#000">=</span> <span style="color:#a90d91">default</span>;
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#endif
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//Platform/Private/AdWindow.cpp
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;AdWindow.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;Window/AdGLFWwindow.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">namespace</span> <span style="color:#000">ade</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">unique_ptr</span><span style="color:#000">&lt;</span><span style="color:#000">AdWindow</span><span style="color:#000">&gt;</span> <span style="color:#000">AdWindow</span><span style="color:#000">::</span><span style="color:#000">Create</span>(<span style="color:#a90d91">uint32_t</span> <span style="color:#000">width</span>, <span style="color:#a90d91">uint32_t</span> <span style="color:#000">height</span>, <span style="color:#a90d91">const</span> <span style="color:#a90d91">char</span> <span style="color:#000">*</span><span style="color:#000">title</span>) {
+</span></span><span style="display:flex;"><span><span style="color:#633820">#ifdef AD_ENGINE_PLATFORM_WIN32
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>        <span style="color:#a90d91">return</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">make_unique</span><span style="color:#000">&lt;</span><span style="color:#000">AdGLFWwindow</span><span style="color:#000">&gt;</span>(<span style="color:#000">width</span>, <span style="color:#000">height</span>, <span style="color:#000">title</span>);
+</span></span><span style="display:flex;"><span><span style="color:#633820">#elif AD_ENGINE_PLATFORM_MACOS
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>        <span style="color:#a90d91">return</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">make_unique</span><span style="color:#000">&lt;</span><span style="color:#000">AdGLFWwindow</span><span style="color:#000">&gt;</span>(<span style="color:#000">width</span>, <span style="color:#000">height</span>, <span style="color:#000">title</span>);
+</span></span><span style="display:flex;"><span><span style="color:#633820">#elif AD_ENGINE_PLATFORM_LINUX
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>        <span style="color:#a90d91">return</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">make_unique</span><span style="color:#000">&lt;</span><span style="color:#000">AdGLFWwindow</span><span style="color:#000">&gt;</span>(<span style="color:#000">width</span>, <span style="color:#000">height</span>, <span style="color:#000">title</span>);
+</span></span><span style="display:flex;"><span><span style="color:#633820">#endif
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>        <span style="color:#a90d91">return</span> <span style="color:#a90d91">nullptr</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在GLFWwindow中的实现：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//Platform/Public/Window/AdGLFWWindow.h
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#ifndef AD_GLFWWINDOW_H
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#define AD_GLFWWINDOW_H
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;AdWindow.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;GLFW/glfw3.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">namespace</span> <span style="color:#000">ade</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdGLFWwindow</span> <span style="color:#000">:</span> <span style="color:#a90d91">public</span> <span style="color:#000">AdWindow</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">public</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">AdGLFWwindow</span>() <span style="color:#000">=</span> <span style="color:#a90d91">delete</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">AdGLFWwindow</span>(<span style="color:#a90d91">uint32_t</span> <span style="color:#000">width</span>, <span style="color:#a90d91">uint32_t</span> <span style="color:#000">height</span>, <span style="color:#a90d91">const</span> <span style="color:#a90d91">char</span> <span style="color:#000">*</span><span style="color:#000">title</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">~</span><span style="color:#000">AdGLFWwindow</span>() <span style="color:#a90d91">override</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">bool</span> <span style="color:#000">ShouldClose</span>() <span style="color:#a90d91">override</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">void</span> <span style="color:#000">PollEvents</span>() <span style="color:#a90d91">override</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">void</span> <span style="color:#000">SwapBuffer</span>() <span style="color:#a90d91">override</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">private</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">GLFWwindow</span> <span style="color:#000">*</span><span style="color:#000">mGLFWwindow</span>;
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#endif
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//Platform/Private/Window/AdGLFWWindow.cpp
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;Window/AdGLFWwindow.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;AdLog.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;GLFW/glfw3native.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">namespace</span> <span style="color:#000">ade</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#000">AdGLFWwindow</span><span style="color:#000">::</span><span style="color:#000">AdGLFWwindow</span>(<span style="color:#a90d91">uint32_t</span> <span style="color:#000">width</span>, <span style="color:#a90d91">uint32_t</span> <span style="color:#000">height</span>, <span style="color:#a90d91">const</span> <span style="color:#a90d91">char</span> <span style="color:#000">*</span><span style="color:#000">title</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">if</span>(<span style="color:#000">!</span><span style="color:#000">glfwInit</span>()){
+</span></span><span style="display:flex;"><span>            <span style="color:#000">LOG_E</span>(<span style="color:#c41a16">&#34;Failed to init glfw.&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#000">glfwWindowHint</span>(<span style="color:#000">GLFW_CLIENT_API</span>, <span style="color:#000">GLFW_NO_API</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">glfwWindowHint</span>(<span style="color:#000">GLFW_VISIBLE</span>, <span style="color:#000">GL_FALSE</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">mGLFWwindow</span> <span style="color:#000">=</span> <span style="color:#000">glfwCreateWindow</span>(<span style="color:#000">width</span>, <span style="color:#000">height</span>, <span style="color:#000">title</span>, <span style="color:#a90d91">nullptr</span>, <span style="color:#a90d91">nullptr</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">if</span>(<span style="color:#000">!</span><span style="color:#000">mGLFWwindow</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#000">LOG_E</span>(<span style="color:#c41a16">&#34;Failed to create glfw window.&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">GLFWmonitor</span> <span style="color:#000">*</span><span style="color:#000">primaryMonitor</span> <span style="color:#000">=</span> <span style="color:#000">glfwGetPrimaryMonitor</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">if</span>(<span style="color:#000">primaryMonitor</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">int</span> <span style="color:#000">xPos</span>, <span style="color:#000">yPos</span>, <span style="color:#000">workWidth</span>, <span style="color:#000">workHeight</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#000">glfwGetMonitorWorkarea</span>(<span style="color:#000">primaryMonitor</span>, <span style="color:#000">&amp;</span><span style="color:#000">xPos</span>, <span style="color:#000">&amp;</span><span style="color:#000">yPos</span>, <span style="color:#000">&amp;</span><span style="color:#000">workWidth</span>, <span style="color:#000">&amp;</span><span style="color:#000">workHeight</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#000">glfwSetWindowPos</span>(<span style="color:#000">mGLFWwindow</span>, <span style="color:#000">workWidth</span> <span style="color:#000">/</span> <span style="color:#1c01ce">2</span> <span style="color:#000">-</span> <span style="color:#000">width</span> <span style="color:#000">/</span> <span style="color:#1c01ce">2</span>, <span style="color:#000">workHeight</span> <span style="color:#000">/</span> <span style="color:#1c01ce">2</span> <span style="color:#000">-</span> <span style="color:#000">height</span> <span style="color:#000">/</span> <span style="color:#1c01ce">2</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">glfwSwapInterval</span>(<span style="color:#1c01ce">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">glfwMakeContextCurrent</span>(<span style="color:#000">mGLFWwindow</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#177500">// show window
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>        <span style="color:#000">glfwShowWindow</span>(<span style="color:#000">mGLFWwindow</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">AdGLFWwindow</span><span style="color:#000">::~</span><span style="color:#000">AdGLFWwindow</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#000">glfwDestroyWindow</span>(<span style="color:#000">mGLFWwindow</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">glfwTerminate</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#000">LOG_I</span>(<span style="color:#c41a16">&#34;The application running end.&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">bool</span> <span style="color:#000">AdGLFWwindow</span><span style="color:#000">::</span><span style="color:#000">ShouldClose</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">return</span> <span style="color:#000">glfwWindowShouldClose</span>(<span style="color:#000">mGLFWwindow</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">void</span> <span style="color:#000">AdGLFWwindow</span><span style="color:#000">::</span><span style="color:#000">PollEvents</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#000">glfwPollEvents</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">void</span> <span style="color:#000">AdGLFWwindow</span><span style="color:#000">::</span><span style="color:#000">SwapBuffer</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#000">glfwSwapBuffers</span>(<span style="color:#000">mGLFWwindow</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>显示窗口：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">unique_ptr</span><span style="color:#000">&lt;</span><span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdWindow</span><span style="color:#000">&gt;</span> <span style="color:#000">window</span> <span style="color:#000">=</span> <span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdWindow</span><span style="color:#000">::</span><span style="color:#000">Create</span>(<span style="color:#1c01ce">800</span>, <span style="color:#1c01ce">600</span>, <span style="color:#c41a16">&#34;SandBox&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">while</span> (<span style="color:#000">!</span><span style="color:#000">window</span><span style="color:#000">-&gt;</span><span style="color:#000">ShouldClose</span>()){
+</span></span><span style="display:flex;"><span>    <span style="color:#000">window</span><span style="color:#000">-&gt;</span><span style="color:#000">PollEvents</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">window</span><span style="color:#000">-&gt;</span><span style="color:#000">SwapBuffers</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>
+        <a data-fancybox="gallery" href="./assets/image-20240411162259154.png">
+            <img class="mx-auto" alt="image-20240411162259154" src="./assets/image-20240411162259154.png" />
+        </a>
+    </p>
+<h2 id="vulkan">Vulkan</h2>
+<p>安装Vulkan可以参考<a href="https://vulkan-tutorial.com/Development_environment">vulkan-tutorial</a>，这个教程非常详细，这里就不细述了。包括后面Vulkan的基础渲染，也会参考该教程。</p>
+<p>在安装好Vulkan后，在<code>CMakeLists.txt</code>中加载进来。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cmake" data-lang="cmake"><span style="display:flex;"><span><span style="color:#177500">#Platform/CMakeLists.txt
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#000">
+</span></span></span><span style="display:flex;"><span><span style="color:#000"></span><span style="color:#177500">#Vulkan
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#a90d91">find_package</span>(<span style="color:#c41a16">Vulkan</span> <span style="color:#c41a16">REQUIRED</span>)<span style="color:#000">
+</span></span></span><span style="display:flex;"><span><span style="color:#000"></span><span style="color:#a90d91">if</span>(<span style="color:#c41a16">Vulkan_FOUND</span>)<span style="color:#000">
+</span></span></span><span style="display:flex;"><span><span style="color:#000"></span>    <span style="color:#a90d91">message</span>(<span style="color:#c41a16">&#34;Find vulkan success: ${Vulkan_INCLUDE_DIRS}&#34;</span>)<span style="color:#000">
+</span></span></span><span style="display:flex;"><span><span style="color:#000"></span>    <span style="color:#a90d91">include_directories</span>(<span style="color:#000">${</span><span style="color:#000">Vulkan_INCLUDE_DIRS</span><span style="color:#000">}</span>)<span style="color:#000">
+</span></span></span><span style="display:flex;"><span><span style="color:#000"></span><span style="color:#a90d91">endif</span>()<span style="color:#000">
+</span></span></span></code></pre></div><p>
+        <a data-fancybox="gallery" href="./assets/image-20240411164509293.png">
+            <img class="mx-auto" alt="image-20240411164509293" src="./assets/image-20240411164509293.png" />
+        </a>
+    </p>
+<p>然后我们创建一个<code>AdGraphicContext</code>类，这是渲染API的上下文，提供渲染调用。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//Platform/Public/AdGraphicContext.h
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#ifndef AD_GRAPHIC_CONTEXT_H
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#define AD_GRAPHIC_CONTEXT_H
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;AdEngine.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">namespace</span> <span style="color:#000">ade</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdGraphicContext</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">public</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">AdGraphicContext</span>(<span style="color:#a90d91">const</span> <span style="color:#000">AdGraphicContext</span><span style="color:#000">&amp;</span>) <span style="color:#000">=</span> <span style="color:#a90d91">delete</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">AdGraphicContext</span> <span style="color:#000">&amp;</span><span style="color:#a90d91">operator</span><span style="color:#000">=</span>(<span style="color:#a90d91">const</span> <span style="color:#000">AdGraphicContext</span><span style="color:#000">&amp;</span>) <span style="color:#000">=</span> <span style="color:#a90d91">delete</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">virtual</span> <span style="color:#000">~</span><span style="color:#000">AdGraphicContext</span>() <span style="color:#000">=</span> <span style="color:#a90d91">default</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">static</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">unique_ptr</span><span style="color:#000">&lt;</span><span style="color:#000">AdGraphicContext</span><span style="color:#000">&gt;</span> <span style="color:#000">Create</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">protected</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">AdGraphicContext</span>() <span style="color:#000">=</span> <span style="color:#a90d91">default</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">private</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#endif
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//Platform/Private/AdGraphicContext.cpp
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;AdGraphicContext.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;Graphic/VK/AdVKGraphicContext.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">namespace</span> <span style="color:#000">ade</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">shared_ptr</span><span style="color:#000">&lt;</span><span style="color:#000">AdGraphicContext</span><span style="color:#000">&gt;</span> <span style="color:#000">AdGraphicContext</span><span style="color:#000">::</span><span style="color:#000">Create</span>() {
+</span></span><span style="display:flex;"><span><span style="color:#633820">#ifdef AD_ENGINE_GRAPHIC_API_VULKAN
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>        <span style="color:#a90d91">return</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">make_shared</span><span style="color:#000">&lt;</span><span style="color:#000">AdVKGraphicContext</span><span style="color:#000">&gt;</span>();
+</span></span><span style="display:flex;"><span><span style="color:#633820">#else
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>        <span style="color:#a90d91">return</span> <span style="color:#a90d91">nullptr</span>;
+</span></span><span style="display:flex;"><span><span style="color:#633820">#endif
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>        <span style="color:#a90d91">return</span> <span style="color:#a90d91">nullptr</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>为了测试Vulkan是否可用，我创建了<code>AdVKGraphicContext</code>，然后调用一个Vulkan API测试。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//Platform/Public/Graphic/VK/AdVKGraphicContext.h
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;AdGraphicContext.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;Graphic/AdVKGraphicContext.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">namespace</span> <span style="color:#000">ade</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">unique_ptr</span><span style="color:#000">&lt;</span><span style="color:#000">AdGraphicContext</span><span style="color:#000">&gt;</span> <span style="color:#000">AdGraphicContext</span><span style="color:#000">::</span><span style="color:#000">Create</span>() {
+</span></span><span style="display:flex;"><span><span style="color:#633820">#ifdef AD_ENGINE_GRAPHIC_API_VULKAN
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>        <span style="color:#a90d91">return</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">make_unique</span><span style="color:#000">&lt;</span><span style="color:#000">AdVKGraphicContext</span><span style="color:#000">&gt;</span>();
+</span></span><span style="display:flex;"><span><span style="color:#633820">#endif
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>        <span style="color:#a90d91">return</span> <span style="color:#a90d91">nullptr</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//Platform/Private/Graphic/VK/AdVKGraphicContext.cpp
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;Graphic/AdVKGraphicContext.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;AdLog.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;vulkan/vulkan.h&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">namespace</span> <span style="color:#000">ade</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#000">AdVKGraphicContext</span><span style="color:#000">::</span><span style="color:#000">AdVKGraphicContext</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#000">CreateInstance</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">AdVKGraphicContext</span><span style="color:#000">::~</span><span style="color:#000">AdVKGraphicContext</span>() {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">void</span> <span style="color:#000">AdVKGraphicContext</span><span style="color:#000">::</span><span style="color:#000">CreateInstance</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">uint32_t</span> <span style="color:#000">availableLayerCount</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">vkEnumerateInstanceLayerProperties</span>(<span style="color:#000">&amp;</span><span style="color:#000">availableLayerCount</span>, <span style="color:#a90d91">nullptr</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkLayerProperties</span> <span style="color:#000">availableLayers</span>[<span style="color:#000">availableLayerCount</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#000">vkEnumerateInstanceLayerProperties</span>(<span style="color:#000">&amp;</span><span style="color:#000">availableLayerCount</span>, <span style="color:#000">availableLayers</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">LOG_D</span>(<span style="color:#c41a16">&#34;---------------------------&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">LOG_D</span>(<span style="color:#c41a16">&#34;Instance Layers: &#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">for</span>(<span style="color:#a90d91">int</span> <span style="color:#000">i</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">i</span> <span style="color:#000">&lt;</span> <span style="color:#000">availableLayerCount</span>; <span style="color:#000">i</span><span style="color:#000">++</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#000">LOG_D</span>(<span style="color:#c41a16">&#34;</span><span style="color:#c41a16">\t</span><span style="color:#c41a16"> {0}&#34;</span>, <span style="color:#000">availableLayers</span>[<span style="color:#000">i</span>].<span style="color:#000">layerName</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#000">LOG_D</span>(<span style="color:#c41a16">&#34;---------------------------&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>然后在我们的测试程序中尝试创建这个渲染API上下文。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//Sample/SandBox/Main.cpp
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&lt;iostream&gt;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;AdLog.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;AdWindow.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#include</span> <span style="color:#633820">&#34;AdGraphicContext.h&#34;</span><span style="color:#633820">
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">int</span> <span style="color:#000">main</span>(){
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span> 	<span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">unique_ptr</span><span style="color:#000">&lt;</span><span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdWindow</span><span style="color:#000">&gt;</span> <span style="color:#000">window</span> <span style="color:#000">=</span> <span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdWindow</span><span style="color:#000">::</span><span style="color:#000">Create</span>(<span style="color:#1c01ce">800</span>, <span style="color:#1c01ce">600</span>, <span style="color:#c41a16">&#34;SandBox&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">unique_ptr</span><span style="color:#000">&lt;</span><span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdGraphicContext</span><span style="color:#000">&gt;</span> <span style="color:#000">graphicContext</span> <span style="color:#000">=</span> <span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdGraphicContext</span><span style="color:#000">::</span><span style="color:#000">Create</span>();
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">return</span> <span style="color:#000">EXIT_SUCCESS</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>我在创建Vulkan上下文时候，只是打印了当前设备支持的所有实例Layer。所以运行结果是：</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240411180804475.png">
+            <img class="mx-auto" alt="image-20240411180804475" src="./assets/image-20240411180804475.png" />
+        </a>
+    </p>
+<p>我们可以在命令行工具中输入<code>vulkaninfo</code>，来对比这些Layer是否是一致的。</p>
+<p>到目前位置，窗口系统GLFW和Vulkan环境搭建完毕。</p>
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="http://www.adiosy.com">xingchen</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html">http://www.adiosy.com/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html">OpenGL或Vulkan渲染YUV格式数据</a></li>
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan02_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E5%BC%80%E7%AF%87.html">Learn_Vulkan02_渲染框架实现_开篇</a></li>
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html">Learn_Vulkan01_重要对象浅析</a></li>
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html">Learn_Vulkan00_第一个三角形</a></li>
+        
+        <li><a href="/posts/hello-openxr-%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html">Hello OpenXR - 第一个OpenXR程序</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/vulkan' target="_blank">Vulkan</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "xingchen0085/doc"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+
+    
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">飞雪无情</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+
+    <br />
+        
+        <div>
+            <span id="busuanzi_container_site_uv" style="font-family: auto;">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+            </span>
+            &copy; 2024 <a href="http://www.adiosy.com">Adiosy&#39;s blog By xingchen</a>
+                
+                | <a rel="nofollow" target="_blank" href="http://beian.miit.gov.cn/">滇ICP备2022000560号-1</a>
+            
+    </div>
+</footer>
+
+
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.2.8/raphael.min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/flowchart/1.12.2/flowchart.min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+                if (!window.flowchart) return;
+                const blocks = document.querySelectorAll('pre code.language-flowchart, pre code.language-flow');
+                for (let i = 0; i < blocks.length; i++) {
+                    const block = blocks[i];
+                    const rootElement = block.parentNode;
+                    const container = document.createElement('div');
+                    const id = `js-flowchart-diagrams-${i}`;
+                    container.id = id;
+                    container.className = 'align-center';
+                    container.setAttribute("style", "overFlow-x:auto");
+                    rootElement.parentNode.replaceChild(container, rootElement);
+                    const diagram = flowchart.parse(block.childNodes[0].nodeValue);
+                    diagram.drawSVG(id, window.flowchartDiagramsOptions ? window.flowchartDiagramsOptions : {});
+                }
+            })();
+        </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+            if (!window.Diagram) return;
+            const blocks = document.querySelectorAll('pre code.language-sequence');
+            for (let i = 0; i < blocks.length; i++) {
+                const block = blocks[i];
+                
+                const rootElement = block.parentNode;
+                const container = document.createElement('div');
+                const id = `js-sequence-diag-${i}`;
+                container.id = id;
+                container.className = 'align-center';
+                container.setAttribute("style", "overFlow-x:auto");
+                rootElement.parentNode.replaceChild(container, rootElement);
+
+                const diagram = Diagram.parse(block.childNodes[0].nodeValue);
+                diagram.drawSVG(id, window.sequenceDiagramsOptions
+                    ? window.sequenceDiagramsOptions
+                    : { theme: 'simple' });
+            }
+        })();
+        </script><script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        
+<form id="search" action='http://www.adiosy.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://www.adiosy.com">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html" title="Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境" target="_blank">Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html" title="OpenGL或Vulkan渲染YUV格式数据" target="_blank">OpenGL或Vulkan渲染YUV格式数据</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan02_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E5%BC%80%E7%AF%87.html" title="Learn_Vulkan02_渲染框架实现_开篇" target="_blank">Learn_Vulkan02_渲染框架实现_开篇</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html" title="Learn_Vulkan01_重要对象浅析" target="_blank">Learn_Vulkan01_重要对象浅析</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html" title="Learn_Vulkan00_第一个三角形" target="_blank">Learn_Vulkan00_第一个三角形</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/hello-openxr-%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html" title="Hello OpenXR - 第一个OpenXR程序" target="_blank">Hello OpenXR - 第一个OpenXR程序</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面" target="_blank">OpenGL渲染器04_绘制点线面</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 " target="_blank">OpenGL渲染器03_OpenGL环境 </a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器02_C&#43;&#43;环境" target="_blank">OpenGL渲染器02_C&#43;&#43;环境</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html" title="OpenGL渲染器01_开篇" target="_blank">OpenGL渲染器01_开篇</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">微信公众号</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="#" title="微信公众号" target="_blank" style="color:red">
+                
+                    <img src="/posts/assets/qrcode.jpg">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="http://www.adiosy.com/categories/opengl.html">OpenGL (4)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/vulkan.html">Vulkan (4)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/yuv.html">YUV (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="http://www.adiosy.com/tags/monado.html">Monado</a>
+    
+    <a href="http://www.adiosy.com/tags/opengl.html">OpenGL</a>
+    
+    <a href="http://www.adiosy.com/tags/opengl%E6%B8%B2%E6%9F%93.html">OpenGL渲染</a>
+    
+    <a href="http://www.adiosy.com/tags/openxr.html">OpenXR</a>
+    
+    <a href="http://www.adiosy.com/tags/vr/ar.html">VR/AR</a>
+    
+    <a href="http://www.adiosy.com/tags/vulkan.html">Vulkan</a>
+    
+    <a href="http://www.adiosy.com/tags/yuv.html">YUV</a>
+    
+    <a href="http://www.adiosy.com/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6.html">图形学</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://github.com/xingchen0085" title="我的Github">我的Github</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://gitee.com/xingchen0085" title="我的Gitee">我的Gitee</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://potatomelon.com" title="土豆社区">土豆社区</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="http://www.adiosy.com/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

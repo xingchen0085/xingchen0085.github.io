@@ -1,0 +1,1563 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>OpenGL或Vulkan渲染YUV格式数据 | Adiosy&#39;s blog</title>
+    <meta property="og:title" content="OpenGL或Vulkan渲染YUV格式数据 - Adiosy&#39;s blog">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2024-04-10T15:43:59&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2024-04-10T15:43:59&#43;08:00'>
+        
+    <meta name="Keywords" content="C/C&#43;&#43;,Java,计算机图形学,渲染,动画">
+    <meta name="description" content="OpenGL或Vulkan渲染YUV格式数据">
+        
+    <meta name="author" content="xingchen">
+    <meta property="og:url" content="http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+        <link href="https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet">
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/custom.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://www.adiosy.com">
+                        Adiosy&#39;s blog
+                    </a>
+                
+                <p class="description">民间图形学爱好者.</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://www.adiosy.com">Home</a>
+                    
+                    <a  href="http://www.adiosy.com/archives.html" title="归档">归档</a>
+                    
+                    <a  href="http://www.adiosy.com/books.html" title="读书">读书</a>
+                    
+                    <a  href="http://www.adiosy.com/about.html" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 0px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 20px;
+        word-wrap: break-word;
+        white-space: nowrap;
+        z-index: 999;
+        cursor: pointer;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 13px;
+         
+        filter: drop-shadow(rgb(150, 150, 150) 0px 0px 6px) !important;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+        list-style: none;
+        padding-inline-start: 1px !important;
+    }
+
+    .post-toc .post-toc-content ul {
+        list-style: none;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: inherit;
+    }
+
+    .post-toc .post-toc-content>nav>ul>li{
+        background-color: #fff;
+        border-left: 5px solid #666;
+        padding: 2px 5px 2px 5px;
+    }
+
+    .post-toc .post-toc-content ul li:hover{
+ 
+ 
+    }
+
+    .post-toc .post-toc-content ul li a{
+        display: inline-block;
+        width: 100%;
+    }
+
+    .post-toc .post-toc-content ul li a:hover{
+        background-color: #666;
+        color: #fff;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 153px;">
+    <h2 class="post-toc-title">目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-概述">1 概述</a></li>
+    <li><a href="#2-yuv介绍">2 YUV介绍</a>
+      <ul>
+        <li><a href="#211-采样方式">2.1.1 采样方式</a></li>
+        <li><a href="#212-排列方式">2.1.2 排列方式</a></li>
+        <li><a href="#213-常见的yuv格式">2.1.3 常见的YUV格式</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-yuv和rgb互转">3 YUV和RGB互转</a>
+      <ul>
+        <li><a href="#31-yuv转rgb">3.1 YUV转RGB</a></li>
+        <li><a href="#32-rgb转yuv">3.2 RGB转YUV</a></li>
+        <li><a href="#33-gpu渲染">3.3 GPU渲染</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-opengl渲染nv12nv21格式">4 OpenGL渲染NV12/NV21格式</a>
+      <ul>
+        <li><a href="#41-读取nv12nv21数据">4.1 读取NV12/NV21数据</a></li>
+        <li><a href="#42-着色器">4.2 着色器</a></li>
+        <li><a href="#43-创建网格体并应用yuv纹理">4.3 创建网格体并应用Y+UV纹理</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-vulkan渲染nv12nv21格式">5 Vulkan渲染NV12/NV21格式</a>
+      <ul>
+        <li><a href="#51-前提">5.1 前提</a></li>
+        <li><a href="#52-读取nv12nv21数据">5.2 读取NV12/NV21数据</a></li>
+        <li><a href="#53-创建网格体并应用yuv纹理">5.3 创建网格体并应用Y+UV纹理</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-参考">6 参考</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 15, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 125,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 125
+                    },
+                };
+
+            var e = $(window).animate({scrollTop: 0}, 600);
+            e < t ? postToc.css(a.start) : postToc.css(a.process);
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+
+    <article class="post">
+        <header>
+            <h1 class="post-title">OpenGL或Vulkan渲染YUV格式数据</h1>
+        </header>
+        
+  <time datetime="2024-04-10T07:43:59Z" class="post-meta meta-date dt-published">
+    2024-04-10
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/yuv' target="_blank">YUV</a>
+  
+</div>
+
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">Table of Contents</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="1-概述">1 概述</h2>
+<p>YUV是一种广泛应用于视频和图像处理的颜色空间格式，它通过将亮度和色度分离来表示颜色信息，以提高压缩效率和适应人眼感知。为了深入了解YUV格式及其应用，本文将分为几个部分来讨论。首先，我们将探讨YUV格式的采样方式和存储格式，以及不同采样方式对图像质量和压缩效率的影响。其次，我们将研究RGB到YUV和YUV到RGB的转换方法，包括转换公式和矩阵运算，以便在不同颜色空间之间进行准确的转换。最后会介绍如何利用OpenGL或Vulkan 来处理和渲染YUV格式的图像或视频数据，将讨论使用着色器程序和纹理贴图技术来实现YUV数据的采样、转换和渲染的方法。</p>
+<h2 id="2-yuv介绍">2 YUV介绍</h2>
+<p>YUV，“Y” 表示明亮度（Luminance），也就是像素的灰阶值，还含有较多的绿色通道量。因此需要单纯的 Y 分量就可以显示出完整的黑白图像。“U” 和 “V” 分别表示色度（Chrominance）和浓度（Chroma），用于描述色彩饱和度，U 分量是蓝色通道与 Y（亮度）的差值，V 分量是红色通道与 Y（亮度）的差值。</p>
+<p>U/V两个分量的变化区间见下图：</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/1712735070651-11.png">
+            <img class="mx-auto" alt="img" src="./assets/1712735070651-11.png" />
+        </a>
+    </p>
+<p>YUV也经常称为YCbCr，两者本质上没有区别。YUV 主要是用在彩色电视中，用于模拟信号表示，优点是可以兼容老式黑白电视，只需要YUV格式中的Y分量就可以输出黑白图像。YCbCr主要用在数字视频、图像的压缩和传输，例如H264、HEVC、MPEG均采用此格式。</p>
+<p>YUV 色彩编码模型在计算机系统应用中也被广泛采用，<strong>它可以有效地降低图片数据的空间占用，提高数据处理效率</strong>，对于需要快速传输或数据量较大的图像数据，YUV 格式是一个理想的选择。</p>
+<p>比如，一张1600x1600像素的照片，RGB 和 YUV（采用YUV420方式采样）格式的空间占用对比：</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/1712735070639-1.png">
+            <img class="mx-auto" alt="img" src="./assets/1712735070639-1.png" />
+        </a>
+    
+        <a data-fancybox="gallery" href="./assets/1712735070640-2.png">
+            <img class="mx-auto" alt="img" src="./assets/1712735070640-2.png" />
+        </a>
+    </p>
+<p>一张图片是由N个像素组成的，在 1600x1600 分辨率的图片中，我们可以理解为水平方向有 1600 个像素，垂直方向也有 1600 个像素，大概拥有250万像素。图片在显示时，每个像素的颜色信息通常使用 RGB 线性编码格式来表示，也就是说，每个像素的颜色可以由 R、G、B 三个分量线性排列组成（图示是R8G8B8格式）。</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410170729708.png">
+            <img class="mx-auto" alt="image-20240410170729708" src="./assets/image-20240410170729708.png" />
+        </a>
+    </p>
+<p>对于 YUV 格式来说，虽然每个像素也由Y、U、V  三个分量组成，但这三个分量的排列方式并不是线性的，而是按照位置特定排列的。根据采样方式和排列方式的不同，我们可以将 YUV 格式分为不同的类型。</p>
+<h3 id="211-采样方式">2.1.1 采样方式</h3>
+<p>常见的YUV格式根据采样方式可以分为三种：</p>
+<ul>
+<li><strong>YUV444</strong>：每1个Y分量都对应一套UV分量，每个像素占用（Y+U+V=8+8+8=24bit）3个字节。</li>
+<li><strong>YUV422</strong>：每2个Y分量对应一套UV分量，每个像素占用（Y+0.5U+0.5V=8+4+4=16bit）2个字节。</li>
+<li><strong>YUV420</strong>：每4个Y分量对应一套UV分量，每个像素占用（Y+0.25U+0.25V=8+2+2=12bit）1.5字节，该采样方式节省较多存储空间，因此也最常用。</li>
+</ul>
+<p>（1）YUV444</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410170753677.png">
+            <img class="mx-auto" alt="image-20240410170753677" src="./assets/image-20240410170753677.png" />
+        </a>
+    </p>
+<p>上图是YUV444的采样模型，左图和右图都可以看出来每个像素点都有一对UV分量，这就相当于没有做色度二次采样，即每一个Y对应一组UV分量。</p>
+<p>（2）YUV422</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410170902503.png">
+            <img class="mx-auto" alt="image-20240410170902503" src="./assets/image-20240410170902503.png" />
+        </a>
+    </p>
+<p>上图是YUV422的采样模型，左图可以看出来在竖直方向上每一个像素都有UV分量，而在水平方向上每两个像素共用一对UV分量；在右图的表现就是每行两个黑两个白。即每两个Y对应一组UV分量。</p>
+<p>（3）YUV420</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410170827387.png">
+            <img class="mx-auto" alt="image-20240410170827387" src="./assets/image-20240410170827387.png" />
+        </a>
+    </p>
+<p>上图是YUV420的采样模型，左图可以看出来四个像素点共用一对UV分量，在水平方向上每两个像素共用一对UV分量，在竖直方向上也是每两个像素包含一对UV分量；在右图的表现就是第一行两个黑两个白，第二行全白。即每四个Y对应一组UV分量。</p>
+<h3 id="212-排列方式">2.1.2 排列方式</h3>
+<p>在采样方式不同基础上，我们可以再根据排列方式的不同分为以下三类：</p>
+<ul>
+<li><strong>平面(Planar)排列</strong>：YUV分量全部分开存放。</li>
+<li><strong>半平面(Semi-Planar)排列</strong>：Y分量单独存放，UV交错存放。</li>
+<li><strong>打包(Packed)排列</strong>：又称为Interleaved排列，YUV分量分别交错存放。</li>
+</ul>
+<p>（1）Planar Format</p>
+<p>Planar的YUV格式，<strong>分为3个平面</strong>。平面存储格式先连续存储所有像素点的Y，紧接着存储所有像素点的U或V，最后存储剩下的U或者V。例如YU12（也叫I420，属于YUV420采样模型，每4个Y分量共用一组UV分量）的排列方式如下：</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410170931638.png">
+            <img class="mx-auto" alt="image-20240410170931638" src="./assets/image-20240410170931638.png" />
+        </a>
+    </p>
+<p>（2）Semi-Planar Format</p>
+<p>Semi-Planar的YUV格式，半平面存储格式，<strong>分为2个平面</strong>，也就是先连续存储所有的Y分量，再交错存储U和V分量。例如NV12（属于YUV420sp采样模型，每4个Y分量共用一组UV分量）的排列方式如下：</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410170941841.png">
+            <img class="mx-auto" alt="image-20240410170941841" src="./assets/image-20240410170941841.png" />
+        </a>
+    </p>
+<blockquote>
+<p>NV12还有一个兄弟格式，称为NV21，其实就是UV调换。即：</p>
+</blockquote>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410170949379.png">
+            <img class="mx-auto" alt="image-20240410170949379" src="./assets/image-20240410170949379.png" />
+        </a>
+    </p>
+<p>（3）Packed Format</p>
+<p>这种格式下YUV数据是交错存储的，例如YUV分量的排列顺序是VYUY，即两个Y分量共用一组UV，属于<strong>YUV 422</strong>的一种。</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410171003778.png">
+            <img class="mx-auto" alt="image-20240410171003778" src="./assets/image-20240410171003778.png" />
+        </a>
+    </p>
+<h3 id="213-常见的yuv格式">2.1.3 常见的YUV格式</h3>
+<table>
+<thead>
+<tr>
+<th>分类</th>
+<th>格式</th>
+<th>排列方式</th>
+<th>空间占用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>YUV422p</td>
+<td>I422</td>
+<td>Y+0.5U+0.5V</td>
+<td>YUV 422 Planar 的一种，YUV 分量分别存放，先是 w * h 长度的 Y，后面跟 w * h * 0.5 长度的 U， 最后是 w * h * 0.5 长度的 V，总长度为 w * h * 2。</td>
+</tr>
+<tr>
+<td>YV16</td>
+<td>Y+0.5V+0.5U</td>
+<td>YUV 422 Planar 的一种，YUV 分量分别存放，先是 w * h 长度的 Y，后面跟 w * h * 0.5 长度的 V， 最后是 w * h * 0.5 长度的 U，总长度为 w * h * 2。与 I422 不同的是，YV16 是先 V 后 U。</td>
+<td></td>
+</tr>
+<tr>
+<td>YUV422sp</td>
+<td>NV16</td>
+<td>Y+0.5UV</td>
+<td>YUV 422 Semi-Planar 的一种，Y 分量单独存放，UV 分量交错存放，UV 在排列的时候，从 U 开始。总长度为 w * h * 2。</td>
+</tr>
+<tr>
+<td>NV61</td>
+<td>Y+0.5VU</td>
+<td>YUV 422 Semi-Planar 的一种，Y 分量单独存放，UV 分量交错存放，UV 在排列的时候，从 V 开始。总长度为 w * h * 2。</td>
+<td></td>
+</tr>
+<tr>
+<td>YUV420p</td>
+<td>YUV12/I420</td>
+<td>Y+0.25U+0.25V</td>
+<td>YUV 420 Planar 的一种，YUV 分量分别存放，先是 w * h 长度的 Y，后面跟 w * h * 0.25 长度的 U， 最后是 w * h * 0.25 长度的 V，总长度为 w * h * 1.5。</td>
+</tr>
+<tr>
+<td>YV12</td>
+<td>Y+0.25V+0.25U</td>
+<td>YUV 420 Planar 的一种，YUV 分量分别存放，先是 w * h 长度的 Y，后面跟 w * h * 0.25 长度的 V， 最后是 w * h * 0.25 长度的 U，总长度为 w * h * 1.5。与 I420 不同的是，YV12 是先 V 后 U。</td>
+<td></td>
+</tr>
+<tr>
+<td>YUV420sp</td>
+<td>NV12</td>
+<td>Y+0.25UV</td>
+<td>YUV 420 Semi-Planar 的一种，Y 分量单独存放，UV 分量交错存放，UV 在排列的时候，从 U 开始。总长度为 w * h * 1.5。</td>
+</tr>
+<tr>
+<td>NV21</td>
+<td>Y+0.25VU</td>
+<td>YUV 420 Semi-Planar 的一种，Y 分量单独存放，UV 分量交错存放，与 NV12 不同的是，UV 在排列的时候，从 V 开始。总长度为 w * h * 1.5。</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-yuv和rgb互转">3 YUV和RGB互转</h2>
+<p>YUV 和 RGB 之间的格式转换可以通过矩阵乘法来实现，相当于给每个分量乘以一个常量。</p>
+<p>$$F_r = M * F_s$$</p>
+<p>不过，由于 YUV 格式存在不同的数字电视输出标准，因此在进行 YUV 和 RGB 之间的转换时，需要考虑不同的协议和标准。常见的 YUV 格式转换协议有BT.601、BT.709和BT.2020三种，这些协议在 YUV 和 RGB 之间的转换过程中系数会稍有不同。</p>
+<blockquote>
+<p>下文如未特殊说明，YUV格式均属于NV12或NV21。</p>
+</blockquote>
+<h3 id="31-yuv转rgb">3.1 YUV转RGB</h3>
+<ol>
+<li>
+<p>BT.601(标准数字电视SDTV)</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410165651980.png">
+            <img class="mx-auto" alt="image-20240410165651980" src="./assets/image-20240410165651980.png" />
+        </a>
+    </p>
+</li>
+<li>
+<p>BT.709(高清数字电视HDTV)</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410165907559.png">
+            <img class="mx-auto" alt="image-20240410165907559" src="./assets/image-20240410165907559.png" />
+        </a>
+    </p>
+</li>
+<li>
+<p>BT.2020(超高清数字电视UHDTV)</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410171205074.png">
+            <img class="mx-auto" alt="image-20240410171205074" src="./assets/image-20240410171205074.png" />
+        </a>
+    </p>
+</li>
+</ol>
+<p>注意：</p>
+<ol>
+<li>
+<p>在 YUV 和 RGB 之间的转换公式中，<strong>U 和 V 分量都减去了 0.5，这是因为 Y、U、V 和 RGB 的取值范围不同</strong>。YUV 格式中的 Y 分量的取值范围是 [0,  1]，U 和 V 分量的取值范围是  [-0.5, 0.5]。而 RGB 格式中，R、G、B  三个分量的取值范围都是 [0, 1]。为了将 YUV 格式转换为 RGB 格式，我们需要将 U  和 V 分量的取值范围映射到 [0, 1] 的范围内。</p>
+<p>$$Y,R,G,B \in \mathbf[0,1]\ UV \in \mathbf[-0.5,0.5]$$</p>
+</li>
+<li>
+<p>如果为了避免浮点计算丢失精度，可以先将各个分量乘以255（0xFF）转为unsigned char计算，后续再根据需要转为浮点型。如果使用 <strong>BT.601 协议标准</strong>，每个像素都需要执行转换，YUV -&gt; RGB 的核心转换代码如下：</p>
+</li>
+</ol>
+<p>（1）普通浮点型计算</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">bool</span> <span style="color:#000">YUV2RGB</span>(...){
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">for</span>(<span style="color:#a90d91">int</span> <span style="color:#000">col</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">col</span> <span style="color:#000">&lt;</span> <span style="color:#000">pixel_width</span>; <span style="color:#000">col</span><span style="color:#000">++</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">for</span>(<span style="color:#a90d91">int</span> <span style="color:#000">row</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">row</span> <span style="color:#000">&lt;</span> <span style="color:#000">pixel_height</span>; <span style="color:#000">row</span><span style="color:#000">++</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">uint8_t</span> <span style="color:#000">Y</span> <span style="color:#000">=</span> ...;
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">uint8_t</span> <span style="color:#000">U</span> <span style="color:#000">=</span> ...;
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">uint8_t</span> <span style="color:#000">V</span> <span style="color:#000">=</span> ...;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#177500">//NV21
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">//if(nv21){
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">//    uint_8 temp = U;
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">//    U = V;
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">//    V = temp;
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">//}
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">float</span> <span style="color:#000">R</span> <span style="color:#000">=</span> <span style="color:#000">Y</span> <span style="color:#000">+</span> <span style="color:#1c01ce">1.4075f</span> <span style="color:#000">*</span> (<span style="color:#000">V</span> <span style="color:#000">-</span> <span style="color:#1c01ce">128</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">float</span> <span style="color:#000">G</span> <span style="color:#000">=</span> <span style="color:#000">Y</span> <span style="color:#000">-</span> <span style="color:#1c01ce">0.3455f</span> <span style="color:#000">*</span> (<span style="color:#000">U</span> <span style="color:#000">-</span> <span style="color:#1c01ce">128</span>) <span style="color:#000">-</span> <span style="color:#1c01ce">0.7169f</span> <span style="color:#000">*</span> (<span style="color:#000">V</span> <span style="color:#000">-</span> <span style="color:#1c01ce">128</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">float</span> <span style="color:#000">B</span> <span style="color:#000">=</span> <span style="color:#000">Y</span> <span style="color:#000">+</span> <span style="color:#1c01ce">1.7790f</span> <span style="color:#000">*</span> (<span style="color:#000">U</span> <span style="color:#000">-</span> <span style="color:#1c01ce">128</span>);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#000">R</span> <span style="color:#000">=</span> <span style="color:#000">clamp</span>(<span style="color:#000">R</span>, <span style="color:#1c01ce">0x00</span>, <span style="color:#1c01ce">0xFF</span>);    <span style="color:#177500">// 需要限制范围到0~255(浮点型：0-1)
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#000">G</span> <span style="color:#000">=</span> <span style="color:#000">clamp</span>(<span style="color:#000">G</span>, <span style="color:#1c01ce">0x00</span>, <span style="color:#1c01ce">0xFF</span>);    <span style="color:#177500">// 需要限制范围到0~255(浮点型：0-1)
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#000">B</span> <span style="color:#000">=</span> <span style="color:#000">clamp</span>(<span style="color:#000">B</span>, <span style="color:#1c01ce">0x00</span>, <span style="color:#1c01ce">0xFF</span>);    <span style="color:#177500">// 需要限制范围到0~255(浮点型：0-1)
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>（2）矩阵计算</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410171123417.png">
+            <img class="mx-auto" alt="image-20240410171123417" src="./assets/image-20240410171123417.png" />
+        </a>
+    </p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">struct</span> <span style="color:#3f6e75">vec3</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">float</span> <span style="color:#000">x</span>, <span style="color:#000">y</span>, <span style="color:#000">z</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">struct</span> <span style="color:#3f6e75">mat3</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">float</span> <span style="color:#000">v</span>[<span style="color:#1c01ce">3</span> <span style="color:#000">*</span> <span style="color:#1c01ce">3</span>];
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">static</span> <span style="color:#a90d91">void</span> <span style="color:#000">mat3MulVec3</span>(<span style="color:#000">mat3</span> <span style="color:#000">mat</span>, <span style="color:#000">vec3</span> <span style="color:#000">v</span>, <span style="color:#000">vec3</span> <span style="color:#000">*</span><span style="color:#000">outV</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#000">outV</span><span style="color:#000">-&gt;</span><span style="color:#000">x</span> <span style="color:#000">=</span> <span style="color:#000">mat</span>.<span style="color:#000">v</span>[<span style="color:#1c01ce">0</span>] <span style="color:#000">*</span> <span style="color:#000">v</span>.<span style="color:#000">x</span> <span style="color:#000">+</span> <span style="color:#000">mat</span>.<span style="color:#000">v</span>[<span style="color:#1c01ce">1</span>] <span style="color:#000">*</span> <span style="color:#000">v</span>.<span style="color:#000">y</span> <span style="color:#000">+</span> <span style="color:#000">mat</span>.<span style="color:#000">v</span>[<span style="color:#1c01ce">2</span>] <span style="color:#000">*</span> <span style="color:#000">v</span>.<span style="color:#000">z</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">outV</span><span style="color:#000">-&gt;</span><span style="color:#000">y</span> <span style="color:#000">=</span> <span style="color:#000">mat</span>.<span style="color:#000">v</span>[<span style="color:#1c01ce">3</span>] <span style="color:#000">*</span> <span style="color:#000">v</span>.<span style="color:#000">x</span> <span style="color:#000">+</span> <span style="color:#000">mat</span>.<span style="color:#000">v</span>[<span style="color:#1c01ce">4</span>] <span style="color:#000">*</span> <span style="color:#000">v</span>.<span style="color:#000">y</span> <span style="color:#000">+</span> <span style="color:#000">mat</span>.<span style="color:#000">v</span>[<span style="color:#1c01ce">5</span>] <span style="color:#000">*</span> <span style="color:#000">v</span>.<span style="color:#000">z</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">outV</span><span style="color:#000">-&gt;</span><span style="color:#000">z</span> <span style="color:#000">=</span> <span style="color:#000">mat</span>.<span style="color:#000">v</span>[<span style="color:#1c01ce">6</span>] <span style="color:#000">*</span> <span style="color:#000">v</span>.<span style="color:#000">x</span> <span style="color:#000">+</span> <span style="color:#000">mat</span>.<span style="color:#000">v</span>[<span style="color:#1c01ce">7</span>] <span style="color:#000">*</span> <span style="color:#000">v</span>.<span style="color:#000">y</span> <span style="color:#000">+</span> <span style="color:#000">mat</span>.<span style="color:#000">v</span>[<span style="color:#1c01ce">8</span>] <span style="color:#000">*</span> <span style="color:#000">v</span>.<span style="color:#000">z</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">bool</span> <span style="color:#000">YUV2RGB</span>(...){
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">for</span>(<span style="color:#a90d91">int</span> <span style="color:#000">col</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">col</span> <span style="color:#000">&lt;</span> <span style="color:#000">pixel_width</span>; <span style="color:#000">col</span><span style="color:#000">++</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">for</span>(<span style="color:#a90d91">int</span> <span style="color:#000">row</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">row</span> <span style="color:#000">&lt;</span> <span style="color:#000">pixel_height</span>; <span style="color:#000">row</span><span style="color:#000">++</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">uint8_t</span> <span style="color:#000">Y</span> <span style="color:#000">=</span> ...;
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">uint8_t</span> <span style="color:#000">U</span> <span style="color:#000">=</span> ...;
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">uint8_t</span> <span style="color:#000">V</span> <span style="color:#000">=</span> ...;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#177500">//NV21
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">//if(nv21){
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">//    uint_8 temp = U;
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">//    U = V;
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">//    V = temp;
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">//}
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#000">vec3</span> <span style="color:#000">yuv</span> <span style="color:#000">=</span> { (<span style="color:#a90d91">float</span>)<span style="color:#000">Y</span>, (<span style="color:#a90d91">float</span>)(<span style="color:#000">U</span> <span style="color:#000">-</span> <span style="color:#1c01ce">128</span>), (<span style="color:#a90d91">float</span>)(<span style="color:#000">V</span> <span style="color:#000">-</span> <span style="color:#1c01ce">128</span>) };
+</span></span><span style="display:flex;"><span>            <span style="color:#000">mat3</span> <span style="color:#000">mat</span> <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#1c01ce">1</span>, <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">1.4075f</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#1c01ce">1</span>, <span style="color:#000">-</span><span style="color:#1c01ce">0.3455f</span>, <span style="color:#000">-</span><span style="color:#1c01ce">0.7169f</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#1c01ce">1</span>, <span style="color:#1c01ce">1.779f</span>, <span style="color:#1c01ce">0</span>
+</span></span><span style="display:flex;"><span>            };
+</span></span><span style="display:flex;"><span>            <span style="color:#000">vec3</span> <span style="color:#000">rgb</span>{};
+</span></span><span style="display:flex;"><span>            <span style="color:#000">mat3MulVec3</span>(<span style="color:#000">mat</span>, <span style="color:#000">yuv</span>, <span style="color:#000">&amp;</span><span style="color:#000">rgb</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">float</span> <span style="color:#000">R</span> <span style="color:#000">=</span> <span style="color:#000">rgb</span>.<span style="color:#000">x</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">float</span> <span style="color:#000">G</span> <span style="color:#000">=</span> <span style="color:#000">rgb</span>.<span style="color:#000">y</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">float</span> <span style="color:#000">B</span> <span style="color:#000">=</span> <span style="color:#000">rgb</span>.<span style="color:#000">z</span>;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#000">R</span> <span style="color:#000">=</span> <span style="color:#000">clamp</span>(<span style="color:#000">R</span>, <span style="color:#1c01ce">0x00</span>, <span style="color:#1c01ce">0xFF</span>);    <span style="color:#177500">// 需要限制范围到0~255(浮点型：0-1)
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#000">G</span> <span style="color:#000">=</span> <span style="color:#000">clamp</span>(<span style="color:#000">G</span>, <span style="color:#1c01ce">0x00</span>, <span style="color:#1c01ce">0xFF</span>);    <span style="color:#177500">// 需要限制范围到0~255(浮点型：0-1)
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#000">B</span> <span style="color:#000">=</span> <span style="color:#000">clamp</span>(<span style="color:#000">B</span>, <span style="color:#1c01ce">0x00</span>, <span style="color:#1c01ce">0xFF</span>);    <span style="color:#177500">// 需要限制范围到0~255(浮点型：0-1)
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>（3）为了防止每个像素都要进行浮点运算，可以将系数乘[0-255]用字典存储，以减少计算耗时。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">static</span> <span style="color:#a90d91">float</span> <span style="color:#000">RGBYUV14075</span>[<span style="color:#1c01ce">256</span>], <span style="color:#000">RGBYUV03455</span>[<span style="color:#1c01ce">256</span>], <span style="color:#000">RGBYUV07169</span>[<span style="color:#1c01ce">256</span>], <span style="color:#000">RGBYUV17790</span>[<span style="color:#1c01ce">256</span>];
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">static</span> <span style="color:#a90d91">void</span> <span style="color:#000">initQueryTable</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">int</span> <span style="color:#000">i</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">for</span> (<span style="color:#000">i</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">i</span> <span style="color:#000">&lt;</span> <span style="color:#1c01ce">256</span>; <span style="color:#000">i</span><span style="color:#000">++</span>) <span style="color:#000">RGBYUV14075</span>[<span style="color:#000">i</span>] <span style="color:#000">=</span> (<span style="color:#a90d91">float</span>)<span style="color:#1c01ce">1.4075</span> <span style="color:#000">*</span> (<span style="color:#000">i</span> <span style="color:#000">-</span> <span style="color:#1c01ce">128</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">for</span> (<span style="color:#000">i</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">i</span> <span style="color:#000">&lt;</span> <span style="color:#1c01ce">256</span>; <span style="color:#000">i</span><span style="color:#000">++</span>) <span style="color:#000">RGBYUV03455</span>[<span style="color:#000">i</span>] <span style="color:#000">=</span> (<span style="color:#a90d91">float</span>)<span style="color:#1c01ce">0.3455</span> <span style="color:#000">*</span> (<span style="color:#000">i</span> <span style="color:#000">-</span> <span style="color:#1c01ce">128</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">for</span> (<span style="color:#000">i</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">i</span> <span style="color:#000">&lt;</span> <span style="color:#1c01ce">256</span>; <span style="color:#000">i</span><span style="color:#000">++</span>) <span style="color:#000">RGBYUV07169</span>[<span style="color:#000">i</span>] <span style="color:#000">=</span> (<span style="color:#a90d91">float</span>)<span style="color:#1c01ce">0.7169</span> <span style="color:#000">*</span> (<span style="color:#000">i</span> <span style="color:#000">-</span> <span style="color:#1c01ce">128</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">for</span> (<span style="color:#000">i</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">i</span> <span style="color:#000">&lt;</span> <span style="color:#1c01ce">256</span>; <span style="color:#000">i</span><span style="color:#000">++</span>) <span style="color:#000">RGBYUV17790</span>[<span style="color:#000">i</span>] <span style="color:#000">=</span> (<span style="color:#a90d91">float</span>)<span style="color:#1c01ce">1.7790</span> <span style="color:#000">*</span> (<span style="color:#000">i</span> <span style="color:#000">-</span> <span style="color:#1c01ce">128</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">bool</span> <span style="color:#000">YUV2RGB</span>(...){
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">for</span>(<span style="color:#a90d91">int</span> <span style="color:#000">col</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">col</span> <span style="color:#000">&lt;</span> <span style="color:#000">pixel_width</span>; <span style="color:#000">col</span><span style="color:#000">++</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">for</span>(<span style="color:#a90d91">int</span> <span style="color:#000">row</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">row</span> <span style="color:#000">&lt;</span> <span style="color:#000">pixel_height</span>; <span style="color:#000">row</span><span style="color:#000">++</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">uint8_t</span> <span style="color:#000">Y</span> <span style="color:#000">=</span> ...;
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">uint8_t</span> <span style="color:#000">U</span> <span style="color:#000">=</span> ...;
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">uint8_t</span> <span style="color:#000">V</span> <span style="color:#000">=</span> ...;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#177500">//NV21
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">//if(nv21){
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">//    uint_8 temp = U;
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">//    U = V;
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">//    V = temp;
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">//}
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">float</span> <span style="color:#000">R</span> <span style="color:#000">=</span> <span style="color:#000">Y</span> <span style="color:#000">+</span> <span style="color:#000">RGBYUV14075</span>[<span style="color:#000">V</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">float</span> <span style="color:#000">G</span> <span style="color:#000">=</span> <span style="color:#000">Y</span> <span style="color:#000">-</span> <span style="color:#000">RGBYUV03455</span>[<span style="color:#000">U</span>] <span style="color:#000">-</span> <span style="color:#000">RGBYUV07169</span>[<span style="color:#000">V</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">float</span> <span style="color:#000">B</span> <span style="color:#000">=</span> <span style="color:#000">Y</span> <span style="color:#000">+</span> <span style="color:#000">RGBYUV17790</span>[<span style="color:#000">U</span>];
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#000">R</span> <span style="color:#000">=</span> <span style="color:#000">clamp</span>(<span style="color:#000">R</span>, <span style="color:#1c01ce">0x00</span>, <span style="color:#1c01ce">0xFF</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#000">G</span> <span style="color:#000">=</span> <span style="color:#000">clamp</span>(<span style="color:#000">G</span>, <span style="color:#1c01ce">0x00</span>, <span style="color:#1c01ce">0xFF</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#000">B</span> <span style="color:#000">=</span> <span style="color:#000">clamp</span>(<span style="color:#000">B</span>, <span style="color:#1c01ce">0x00</span>, <span style="color:#1c01ce">0xFF</span>);
+</span></span><span style="display:flex;"><span>       }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="32-rgb转yuv">3.2 RGB转YUV</h3>
+<ol>
+<li>
+<p>BT.601(标准数字电视SDTV)</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410171331055.png">
+            <img class="mx-auto" alt="image-20240410171331055" src="./assets/image-20240410171331055.png" />
+        </a>
+    </p>
+</li>
+<li>
+<p>BT.709(高清数字电视HDTV)</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410171343039.png">
+            <img class="mx-auto" alt="image-20240410171343039" src="./assets/image-20240410171343039.png" />
+        </a>
+    </p>
+</li>
+<li>
+<p>BT.2020(超高清数字电视UHDTV)</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410171357823.png">
+            <img class="mx-auto" alt="image-20240410171357823" src="./assets/image-20240410171357823.png" />
+        </a>
+    </p>
+</li>
+</ol>
+<p>使用BT.601协议，RGB -&gt; NV12（YUV420采样模型）核心转换代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">uint8_t</span> <span style="color:#000">*</span><span style="color:#000">yBuffer</span> <span style="color:#000">=</span> <span style="color:#000">yuvBuffer</span>;                                  <span style="color:#177500">// Y数据段
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#a90d91">uint8_t</span> <span style="color:#000">*</span><span style="color:#000">uvBuffer</span> <span style="color:#000">=</span> <span style="color:#000">yuvBuffer</span> <span style="color:#000">+</span> <span style="color:#000">pixel_width</span> <span style="color:#000">*</span> <span style="color:#000">pixel_height</span>;    <span style="color:#177500">// UV数据段
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#a90d91">uint8_t</span> <span style="color:#000">*</span><span style="color:#000">rgbIndex</span> <span style="color:#000">=</span> <span style="color:#000">rgbBuffer</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">bool</span> <span style="color:#000">RGB2YUV</span>(...){
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">for</span>(<span style="color:#a90d91">int</span> <span style="color:#000">col</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">col</span> <span style="color:#000">&lt;</span> <span style="color:#000">pixel_width</span>; <span style="color:#000">col</span><span style="color:#000">++</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">for</span>(<span style="color:#a90d91">int</span> <span style="color:#000">row</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">row</span> <span style="color:#000">&lt;</span> <span style="color:#000">pixel_height</span>; <span style="color:#000">row</span><span style="color:#000">++</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">uint8_t</span> <span style="color:#000">R</span> <span style="color:#000">=</span> <span style="color:#000">*</span><span style="color:#000">rgbIndex</span><span style="color:#000">++</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">uint8_t</span> <span style="color:#000">G</span> <span style="color:#000">=</span> <span style="color:#000">*</span><span style="color:#000">rgbIndex</span><span style="color:#000">++</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">uint8_t</span> <span style="color:#000">B</span> <span style="color:#000">=</span> <span style="color:#000">*</span><span style="color:#000">rgbIndex</span><span style="color:#000">++</span>;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">float</span> <span style="color:#000">Y</span> <span style="color:#000">=</span> <span style="color:#000">YUVRGB02990</span>[<span style="color:#000">R</span>] <span style="color:#000">+</span> <span style="color:#000">YUVRGB05870</span>[<span style="color:#000">G</span>] <span style="color:#000">+</span> <span style="color:#000">YUVRGB01140</span>[<span style="color:#000">B</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#000">Y</span> <span style="color:#000">=</span> <span style="color:#000">clamp</span>(<span style="color:#000">Y</span>, <span style="color:#1c01ce">0x00</span>, <span style="color:#1c01ce">0xFF</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#177500">//设置Y的值
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#000">*</span><span style="color:#000">yBuffer</span><span style="color:#000">++</span> <span style="color:#000">=</span> (<span style="color:#a90d91">uint8_t</span>) <span style="color:#000">Y</span>;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#177500">//采样 2x2
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#a90d91">if</span>(<span style="color:#000">w</span> <span style="color:#000">%</span> <span style="color:#1c01ce">2</span> <span style="color:#000">==</span> <span style="color:#1c01ce">0</span> <span style="color:#000">&amp;&amp;</span> <span style="color:#000">h</span> <span style="color:#000">%</span> <span style="color:#1c01ce">2</span> <span style="color:#000">==</span> <span style="color:#1c01ce">0</span>){
+</span></span><span style="display:flex;"><span>                <span style="color:#a90d91">float</span> <span style="color:#000">U</span> <span style="color:#000">=</span> (<span style="color:#000">-</span><span style="color:#000">YUVRGB01690</span>[<span style="color:#000">R</span>] <span style="color:#000">-</span> <span style="color:#000">YUVRGB03310</span>[<span style="color:#000">G</span>] <span style="color:#000">+</span> <span style="color:#000">YUVRGB05000</span>[<span style="color:#000">B</span>]) <span style="color:#000">+</span> <span style="color:#1c01ce">128</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#a90d91">float</span> <span style="color:#000">V</span> <span style="color:#000">=</span> (<span style="color:#000">YUVRGB05000</span>[<span style="color:#000">R</span>] <span style="color:#000">-</span> <span style="color:#000">YUVRGB04190</span>[<span style="color:#000">G</span>] <span style="color:#000">-</span> <span style="color:#000">YUVRGB00810</span>[<span style="color:#000">B</span>]) <span style="color:#000">+</span> <span style="color:#1c01ce">128</span>;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>                <span style="color:#000">U</span> <span style="color:#000">=</span> <span style="color:#000">clamp</span>(<span style="color:#000">U</span>, <span style="color:#1c01ce">0x00</span>, <span style="color:#1c01ce">0xFF</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#000">V</span> <span style="color:#000">=</span> <span style="color:#000">clamp</span>(<span style="color:#000">V</span>, <span style="color:#1c01ce">0x00</span>, <span style="color:#1c01ce">0xFF</span>);
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#177500">//NV21
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>                <span style="color:#177500">//if(nv21){
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>                <span style="color:#177500">//    uint_8 temp = U;
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>                <span style="color:#177500">//    U = V;
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>                <span style="color:#177500">//    V = temp;
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>                <span style="color:#177500">//}
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#177500">// 设置U,V的值
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>                <span style="color:#000">*</span><span style="color:#000">uvBuffer</span><span style="color:#000">++</span> <span style="color:#000">=</span> (<span style="color:#a90d91">uint8_t</span>) (<span style="color:#000">U</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#000">*</span><span style="color:#000">uvBuffer</span><span style="color:#000">++</span> <span style="color:#000">=</span> (<span style="color:#a90d91">uint8_t</span>) (<span style="color:#000">V</span>);
+</span></span><span style="display:flex;"><span>            } 
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    ..
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="33-gpu渲染">3.3 GPU渲染</h3>
+<p>在#3章节中，如果使用CPU来执行YUV和RGB互转，在1600x1600分辨率下，需要约40-60毫秒的处理时间。但是，如果使用GPU来处理呢？使用GPU进行处理时，通常会获得更快的处理速度，因为<strong>GPU在</strong>并行计算方面表现更为出色，能够同时处理多个像素。</p>
+<p>当我们需要将摄像设备返回的画面渲染到屏幕上时，设备通常会返回RAW或YUV格式的数据，这些数据可以通过GPU渲染而实现预览功能。此外，我们还可以将图像数据采样到一个畸变网格中，这样可以实现Video-see through（VST）的基础效果，实时显示相机捕捉到的内容，并在需要时应用畸变校正和其他增强效果。这样的处理过程通常需要借助GPU的计算能力来实现高效渲染和实时响应。</p>
+<p>使用YUVviewer打开一个NV12图像。</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/1712735070640-3.png">
+            <img class="mx-auto" alt="img" src="./assets/1712735070640-3.png" />
+        </a>
+    
+        <a data-fancybox="gallery" href="./assets/1712735070640-4.png">
+            <img class="mx-auto" alt="img" src="./assets/1712735070640-4.png" />
+        </a>
+    </p>
+<p>使用 OpenGL/Vulkan 两种API完成渲染，渲染结果如下：</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410171435452.png">
+            <img class="mx-auto" alt="image-20240410171435452" src="./assets/image-20240410171435452.png" />
+        </a>
+    </p>
+<p>
+        <a data-fancybox="gallery" href="./assets/1712735070640-6.png">
+            <img class="mx-auto" alt="img" src="./assets/1712735070640-6.png" />
+        </a>
+    </p>
+<p>GPU渲染参考以下四个步骤：</p>
+<ol>
+<li>渲染API的前置步骤，OpenGL 或Vulkan 初始化，<strong>需要支持纹理渲染。</strong></li>
+<li>读取YUV格式数据，数据可以来自文件或内存。因为NV12/NV21属于YUV420sp模型，只有Y和UV两个平面，所以读取这两个平面，然后分别为其创建各自的纹理。</li>
+<li>编写渲染着色器（Shader），给Y+UV两个平面分别采样，并使用#3章节中公式将其转换为RGB。</li>
+<li>初始化一个四边形网格，并将步骤#2中创建的两个纹理合成并应用给这个网格。</li>
+</ol>
+<p>
+        <a data-fancybox="gallery" href="./assets/1712735070640-7.png">
+            <img class="mx-auto" alt="img" src="./assets/1712735070640-7.png" />
+        </a>
+    
+        <a data-fancybox="gallery" href="./assets/1712735070640-8.png">
+            <img class="mx-auto" alt="img" src="./assets/1712735070640-8.png" />
+        </a>
+    </p>
+<h2 id="4-opengl渲染nv12nv21格式">4 OpenGL渲染NV12/NV21格式</h2>
+<h3 id="41-读取nv12nv21数据">4.1 读取NV12/NV21数据</h3>
+<ol>
+<li>我们可以定义一个YUV纹理类，记录YUV数据的宽高、数据和帧数等，并提供读取/销毁等操作。</li>
+</ol>
+<p>这里需要注意的是<code>this-&gt;frameSize = width * height * 3 / 2</code>，这里 * 1.5的原因是2.2章节中提到的，NV12/NV21的数据总长度为w * h * 1.5。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">class</span> <span style="color:#3f6e75">YuvTexture</span>{
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">public</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">YuvTexture</span>() <span style="color:#000">=</span> <span style="color:#a90d91">delete</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">~</span><span style="color:#000">YuvTexture</span>(){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">free</span>(<span style="color:#000">data</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#000">YuvTexture</span>(<span style="color:#a90d91">const</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">string</span> <span style="color:#000">&amp;</span><span style="color:#000">filePath</span>, <span style="color:#a90d91">uint32_t</span> <span style="color:#000">width</span>, <span style="color:#a90d91">uint32_t</span> <span style="color:#000">height</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">this</span><span style="color:#000">-&gt;</span><span style="color:#000">filePath</span> <span style="color:#000">=</span> <span style="color:#000">filePath</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">this</span><span style="color:#000">-&gt;</span><span style="color:#000">width</span> <span style="color:#000">=</span> <span style="color:#000">width</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">this</span><span style="color:#000">-&gt;</span><span style="color:#000">height</span> <span style="color:#000">=</span> <span style="color:#000">height</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">this</span><span style="color:#000">-&gt;</span><span style="color:#000">frameSize</span> <span style="color:#000">=</span> <span style="color:#000">width</span> <span style="color:#000">*</span> <span style="color:#000">height</span> <span style="color:#000">*</span> <span style="color:#1c01ce">3</span> <span style="color:#000">/</span> <span style="color:#1c01ce">2</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">this</span><span style="color:#000">-&gt;</span><span style="color:#000">currentFrameIndex</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">void</span> <span style="color:#000">read</span>(){
+</span></span><span style="display:flex;"><span>        <span style="color:#177500">//TODO 
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">void</span> <span style="color:#000">destroy</span>(){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">free</span>(<span style="color:#000">data</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#177500">//回收Y+UV两个Texture
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">public</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">GLuint</span> <span style="color:#000">texYId</span>;             <span style="color:#177500">//Y纹理ID
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">GLuint</span> <span style="color:#000">texUVId</span>;            <span style="color:#177500">//UV纹理ID
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#a90d91">private</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span> <span style="color:#000">width</span>, <span style="color:#000">height</span>;    <span style="color:#177500">//YUV图片宽高
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">size_t</span> <span style="color:#000">dataSize</span>;           <span style="color:#177500">//数据长度
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#a90d91">uint8_t</span> <span style="color:#000">*</span><span style="color:#000">data</span>;             <span style="color:#177500">//YUV数据
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span> <span style="color:#000">frameSize</span>;        <span style="color:#177500">//每帧的数据长度
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#a90d91">int</span> <span style="color:#000">currentFrameIndex</span>;     <span style="color:#177500">//当前帧
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#a90d91">int</span> <span style="color:#000">totalFrameCount</span>;       <span style="color:#177500">//总帧数
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>};
+</span></span></code></pre></div><ol>
+<li>然后实现<code>read()</code>函数。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">void</span> <span style="color:#000">read</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#000">FILE</span> <span style="color:#000">*</span><span style="color:#000">fp</span> <span style="color:#000">=</span> <span style="color:#000">fopen</span>(<span style="color:#000">filePath</span>.<span style="color:#000">c_str</span>(),<span style="color:#c41a16">&#34;rb&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">if</span> (<span style="color:#000">fp</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">fseek</span>(<span style="color:#000">fp</span>, <span style="color:#1c01ce">0</span>, <span style="color:#000">SEEK_END</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">dataSize</span> <span style="color:#000">=</span> <span style="color:#000">ftell</span>(<span style="color:#000">fp</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">this</span><span style="color:#000">-&gt;</span><span style="color:#000">data</span> <span style="color:#000">=</span> <span style="color:#a90d91">static_cast</span><span style="color:#000">&lt;</span><span style="color:#a90d91">uint8_t</span> <span style="color:#000">*&gt;</span>(<span style="color:#000">malloc</span>(<span style="color:#a90d91">sizeof</span>(<span style="color:#a90d91">uint8_t</span>) <span style="color:#000">*</span> <span style="color:#000">dataSize</span>));
+</span></span><span style="display:flex;"><span>        <span style="color:#000">fseek</span>(<span style="color:#000">fp</span>, <span style="color:#1c01ce">0</span>, <span style="color:#000">SEEK_SET</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">fread</span>(<span style="color:#000">data</span>, <span style="color:#1c01ce">1</span>, <span style="color:#000">dataSize</span>, <span style="color:#000">fp</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">fclose</span>(<span style="color:#000">fp</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">fp</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">this</span><span style="color:#000">-&gt;</span><span style="color:#000">totalFrameCount</span> <span style="color:#000">=</span> <span style="color:#000">dataSize</span> <span style="color:#000">/</span> <span style="color:#000">frameSize</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">//创建 Y Texture
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">glGenTextures</span>(<span style="color:#1c01ce">1</span>, <span style="color:#000">&amp;</span><span style="color:#000">texYId</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glBindTexture</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#000">texYId</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glTexParameteri</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#000">GL_TEXTURE_MIN_FILTER</span>, <span style="color:#000">GL_LINEAR</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glTexParameteri</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#000">GL_TEXTURE_MAG_FILTER</span>, <span style="color:#000">GL_LINEAR</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glTexParameteri</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#000">GL_TEXTURE_WRAP_S</span>, <span style="color:#000">GL_CLAMP_TO_EDGE</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glTexParameteri</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#000">GL_TEXTURE_WRAP_T</span>, <span style="color:#000">GL_CLAMP_TO_EDGE</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">//创建UV Texture
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">glGenTextures</span>(<span style="color:#1c01ce">1</span>, <span style="color:#000">&amp;</span><span style="color:#000">texUVId</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glBindTexture</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#000">texUVId</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glTexParameteri</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#000">GL_TEXTURE_MIN_FILTER</span>, <span style="color:#000">GL_LINEAR</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glTexParameteri</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#000">GL_TEXTURE_MAG_FILTER</span>, <span style="color:#000">GL_LINEAR</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glTexParameteri</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#000">GL_TEXTURE_WRAP_S</span>, <span style="color:#000">GL_CLAMP_TO_EDGE</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glTexParameteri</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#000">GL_TEXTURE_WRAP_T</span>, <span style="color:#000">GL_CLAMP_TO_EDGE</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glBindTexture</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#1c01ce">0</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>第一部分是IO读取，这部分数据就是为了得到data byte数据。</p>
+<p>第二部分使用<code>glGenTextures</code>OpenGL API创建Y+UV两个纹理。</p>
+<ol>
+<li>以上创建好纹理之后，我们还需要将Y、UV两个平面数据载入纹理。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">void</span> <span style="color:#000">updateTexture</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">if</span>(<span style="color:#000">currentFrameIndex</span> <span style="color:#000">&gt;=</span> <span style="color:#1c01ce">0</span> <span style="color:#000">&amp;&amp;</span> <span style="color:#000">currentFrameIndex</span> <span style="color:#000">&lt;</span> <span style="color:#000">totalFrameCount</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">uint8_t</span> <span style="color:#000">*</span><span style="color:#000">buffer</span> <span style="color:#000">=</span> <span style="color:#000">data</span> <span style="color:#000">+</span> <span style="color:#000">currentFrameIndex</span> <span style="color:#000">*</span> <span style="color:#000">frameSize</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">glBindTexture</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#000">texYId</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">glTexImage2D</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#1c01ce">0</span>, <span style="color:#000">GL_RED</span>, <span style="color:#000">width</span>, <span style="color:#000">height</span>, <span style="color:#1c01ce">0</span>, <span style="color:#000">GL_RED</span>, <span style="color:#000">GL_UNSIGNED_BYTE</span>, <span style="color:#000">buffer</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">glBindTexture</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#1c01ce">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000">glBindTexture</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#000">texUVId</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">glTexImage2D</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#1c01ce">0</span>, <span style="color:#000">GL_RG</span>, <span style="color:#000">width</span> <span style="color:#000">/</span> <span style="color:#1c01ce">2</span>, <span style="color:#000">height</span> <span style="color:#000">/</span> <span style="color:#1c01ce">2</span>, <span style="color:#1c01ce">0</span>, <span style="color:#000">GL_RG</span>, <span style="color:#000">GL_UNSIGNED_BYTE</span>, <span style="color:#000">buffer</span> <span style="color:#000">+</span> <span style="color:#000">width</span> <span style="color:#000">*</span> <span style="color:#000">height</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">glBindTexture</span>(<span style="color:#000">GL_TEXTURE_2D</span>, <span style="color:#1c01ce">0</span>);
+</span></span><span style="display:flex;"><span>    } <span style="color:#a90d91">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#000">currentFrameIndex</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>其核心处理在于<code>glTexImage2D</code>API，该API的定义如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#000">glTexImage2D</span>(<span style="color:#000">GLenum</span> <span style="color:#000">target</span>, <span style="color:#000">GLint</span> <span style="color:#000">level</span>, <span style="color:#000">GLint</span> <span style="color:#000">internalformat</span>, <span style="color:#000">GLsizei</span> <span style="color:#000">width</span>, <span style="color:#000">GLsizei</span> <span style="color:#000">height</span>, <span style="color:#000">GLint</span> <span style="color:#000">border</span>, <span style="color:#000">GLenum</span> <span style="color:#000">format</span>, <span style="color:#000">GLenum</span> <span style="color:#000">type</span>, <span style="color:#a90d91">const</span> <span style="color:#a90d91">void</span> <span style="color:#000">*</span><span style="color:#000">pixels</span>);
+</span></span></code></pre></div><ul>
+<li>target:：指定纹理绑定目标，我们采用默认的2D纹理。因此设置为GL_TEXTURE_2D。</li>
+<li>level：多级渐远纹理的级别。</li>
+<li>internalformat： 告诉OpenGL希望把纹理储存为何种格式。<strong>对于Y平面来讲，数据段每个像素就只有一个Y，所以我们填<code>GL_RED</code>单一分量；对于UV平面，因为是两个分量值，所以我们填<code>GL_RG</code>。</strong></li>
+<li>width：纹理宽度，因NV12/NV21属于YUV420采样方式，所以对于Y平面，宽高就是width * height；对于UV平面来说，宽高是width/2 * height /  2。</li>
+<li>border：应该总是被设为<code>0</code>（历史遗留的问题）。</li>
+<li>format/type：定义了源图的格式和数据类型。我们使用RGB值加载这个图像，并把它们储存为<code>char</code>(byte)数组，我们将会传入对应值。</li>
+<li>最后一个参数是真正的图像数据。</li>
+</ul>
+<p>重要参数说明：</p>
+<ol>
+<li>Y平面纹理格式中，我们使用了 <strong><code>GL_RED</code></strong> 格式，表示只需要一个纹理通道，在着色器中，<code>texture(tex_y, v_texcoord).r</code>可以用来取出来这单一通道数据。</li>
+<li>在OpenGL3.3版本之前，还可以用 <strong><code>GL_LUMINANCE</code></strong> 来代替 <strong><code>GL_RED</code></strong> 表示单一通道颜色值，用 <strong><code>GL_LUMINANCE_ALPHA</code></strong> 来代替 <strong><code>GL_RG</code></strong> 两个通道颜色值。只是OpenGL3.3之后，这两个枚举被移除了，并不能使用。</li>
+</ol>
+<h3 id="42-着色器">4.2 着色器</h3>
+<p>着色器(Shader)是运行在GPU上的小程序，这些小程序为图形渲染管线的某个特定部分而运行。我们在CPU准备好网格、纹理等数据后，由CPU将数据提交给GPU完成。GPU处理图像有一个流水线的概念，着色器就是GPU执行某些流程时的逻辑定义。最简单的情况下我们需要顶点着色器（Vertex Shader）和片元着色器（Fragment Shader）两个着色器配合完成渲染，这两个着色器可以简单理解为：</p>
+<ol>
+<li>顶点着色器就是执行这一流程时每个顶点要执行一次。伪代码：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">for</span>(<span style="color:#000">Vertex</span> <span style="color:#000">v</span> : <span style="color:#000">vetices</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">// 顶点处理
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">v</span>.<span style="color:#000">postion</span> <span style="color:#000">=</span> <span style="color:#000">?</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">v</span>.<span style="color:#000">color</span><span style="color:#000">=?</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">v</span>.<span style="color:#000">textcoord</span><span style="color:#000">=?</span>;
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ol>
+<li>片元着色器就是每个像素（片元）都要执行一次。伪代码：</li>
+</ol>
+<pre tabindex="0"><code class="language-OpenGL" data-lang="OpenGL">for(pixel v : pixels){
+    pixel = {r = 0.1, g = 0.2, b = 0.3};
+    ...
+    ...
+}
+</code></pre><p>对于YUV数据，我们不在CPU侧进行RGB转换，所以需要两个纹理采样，然后在着色器以使用矩阵乘法完成颜色转换。以下是YUV渲染的片元着色器样例。</p>
+<blockquote>
+<p>需要注意的是，着色器中的矩阵是列主序，需要将矩阵行主序转为列主序。</p>
+</blockquote>
+<pre tabindex="0"><code class="language-OpenGL" data-lang="OpenGL">#version 330 core
+
+in vec2 v_texcoord;
+
+uniform sampler2D tex_y;    //Y平面纹理采样，对应我们上述的glGenTextures(1, &amp;texYId);
+uniform sampler2D tex_uv;   //UV平面纹理采样，对应我们上述的glGenTextures(1, &amp;texUVId);
+
+out vec4 FragColor;
+void main(){
+    vec3 yuv;
+    yuv.x = texture(tex_y, v_texcoord).r;
+    yuv.y = texture(tex_uv, v_texcoord).g - 0.5;
+    yuv.z = texture(tex_uv, v_texcoord).r - 0.5;
+    highp vec3 rgb = mat3( 1,       1,      1,             //BT.601
+                           0,     -0.3455,  1.779,    
+                           1.4075, -0.7169,  0) * yuv; 
+
+    //highp vec3 rgb = mat3( 1,       1,      1,              //BT.709
+    //                       0,     -0.1868,  1.856,    
+    //                       1.5478, -0.4680,  0) * yuv; 
+
+    //highp vec3 rgb = mat3( 1,       1,      1,              // BT.2020
+    //                       0,     -0.1645,  1.8814,
+    //                       1.4746, -0.5713,  0) * yuv; 
+
+     FragColor = vec4(rgb, 1);
+}
+</code></pre><p>对于顶点着色器，只需要传递网格顶点位置和纹理UV坐标即可。</p>
+<pre tabindex="0"><code class="language-OpenGL" data-lang="OpenGL">#version 330 core
+layout (location = 0) in vec2 a_position;    //网格顶点位置
+layout (location = 2) in vec2 a_texcoord;    //网格UV坐标
+out vec2 v_texcoord;
+void main(){
+  gl_Position = vec4(a_position, 0, 1);
+  v_texcoord = a_texcoord;
+}
+</code></pre><h3 id="43-创建网格体并应用yuv纹理">4.3 创建网格体并应用Y+UV纹理</h3>
+<p>本案例需要将YUV纹理平铺显示到应用窗口，所以只用一个四边形网格，并且范围是[-1,1]。</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410171549322.png">
+            <img class="mx-auto" alt="image-20240410171549322" src="./assets/image-20240410171549322.png" />
+        </a>
+    </p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240410171555712.png">
+            <img class="mx-auto" alt="image-20240410171555712" src="./assets/image-20240410171555712.png" />
+        </a>
+    </p>
+<p>初始化网格。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">void</span> <span style="color:#000">initMesh</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">float</span> <span style="color:#000">vertexPos</span>[] <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#000">-</span><span style="color:#1c01ce">1.0f</span>, <span style="color:#1c01ce">1.0f</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#000">-</span><span style="color:#1c01ce">1.0f</span>, <span style="color:#000">-</span><span style="color:#1c01ce">1.0f</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">1.0f</span>, <span style="color:#000">-</span><span style="color:#1c01ce">1.0f</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">1.0f</span>, <span style="color:#1c01ce">1.0f</span>,
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">float</span> <span style="color:#000">vertexTexcoord</span>[] <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">1</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">1</span>, <span style="color:#1c01ce">1</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">1</span>, <span style="color:#1c01ce">0</span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">int</span> <span style="color:#000">indices</span>[] <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">1</span>, <span style="color:#1c01ce">2</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">2</span>, <span style="color:#1c01ce">3</span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glGenVertexArrays</span>(<span style="color:#1c01ce">1</span>, <span style="color:#000">&amp;</span><span style="color:#000">vao</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glGenBuffers</span>(<span style="color:#000">VBO_SIZE</span>, <span style="color:#000">vbo</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glGenBuffers</span>(<span style="color:#1c01ce">1</span>, <span style="color:#000">&amp;</span><span style="color:#000">ebo</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glBindVertexArray</span>(<span style="color:#000">vao</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glBindBuffer</span>(<span style="color:#000">GL_ARRAY_BUFFER</span>, <span style="color:#000">vbo</span>[<span style="color:#1c01ce">0</span>]);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glBufferData</span>(<span style="color:#000">GL_ARRAY_BUFFER</span>, <span style="color:#a90d91">sizeof</span>(<span style="color:#000">vertexPos</span>), <span style="color:#000">vertexPos</span>, <span style="color:#000">GL_STATIC_DRAW</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">GLuint</span>  <span style="color:#000">loc</span> <span style="color:#000">=</span> <span style="color:#000">glGetAttribLocation</span>(<span style="color:#000">program</span>, <span style="color:#c41a16">&#34;a_position&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glEnableVertexAttribArray</span>(<span style="color:#000">loc</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glVertexAttribPointer</span>(<span style="color:#000">loc</span>, <span style="color:#1c01ce">2</span>, <span style="color:#000">GL_FLOAT</span>, <span style="color:#a90d91">false</span>, <span style="color:#1c01ce">0</span>, (<span style="color:#a90d91">void</span><span style="color:#000">*</span>) <span style="color:#1c01ce">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glBindBuffer</span>(<span style="color:#000">GL_ARRAY_BUFFER</span>, <span style="color:#000">vbo</span>[<span style="color:#1c01ce">1</span>]);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glBufferData</span>(<span style="color:#000">GL_ARRAY_BUFFER</span>, <span style="color:#a90d91">sizeof</span>(<span style="color:#000">vertexTexcoord</span>), <span style="color:#000">vertexTexcoord</span>, <span style="color:#000">GL_STATIC_DRAW</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">loc</span> <span style="color:#000">=</span> <span style="color:#000">glGetAttribLocation</span>(<span style="color:#000">program</span>, <span style="color:#c41a16">&#34;a_texcoord&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glEnableVertexAttribArray</span>(<span style="color:#000">loc</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glVertexAttribPointer</span>(<span style="color:#000">loc</span>, <span style="color:#1c01ce">2</span>, <span style="color:#000">GL_FLOAT</span>, <span style="color:#a90d91">false</span>, <span style="color:#1c01ce">0</span>, (<span style="color:#a90d91">void</span><span style="color:#000">*</span>) <span style="color:#1c01ce">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glBindBuffer</span>(<span style="color:#000">GL_ELEMENT_ARRAY_BUFFER</span>, <span style="color:#000">ebo</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glBufferData</span>(<span style="color:#000">GL_ELEMENT_ARRAY_BUFFER</span>, <span style="color:#a90d91">sizeof</span>(<span style="color:#000">indices</span>), <span style="color:#000">indices</span>, <span style="color:#000">GL_STATIC_DRAW</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">glBindVertexArray</span>(<span style="color:#1c01ce">0</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="5-vulkan渲染nv12nv21格式">5 Vulkan渲染NV12/NV21格式</h2>
+<p>Vulkan中默认已有YUV的实现方案，在其内部称为“YCbCr”。比如VKFormat中就有关于YUV的一些格式：</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/1712735070640-9.png">
+            <img class="mx-auto" alt="img" src="./assets/1712735070640-9.png" />
+        </a>
+    </p>
+<p>另外还区分了不同标准和协议。</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/1712735070640-10.png">
+            <img class="mx-auto" alt="img" src="./assets/1712735070640-10.png" />
+        </a>
+    </p>
+<p>因此，使用Vulkan渲染NV12/NV21有两种方案。</p>
+<ol>
+<li>第一种方案是利用Vulkan自带的**<code>VkSamplerYcbcrConversionInfo</code>**来进行颜色格式转换。可以初始化这个对象，应用 YUV 纹理，并可实现自动的颜色格式转换。这种方法利用了Vulkan的内置功能，简化了颜色格式转换的流程，并提供了一种方便的方式来处理YUV数据。</li>
+<li>第二种方案和OpenGL实现方式一致，需要自行创建 Y、UV 两个平面纹理，然后利用片元着色器实现色彩转换。而第一种方案因为是Vulkan内置转换，我们不能对其做更多控制，比如反转 U、V 分量、改变色彩饱和度、将NV12转换到NV21格式等。</li>
+</ol>
+<p>本文为了和OpenGL实现方式一致，所以只探讨第二种实现方案，第一种方案可以参考<a href="https://stackoverflow.com/questions/53853046/ycbcr-sampler-in-vulkan">YCbCr Sampler in Vulkan</a> 示例。</p>
+<h3 id="51-前提">5.1 前提</h3>
+<p>Vulkan 和 OpenGL 都是渲染API，那么在底层图形渲染管线都是一致的，只是Vulkan相对更底层、更复杂。</p>
+<p>以下是在渲染YUV数据需要用的 OpenGL、Vulkan 几个比较重要的对象对比。</p>
+<table>
+<thead>
+<tr>
+<th>对象</th>
+<th>OpenGL</th>
+<th>Vulkan</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>纹理</td>
+<td>GLTexture</td>
+<td>VkImage</td>
+<td>纹理是一个2D图片（甚至也有1D和3D的纹理），它可以用来添加物体的细节。本文中纹理其实就是NV12/NV21的两个平面。在Vulkan中，可以理解为VkImage就是OpenGL中的GLTexture，但需要通过VkImageView对Image对象进行绑定和访问，以实现纹理的采样和使用。</td>
+</tr>
+<tr>
+<td>设置纹理</td>
+<td>glTexImage2D</td>
+<td>vkCmdCopyBufferToImage</td>
+<td>在OpenGL中，使用<code>glTexImage2D</code>函数可以直接将颜色字节数据推送给纹理对象，可以使用该函数来指定纹理的数据格式、大小和像素数据等。但是在Vulkan中，需要通过创建<code>VkBuffer</code>对象来存储颜色字节数据，并将其复制到纹理对象<code>VkImage</code>中。</td>
+</tr>
+<tr>
+<td>Y平面纹理格式</td>
+<td>GL_RED</td>
+<td>VK_FORMAT_R8_UNORM</td>
+<td>Y平面的有效数据就是Y本身，所以只需要一个分量。对于OpenGL来说，就可以直接传递RED红色单通道，使用红色通道作为亮度数据；对于Vulkan来说，红色单通道可以用R8_UNORM来代替。</td>
+</tr>
+<tr>
+<td>UV平面纹理格式</td>
+<td>GL_RG</td>
+<td>VK_FORMAT_R8G8_UNORM</td>
+<td>UV平面的有效数据U和V分量，需要两个通道数据。对于OpenGL来说，就可以直接传递RG两个通道；对于Vulkan来说，两通道可以用R8G8_UNORM来代替。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-读取nv12nv21数据">5.2 读取NV12/NV21数据</h3>
+<p>对于Vulkan来说，纹理信息不像OpenGL一样只需要一个<code>GLuint textureId</code>，而是需要以下几个对象来表示。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">struct</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkImage</span> <span style="color:#000">mImg</span> <span style="color:#000">=</span> <span style="color:#000">VK_NULL_HANDLE</span>;                <span style="color:#177500">// image，采样时不可以直接使用，需要由ImageView绑定使用
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">VkDeviceMemory</span> <span style="color:#000">mMemory</span> <span style="color:#000">=</span> <span style="color:#000">VK_NULL_HANDLE</span>;      <span style="color:#177500">// image所占用的内存
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">VkImageView</span> <span style="color:#000">mImgView</span> <span style="color:#000">=</span> <span style="color:#000">VK_NULL_HANDLE</span>;        <span style="color:#177500">// 绑定使用
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">VkSampler</span> <span style="color:#000">mSampler</span> <span style="color:#000">=</span> <span style="color:#000">VK_NULL_HANDLE</span>;          <span style="color:#177500">// 采样配置
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>} <span style="color:#000">aVkImage</span>;
+</span></span></code></pre></div><p>因此，对于NV12/NV21的Y、UV两个平面，可以写作：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">struct</span> <span style="color:#3f6e75">VkYUVImage</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">struct</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkImage</span> <span style="color:#000">mImg</span> <span style="color:#000">=</span> <span style="color:#000">VK_NULL_HANDLE</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkDeviceMemory</span> <span style="color:#000">mMemory</span> <span style="color:#000">=</span> <span style="color:#000">VK_NULL_HANDLE</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkImageView</span> <span style="color:#000">mImgView</span> <span style="color:#000">=</span> <span style="color:#000">VK_NULL_HANDLE</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkSampler</span> <span style="color:#000">mSampler</span> <span style="color:#000">=</span> <span style="color:#000">VK_NULL_HANDLE</span>;
+</span></span><span style="display:flex;"><span>    } <span style="color:#000">yPlane</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">struct</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkImage</span> <span style="color:#000">mImg</span> <span style="color:#000">=</span> <span style="color:#000">VK_NULL_HANDLE</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkDeviceMemory</span> <span style="color:#000">mMemory</span> <span style="color:#000">=</span> <span style="color:#000">VK_NULL_HANDLE</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkImageView</span> <span style="color:#000">mImgView</span> <span style="color:#000">=</span> <span style="color:#000">VK_NULL_HANDLE</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkSampler</span> <span style="color:#000">mSampler</span> <span style="color:#000">=</span> <span style="color:#000">VK_NULL_HANDLE</span>;
+</span></span><span style="display:flex;"><span>    } <span style="color:#000">uvPlane</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>然后跟OpenGL一样，对上述两个纹理进行初始化。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">void</span> <span style="color:#000">read</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#000">FILE</span> <span style="color:#000">*</span><span style="color:#000">fp</span> <span style="color:#000">=</span> <span style="color:#000">fopen</span>(<span style="color:#000">filePath</span>.<span style="color:#000">c_str</span>(),<span style="color:#c41a16">&#34;rb&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">if</span> (<span style="color:#000">fp</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">fseek</span>(<span style="color:#000">fp</span>, <span style="color:#1c01ce">0</span>, <span style="color:#000">SEEK_END</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">dataSize</span> <span style="color:#000">=</span> <span style="color:#000">ftell</span>(<span style="color:#000">fp</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">this</span><span style="color:#000">-&gt;</span><span style="color:#000">data</span> <span style="color:#000">=</span> <span style="color:#a90d91">static_cast</span><span style="color:#000">&lt;</span><span style="color:#a90d91">uint8_t</span> <span style="color:#000">*&gt;</span>(<span style="color:#000">malloc</span>(<span style="color:#a90d91">sizeof</span>(<span style="color:#a90d91">uint8_t</span>) <span style="color:#000">*</span> <span style="color:#000">dataSize</span>));
+</span></span><span style="display:flex;"><span>        <span style="color:#000">fseek</span>(<span style="color:#000">fp</span>, <span style="color:#1c01ce">0</span>, <span style="color:#000">SEEK_SET</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">fread</span>(<span style="color:#000">data</span>, <span style="color:#1c01ce">1</span>, <span style="color:#000">dataSize</span>, <span style="color:#000">fp</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">fclose</span>(<span style="color:#000">fp</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#000">fp</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">this</span><span style="color:#000">-&gt;</span><span style="color:#000">totalFrameCount</span> <span style="color:#000">=</span> <span style="color:#000">dataSize</span> <span style="color:#000">/</span> <span style="color:#000">frameSize</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">//VkBuffer 
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">VkBuffer</span> <span style="color:#000">imgBuffer</span> <span style="color:#000">=</span> <span style="color:#000">createVkBufferFromData</span>(<span style="color:#000">dataSize</span>, <span style="color:#000">data</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">//创建 Y Texture
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">creayImage</span>(<span style="color:#000">VK_FORMAT_R8_UNORM</span>, <span style="color:#000">width</span>, <span style="color:#000">height</span>, <span style="color:#000">imgBuffer</span>, 
+</span></span><span style="display:flex;"><span>               <span style="color:#000">&amp;</span><span style="color:#000">yPlane</span>.<span style="color:#000">mImg</span>, <span style="color:#000">&amp;</span><span style="color:#000">yPlane</span>.<span style="color:#000">mImgView</span>, <span style="color:#000">&amp;</span><span style="color:#000">yPlane</span>.<span style="color:#000">mSampler</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">//创建UV Texture
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">creayImage</span>(<span style="color:#000">VK_FORMAT_R8G8_UNORM</span>, <span style="color:#000">width</span> <span style="color:#000">/</span> <span style="color:#1c01ce">2</span>, <span style="color:#000">height</span> <span style="color:#000">/</span> <span style="color:#1c01ce">2</span>, <span style="color:#000">imgBuffer</span>, 
+</span></span><span style="display:flex;"><span>               <span style="color:#000">&amp;</span><span style="color:#000">uvPlane</span>.<span style="color:#000">mImg</span>, <span style="color:#000">&amp;</span><span style="color:#000">uvPlane</span>.<span style="color:#000">mImgView</span>, <span style="color:#000">&amp;</span><span style="color:#000">uvPlane</span>.<span style="color:#000">mSampler</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ol>
+<li>创建 VkImage；</li>
+<li>申请 VkImage内存并绑定；</li>
+<li>创建 VkImageView；</li>
+<li>创建 VkSampler，指定纹理环绕方式和采样方式等。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">void</span> <span style="color:#000">createImage</span>(<span style="color:#000">VkFormat</span> <span style="color:#000">format</span>, <span style="color:#a90d91">uint32_t</span> <span style="color:#000">width</span>, <span style="color:#a90d91">uint32_t</span> <span style="color:#000">height</span>; <span style="color:#000">VkBuffer</span> <span style="color:#000">imgBuffer</span>, 
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkImage</span> <span style="color:#000">*</span><span style="color:#000">outImg</span>, <span style="color:#000">VkDeviceMemory</span> <span style="color:#000">*</span><span style="color:#000">outMemory</span>, <span style="color:#000">VkImageView</span> <span style="color:#000">*</span><span style="color:#000">outImgView</span>, <span style="color:#000">VkSampler</span> <span style="color:#000">*</span><span style="color:#000">outSampler</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">//1. create image
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">VkImageCreateInfo</span> <span style="color:#000">imageInfo</span> <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">sType</span> <span style="color:#000">=</span> <span style="color:#000">VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">pNext</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">flags</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">imageType</span> <span style="color:#000">=</span> <span style="color:#000">VK_IMAGE_TYPE_2D</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">format</span> <span style="color:#000">=</span> <span style="color:#000">format</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">extent</span> <span style="color:#000">=</span> <span style="color:#000">VkExtent3D</span>{ <span style="color:#000">width</span>, <span style="color:#000">height</span>, <span style="color:#1c01ce">1</span> },
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">mipLevels</span> <span style="color:#000">=</span> <span style="color:#1c01ce">1</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">arrayLayers</span> <span style="color:#000">=</span> <span style="color:#1c01ce">1</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">samples</span> <span style="color:#000">=</span> <span style="color:#000">VK_SAMPLE_COUNT_1_BIT</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">tiling</span> <span style="color:#000">=</span> <span style="color:#000">VK_IMAGE_TILING_LINEAR</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">usage</span> <span style="color:#000">=</span> <span style="color:#000">VK_IMAGE_USAGE_SAMPLED_BIT</span> <span style="color:#000">|</span> <span style="color:#000">VK_IMAGE_USAGE_TRANSFER_DST_BIT</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">sharingMode</span> <span style="color:#000">=</span> <span style="color:#000">VK_SHARING_MODE_EXCLUSIVE</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">queueFamilyIndexCount</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">pQueueFamilyIndices</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">initialLayout</span> <span style="color:#000">=</span> <span style="color:#000">VK_IMAGE_LAYOUT_UNDEFINED</span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    <span style="color:#000">CALL_VK</span>(<span style="color:#000">vkCreateImage</span>(<span style="color:#000">device</span>, <span style="color:#000">&amp;</span><span style="color:#000">imageInfo</span>, <span style="color:#000">VK_ALLOC</span>, <span style="color:#000">outImg</span>));
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">// allocate Image memory and bind.
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">VkMemoryRequirements</span> <span style="color:#000">memReqs</span>{};
+</span></span><span style="display:flex;"><span>    <span style="color:#000">vkGetImageMemoryRequirements</span>(<span style="color:#000">device</span>, <span style="color:#000">*</span><span style="color:#000">outImg</span>, <span style="color:#000">&amp;</span><span style="color:#000">memReqs</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span> <span style="color:#000">memoryTypeIndex</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#000">VkMemoryPropertyFlags</span> <span style="color:#000">memoryPropertyFlags</span> <span style="color:#000">=</span> <span style="color:#000">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">bool</span> <span style="color:#000">bret</span> <span style="color:#000">=</span> <span style="color:#000">vk_get_memory_type</span>( <span style="color:#177500">//
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#000">mVkBundle</span>,              <span style="color:#177500">// vk_bundle
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#000">memReqs</span>.<span style="color:#000">memoryTypeBits</span>, <span style="color:#177500">// type_bits
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#000">memoryPropertyFlags</span>,    <span style="color:#177500">// memory_props
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#000">&amp;</span><span style="color:#000">memoryTypeIndex</span>);      <span style="color:#177500">// out_type_id
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#a90d91">if</span> (<span style="color:#000">!</span><span style="color:#000">bret</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VK_ERROR</span>(<span style="color:#000">mVkBundle</span>, <span style="color:#c41a16">&#34;vk_get_memory_type: false</span><span style="color:#c41a16">\n\t</span><span style="color:#c41a16">Failed to find a matching memory type.&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">return</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkMemoryAllocateInfo</span> <span style="color:#000">memoryAllocateInfo</span> <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">sType</span> <span style="color:#000">=</span> <span style="color:#000">VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">pNext</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">allocationSize</span> <span style="color:#000">=</span> <span style="color:#000">memReqs</span>.<span style="color:#000">size</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">memoryTypeIndex</span> <span style="color:#000">=</span> <span style="color:#000">memoryTypeIndex</span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    <span style="color:#000">CALL_VK</span>(<span style="color:#000">vkAllocateMemory</span>(<span style="color:#000">device</span>, <span style="color:#000">&amp;</span><span style="color:#000">memoryAllocateInfo</span>, <span style="color:#000">VK_ALLOC</span>, <span style="color:#000">outMemory</span>));
+</span></span><span style="display:flex;"><span>    <span style="color:#000">vkBindImageMemory</span>(<span style="color:#000">device</span>, <span style="color:#000">*</span><span style="color:#000">outImg</span>, <span style="color:#000">*</span><span style="color:#000">outMemory</span>, <span style="color:#1c01ce">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#000">transition_image_layout</span>(<span style="color:#000">mVkBundle</span>, <span style="color:#000">mCommandPool</span>, <span style="color:#000">*</span><span style="color:#000">outImg</span>, <span style="color:#000">format</span>,
+</span></span><span style="display:flex;"><span>                            <span style="color:#000">VK_IMAGE_LAYOUT_UNDEFINED</span>, <span style="color:#000">VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL</span>, <span style="color:#000">cmdBuffer</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">//2. create image view
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">VkImageViewCreateInfo</span> <span style="color:#000">imgViewInfo</span> <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">sType</span> <span style="color:#000">=</span> <span style="color:#000">VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">pNext</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">flags</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">image</span> <span style="color:#000">=</span> <span style="color:#000">*</span><span style="color:#000">outImg</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">viewType</span> <span style="color:#000">=</span> <span style="color:#000">VK_IMAGE_VIEW_TYPE_2D</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">format</span> <span style="color:#000">=</span> <span style="color:#000">format</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">components</span> <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>                    .<span style="color:#000">r</span> <span style="color:#000">=</span> <span style="color:#000">VK_COMPONENT_SWIZZLE_IDENTITY</span>,
+</span></span><span style="display:flex;"><span>                    .<span style="color:#000">g</span> <span style="color:#000">=</span> <span style="color:#000">VK_COMPONENT_SWIZZLE_IDENTITY</span>,
+</span></span><span style="display:flex;"><span>                    .<span style="color:#000">b</span> <span style="color:#000">=</span> <span style="color:#000">VK_COMPONENT_SWIZZLE_IDENTITY</span>,
+</span></span><span style="display:flex;"><span>                    .<span style="color:#000">a</span> <span style="color:#000">=</span> <span style="color:#000">VK_COMPONENT_SWIZZLE_IDENTITY</span>
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">subresourceRange</span> <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>                    .<span style="color:#000">aspectMask</span> <span style="color:#000">=</span> <span style="color:#000">VK_IMAGE_ASPECT_COLOR_BIT</span>,
+</span></span><span style="display:flex;"><span>                    .<span style="color:#000">baseMipLevel</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>                    .<span style="color:#000">levelCount</span> <span style="color:#000">=</span> <span style="color:#1c01ce">1</span>,
+</span></span><span style="display:flex;"><span>                    .<span style="color:#000">baseArrayLayer</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>                    .<span style="color:#000">layerCount</span> <span style="color:#000">=</span> <span style="color:#1c01ce">1</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    <span style="color:#000">CALL_VK</span>(<span style="color:#000">vkCreateImageView</span>(<span style="color:#000">device</span>, <span style="color:#000">&amp;</span><span style="color:#000">imgViewInfo</span>, <span style="color:#000">VK_ALLOC</span>, <span style="color:#000">outImgView</span>));
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">//3. create sampler
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">VkSamplerCreateInfo</span> <span style="color:#000">samplerCreateInfo</span> <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">sType</span> <span style="color:#000">=</span> <span style="color:#000">VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">pNext</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">flags</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">magFilter</span> <span style="color:#000">=</span> <span style="color:#000">VK_FILTER_NEAREST</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">minFilter</span> <span style="color:#000">=</span> <span style="color:#000">VK_FILTER_NEAREST</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">mipmapMode</span> <span style="color:#000">=</span> <span style="color:#000">VK_SAMPLER_MIPMAP_MODE_NEAREST</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">addressModeU</span> <span style="color:#000">=</span> <span style="color:#000">VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">addressModeV</span> <span style="color:#000">=</span> <span style="color:#000">VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">addressModeW</span> <span style="color:#000">=</span> <span style="color:#000">VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">mipLodBias</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0.0f</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">anisotropyEnable</span> <span style="color:#000">=</span> <span style="color:#000">VK_FALSE</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">maxAnisotropy</span> <span style="color:#000">=</span> <span style="color:#1c01ce">1.0f</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">compareEnable</span> <span style="color:#000">=</span> <span style="color:#000">VK_FALSE</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">compareOp</span> <span style="color:#000">=</span> <span style="color:#000">VK_COMPARE_OP_NEVER</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">minLod</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0.0f</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">maxLod</span> <span style="color:#000">=</span> <span style="color:#1c01ce">1.0f</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">borderColor</span> <span style="color:#000">=</span> <span style="color:#000">VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">unnormalizedCoordinates</span> <span style="color:#000">=</span> <span style="color:#000">VK_FALSE</span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    <span style="color:#000">CALL_VK</span>(<span style="color:#000">vkCreateSampler</span>(<span style="color:#000">device</span>, <span style="color:#000">&amp;</span><span style="color:#000">samplerCreateInfo</span>, <span style="color:#000">VK_ALLOC</span>, <span style="color:#000">outSampler</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">//4. copy buffer to image
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">VkBufferImageCopy</span> <span style="color:#000">bufferCopyRegions</span> <span style="color:#000">=</span>{
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">bufferOffset</span> <span style="color:#000">=</span> <span style="color:#000">bufferOffset</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">bufferRowLength</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">bufferImageHeight</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">imageSubresource</span> <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>                .<span style="color:#000">aspectMask</span> <span style="color:#000">=</span> <span style="color:#000">VK_IMAGE_ASPECT_COLOR_BIT</span>,
+</span></span><span style="display:flex;"><span>                .<span style="color:#000">mipLevel</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>                .<span style="color:#000">baseArrayLayer</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>                .<span style="color:#000">layerCount</span> <span style="color:#000">=</span> <span style="color:#1c01ce">1</span>,
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">imageOffset</span> <span style="color:#000">=</span> {<span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">0</span>},
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">imageExtent</span> <span style="color:#000">=</span> { <span style="color:#000">IMAGE_WIDTH</span>, <span style="color:#000">IMAGE_HEIGHT</span>, <span style="color:#1c01ce">1</span>},
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    <span style="color:#000">vkCmdCopyBufferToImage</span>(<span style="color:#000">cmdBuffer</span>, <span style="color:#000">mImgBuffer</span>, <span style="color:#000">mCameraImage</span>.<span style="color:#000">yImg</span>.<span style="color:#000">mImg</span>, <span style="color:#000">VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL</span>, <span style="color:#1c01ce">1</span>, <span style="color:#000">&amp;</span><span style="color:#000">bufferCopyRegions</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">bufferCopyRegions</span>.<span style="color:#000">bufferOffset</span> <span style="color:#000">=</span> <span style="color:#000">bufferOffset</span> <span style="color:#000">+</span> <span style="color:#000">IMAGE_WIDTH</span> <span style="color:#000">*</span> <span style="color:#000">IMAGE_HEIGHT</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">bufferCopyRegions</span>.<span style="color:#000">imageExtent</span> <span style="color:#000">=</span> { <span style="color:#000">IMAGE_WIDTH</span> <span style="color:#000">/</span> <span style="color:#1c01ce">2</span>, <span style="color:#000">IMAGE_HEIGHT</span> <span style="color:#000">/</span> <span style="color:#1c01ce">2</span>, <span style="color:#1c01ce">1</span> };
+</span></span><span style="display:flex;"><span>    <span style="color:#000">vkCmdCopyBufferToImage</span>(<span style="color:#000">cmdBuffer</span>, <span style="color:#000">mImgBuffer</span>, <span style="color:#000">mCameraImage</span>.<span style="color:#000">uvImg</span>.<span style="color:#000">mImg</span>, <span style="color:#000">VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL</span>, <span style="color:#1c01ce">1</span>, <span style="color:#000">&amp;</span><span style="color:#000">bufferCopyRegions</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="53-创建网格体并应用yuv纹理">5.3 创建网格体并应用Y+UV纹理</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">void</span> <span style="color:#000">initMesh</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">float</span> <span style="color:#000">vertexPos</span>[] <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#000">-</span><span style="color:#1c01ce">1.0f</span>, <span style="color:#1c01ce">1.0f</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#000">-</span><span style="color:#1c01ce">1.0f</span>, <span style="color:#000">-</span><span style="color:#1c01ce">1.0f</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">1.0f</span>, <span style="color:#000">-</span><span style="color:#1c01ce">1.0f</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">1.0f</span>, <span style="color:#1c01ce">1.0f</span>,
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">float</span> <span style="color:#000">vertexTexcoord</span>[] <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">1</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">1</span>, <span style="color:#1c01ce">1</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">1</span>, <span style="color:#1c01ce">0</span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">int</span> <span style="color:#000">indices</span>[] <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">1</span>, <span style="color:#1c01ce">2</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">2</span>, <span style="color:#1c01ce">3</span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#000">createBuffer</span>(<span style="color:#000">physicalMemoType</span>, <span style="color:#000">device</span>, <span style="color:#000">cmdPool</span>, <span style="color:#000">queue</span>, <span style="color:#000">VK_BUFFER_USAGE_TRANSFER_DST_BIT</span> <span style="color:#000">|</span> <span style="color:#000">VK_BUFFER_USAGE_VERTEX_BUFFER_BIT</span>,
+</span></span><span style="display:flex;"><span>             <span style="color:#000">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span>, <span style="color:#a90d91">sizeof</span>(<span style="color:#000">Vertex</span>) <span style="color:#000">*</span> <span style="color:#000">vertices</span>.<span style="color:#000">size</span>(), <span style="color:#000">vertices</span>.<span style="color:#000">data</span>(),
+</span></span><span style="display:flex;"><span>             <span style="color:#000">&amp;</span><span style="color:#000">vertexBuffer</span>, <span style="color:#000">&amp;</span><span style="color:#000">vertexMemory</span>);
+</span></span><span style="display:flex;"><span>             
+</span></span><span style="display:flex;"><span>    <span style="color:#000">createBuffer</span>(<span style="color:#000">physicalMemoType</span>, <span style="color:#000">device</span>, <span style="color:#000">cmdPool</span>, <span style="color:#000">queue</span>, <span style="color:#000">VK_BUFFER_USAGE_TRANSFER_DST_BIT</span> <span style="color:#000">|</span> <span style="color:#000">VK_BUFFER_USAGE_INDEX_BUFFER_BIT</span>,
+</span></span><span style="display:flex;"><span>             <span style="color:#000">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span>, <span style="color:#a90d91">sizeof</span>(<span style="color:#a90d91">uint32_t</span>) <span style="color:#000">*</span> <span style="color:#000">indices</span>.<span style="color:#000">size</span>(), <span style="color:#000">indices</span>.<span style="color:#000">data</span>(),
+</span></span><span style="display:flex;"><span>             <span style="color:#000">&amp;</span><span style="color:#000">indexBuffer</span>, <span style="color:#000">&amp;</span><span style="color:#000">indexMemory</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>源码地址：<a href="https://gitee.com/xingchen0085/yuv2gl">https://gitee.com/xingchen0085/yuv2gl</a></p>
+<h2 id="6-参考">6 参考</h2>
+<p>[1] 维基百科. <a href="https://en.wikipedia.org/wiki/YUV">https://en.wikipedia.org/wiki/YUV</a></p>
+<p>[2] 维基百科. <a href="https://en.wikipedia.org/wiki/Chroma_subsampling">https://en.wikipedia.org/wiki/Chroma_subsampling</a></p>
+<p>[3] Videolan. <a href="https://wiki.videolan.org/YUV">https://wiki.videolan.org/YUV</a></p>
+<p>[4] FOURCC. <a href="https://www.fourcc.org/">https://www.fourcc.org/</a></p>
+<p>[5] 参天de小树. <a href="https://blog.csdn.net/m18612362926/article/details/127667954">BT601/BT709/BT2020 YUV2RGB RGB2YUV 公式</a></p>
+<p>[6] <a href="http://notes.maxwi.com/2017/12/05/yuv/">YUV 数据格式详解</a></p>
+<p>[7] [纹理 - LearnOpenGL CN](<a href="https://learnopengl-cn.github.io/01">https://learnopengl-cn.github.io/01</a> Getting started/06 Textures/)</p>
+<p>[8] <a href="https://stackoverflow.com/questions/53853046/ycbcr-sampler-in-vulkan">YCbCr Sampler in Vulkan</a></p>
+<p>[9] 知乎 <a href="https://zhuanlan.zhihu.com/p/559189793">RAW、RGB、YUV 图像格式区别</a></p>
+<p>[10] <a href="https://www.jianshu.com/p/a91502c00fb0">YUV颜色编码解析</a></p>
+<p>[11] <a href="https://blog.csdn.net/qq_43426078/article/details/124024237">【图像处理】RGB、YUV (YCbCr) 图像表示详解_小丫么小阿豪的博客-CSDN博客</a></p>
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="http://www.adiosy.com">xingchen</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html">http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan02_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E5%BC%80%E7%AF%87.html">Learn_Vulkan02_渲染框架实现_开篇</a></li>
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html">Learn_Vulkan01_重要对象浅析</a></li>
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html">Learn_Vulkan00_第一个三角形</a></li>
+        
+        <li><a href="/posts/hello-openxr-%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html">Hello OpenXR - 第一个OpenXR程序</a></li>
+        
+        <li><a href="/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html">OpenGL渲染器04_绘制点线面</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/vulkan' target="_blank">Vulkan</a></li>
+                
+                <li><a href='/tags/opengl' target="_blank">OpenGL</a></li>
+                
+                <li><a href='/tags/yuv' target="_blank">YUV</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "xingchen0085/doc"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+
+    
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">飞雪无情</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+
+    <br />
+        
+        <div>
+            <span id="busuanzi_container_site_uv" style="font-family: auto;">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+            </span>
+            &copy; 2024 <a href="http://www.adiosy.com">Adiosy&#39;s blog By xingchen</a>
+                
+                | <a rel="nofollow" target="_blank" href="http://beian.miit.gov.cn/">滇ICP备2022000560号-1</a>
+            
+    </div>
+</footer>
+
+
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.2.8/raphael.min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/flowchart/1.12.2/flowchart.min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+                if (!window.flowchart) return;
+                const blocks = document.querySelectorAll('pre code.language-flowchart, pre code.language-flow');
+                for (let i = 0; i < blocks.length; i++) {
+                    const block = blocks[i];
+                    const rootElement = block.parentNode;
+                    const container = document.createElement('div');
+                    const id = `js-flowchart-diagrams-${i}`;
+                    container.id = id;
+                    container.className = 'align-center';
+                    container.setAttribute("style", "overFlow-x:auto");
+                    rootElement.parentNode.replaceChild(container, rootElement);
+                    const diagram = flowchart.parse(block.childNodes[0].nodeValue);
+                    diagram.drawSVG(id, window.flowchartDiagramsOptions ? window.flowchartDiagramsOptions : {});
+                }
+            })();
+        </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+            if (!window.Diagram) return;
+            const blocks = document.querySelectorAll('pre code.language-sequence');
+            for (let i = 0; i < blocks.length; i++) {
+                const block = blocks[i];
+                
+                const rootElement = block.parentNode;
+                const container = document.createElement('div');
+                const id = `js-sequence-diag-${i}`;
+                container.id = id;
+                container.className = 'align-center';
+                container.setAttribute("style", "overFlow-x:auto");
+                rootElement.parentNode.replaceChild(container, rootElement);
+
+                const diagram = Diagram.parse(block.childNodes[0].nodeValue);
+                diagram.drawSVG(id, window.sequenceDiagramsOptions
+                    ? window.sequenceDiagramsOptions
+                    : { theme: 'simple' });
+            }
+        })();
+        </script><script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        
+<form id="search" action='http://www.adiosy.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://www.adiosy.com">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html" title="Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境" target="_blank">Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html" title="OpenGL或Vulkan渲染YUV格式数据" target="_blank">OpenGL或Vulkan渲染YUV格式数据</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan02_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E5%BC%80%E7%AF%87.html" title="Learn_Vulkan02_渲染框架实现_开篇" target="_blank">Learn_Vulkan02_渲染框架实现_开篇</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html" title="Learn_Vulkan01_重要对象浅析" target="_blank">Learn_Vulkan01_重要对象浅析</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html" title="Learn_Vulkan00_第一个三角形" target="_blank">Learn_Vulkan00_第一个三角形</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/hello-openxr-%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html" title="Hello OpenXR - 第一个OpenXR程序" target="_blank">Hello OpenXR - 第一个OpenXR程序</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面" target="_blank">OpenGL渲染器04_绘制点线面</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 " target="_blank">OpenGL渲染器03_OpenGL环境 </a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器02_C&#43;&#43;环境" target="_blank">OpenGL渲染器02_C&#43;&#43;环境</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html" title="OpenGL渲染器01_开篇" target="_blank">OpenGL渲染器01_开篇</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">微信公众号</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="#" title="微信公众号" target="_blank" style="color:red">
+                
+                    <img src="/posts/assets/qrcode.jpg">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="http://www.adiosy.com/categories/opengl.html">OpenGL (4)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/vulkan.html">Vulkan (4)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/yuv.html">YUV (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="http://www.adiosy.com/tags/monado.html">Monado</a>
+    
+    <a href="http://www.adiosy.com/tags/opengl.html">OpenGL</a>
+    
+    <a href="http://www.adiosy.com/tags/opengl%E6%B8%B2%E6%9F%93.html">OpenGL渲染</a>
+    
+    <a href="http://www.adiosy.com/tags/openxr.html">OpenXR</a>
+    
+    <a href="http://www.adiosy.com/tags/vr/ar.html">VR/AR</a>
+    
+    <a href="http://www.adiosy.com/tags/vulkan.html">Vulkan</a>
+    
+    <a href="http://www.adiosy.com/tags/yuv.html">YUV</a>
+    
+    <a href="http://www.adiosy.com/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6.html">图形学</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://github.com/xingchen0085" title="我的Github">我的Github</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://gitee.com/xingchen0085" title="我的Gitee">我的Gitee</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://potatomelon.com" title="土豆社区">土豆社区</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="http://www.adiosy.com/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

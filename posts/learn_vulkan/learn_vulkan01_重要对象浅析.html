@@ -1,0 +1,1178 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Learn_Vulkan01_重要对象浅析 | Adiosy&#39;s blog</title>
+    <meta property="og:title" content="Learn_Vulkan01_重要对象浅析 - Adiosy&#39;s blog">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2023-06-15T00:00:00&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2023-06-15T00:00:00&#43;08:00'>
+        
+    <meta name="Keywords" content="C/C&#43;&#43;,Java,计算机图形学,渲染,动画">
+    <meta name="description" content="Learn_Vulkan01_重要对象浅析">
+        
+    <meta name="author" content="xingchen">
+    <meta property="og:url" content="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+        <link href="https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet">
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/custom.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://www.adiosy.com">
+                        Adiosy&#39;s blog
+                    </a>
+                
+                <p class="description">民间图形学爱好者.</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://www.adiosy.com">Home</a>
+                    
+                    <a  href="http://www.adiosy.com/archives.html" title="归档">归档</a>
+                    
+                    <a  href="http://www.adiosy.com/books.html" title="读书">读书</a>
+                    
+                    <a  href="http://www.adiosy.com/about.html" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 0px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 20px;
+        word-wrap: break-word;
+        white-space: nowrap;
+        z-index: 999;
+        cursor: pointer;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 13px;
+         
+        filter: drop-shadow(rgb(150, 150, 150) 0px 0px 6px) !important;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+        list-style: none;
+        padding-inline-start: 1px !important;
+    }
+
+    .post-toc .post-toc-content ul {
+        list-style: none;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: inherit;
+    }
+
+    .post-toc .post-toc-content>nav>ul>li{
+        background-color: #fff;
+        border-left: 5px solid #666;
+        padding: 2px 5px 2px 5px;
+    }
+
+    .post-toc .post-toc-content ul li:hover{
+ 
+ 
+    }
+
+    .post-toc .post-toc-content ul li a{
+        display: inline-block;
+        width: 100%;
+    }
+
+    .post-toc .post-toc-content ul li a:hover{
+        background-color: #666;
+        color: #fff;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 153px;">
+    <h2 class="post-toc-title">目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-概述">1 概述</a></li>
+    <li><a href="#2-对象描述">2 对象描述</a>
+      <ul>
+        <li><a href="#21-层和扩展">2.1 层和扩展</a></li>
+        <li><a href="#22-实例窗口表面设备和队列">2.2 实例、窗口表面、设备和队列</a></li>
+        <li><a href="#23-交换链">2.3 交换链</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-总结">3 总结</a></li>
+    <li><a href="#4-参考">4 参考</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 15, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 125,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 125
+                    },
+                };
+
+            var e = $(window).animate({scrollTop: 0}, 600);
+            e < t ? postToc.css(a.start) : postToc.css(a.process);
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+
+    <article class="post">
+        <header>
+            <h1 class="post-title">Learn_Vulkan01_重要对象浅析</h1>
+        </header>
+        
+  <time datetime="2023-06-15T00:00:00Z" class="post-meta meta-date dt-published">
+    2023-06-15
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/vulkan' target="_blank">Vulkan</a>
+  
+</div>
+
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">Table of Contents</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="1-概述">1 概述</h2>
+<p>前面一篇文章是<a href="/posts/learn_vulkan/Learn_Vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html">Learn_Vulkan00_第一个三角形</a>，渲染出来了第一个彩色三角形。学习新事物的是一个很枯燥的过程，所以我们应该每个阶段想办法获得一些成就感，比如上一篇的三角形，先用最快的方式得到效果，能看到效果就能给我们带来进一步的学习动力。</p>
+<p>上一个案例中用到的对象我只是列了一个列表，简单描述了各个对象的作用。但描述还是较为简短，在进入更复杂的Vulkan程序之前，还是想把几个重要对象梳理一遍。</p>
+<ul>
+<li>层和扩展</li>
+<li>实例</li>
+<li>窗口表面</li>
+<li>物理设备和队列族</li>
+<li>逻辑设备和队列</li>
+<li>交换链</li>
+</ul>
+<blockquote>
+<p>说明：本文中的代码就是上篇文章中的代码，编程环境是Windows，如果要在Linux/MacOS中运行，还需要修改配置文件。</p>
+</blockquote>
+<h2 id="2-对象描述">2 对象描述</h2>
+<h3 id="21-层和扩展">2.1 层和扩展</h3>
+<p>在Vulkan程序开发中，开发者可以查询当前环境下的Vulkan驱动有哪些扩展和功能，这些细节交给开发者，以实现程序最大优化。</p>
+<p>层（<code>Layer</code>），如下图所示，在Vulkan API调用过程中，会检查<strong>已开启的层</strong>并将其注入到执行链中。这种调用方式类似于装饰器设计模式，Vulkan API最后通过驱动完成任务，也就是图中的ICD（不同厂商对图形API所做的驱动文件）。比如我们可以根据需求开启Validation Layer，在真正的函数调用前后截取一些信息，这样就可以实现我们的日志抓取。</p>
+<blockquote>
+<p>图中虚线框标识不走该层。</p>
+</blockquote>
+<p>
+        <a data-fancybox="gallery" href="../assets/image-20230615155051528.png">
+            <img class="mx-auto" alt="image-20230615155051528" src="../assets/image-20230615155051528.png" />
+        </a>
+    </p>
+<ul>
+<li>扩展（<code>extension</code>），扩展提供给我们一些额外的功能或特性，在Vulkan API种，以<code>KHR/EXT</code>结尾的都是扩展。我们可以先查询支持的扩展列表，然后在创建实例或设备时添加我们需要的扩展。</li>
+</ul>
+<p>在上一篇文章种，比如<code>VkSurfaceKHR </code>、<code>VkSwapchainKHR</code>和<code>VkDebugReportCallbackEXT </code>就是扩展对象，因为在不同系统平台下，我们需要不同的<code>Surface</code>。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#000">VK_KHR_surface</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">VK_KHR_win32_surface</span>
+</span></span></code></pre></div><p>另外，在应用开发阶段我们可以开启验证层(Validation Layer)，方便调试，然后在发布产品前将这些层关闭，防止生产环境下因验证而产生不必要的性能消耗。</p>
+<p><strong>使用</strong></p>
+<p>层和扩展的使用分为三个步骤：</p>
+<ol>
+<li>维护我们要检查的层和扩展，我们准备开启最常用的验证层。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">const</span> <span style="color:#a90d91">char</span> <span style="color:#000">*</span><span style="color:#000">validationInstanceLayers</span>[] <span style="color:#000">=</span> { <span style="color:#c41a16">&#34;VK_LAYER_KHRONOS_validation&#34;</span> };
+</span></span></code></pre></div><ol start="2">
+<li>使用<code>vkEnumeratexxxLayerProperties</code>或<code>vkEnumeratexxxExtensionProperties</code>查询当前环境支持的层和扩展；</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">uint32_t</span> <span style="color:#000">availableLayerCount</span>;
+</span></span><span style="display:flex;"><span><span style="color:#000">CALL_VK</span>(<span style="color:#000">vkEnumerateInstanceLayerProperties</span>(<span style="color:#000">&amp;</span><span style="color:#000">availableLayerCount</span>, <span style="color:#a90d91">nullptr</span>));
+</span></span><span style="display:flex;"><span><span style="color:#000">VkLayerProperties</span> <span style="color:#000">availableLayerProps</span>[<span style="color:#000">availableLayerCount</span>];
+</span></span><span style="display:flex;"><span><span style="color:#000">CALL_VK</span>(<span style="color:#000">vkEnumerateInstanceLayerProperties</span>(<span style="color:#000">&amp;</span><span style="color:#000">availableLayerCount</span>, <span style="color:#000">availableLayerProps</span>));
+</span></span></code></pre></div><ol start="3">
+<li>判断层/扩展，并将其赋值给实例或设备的<code>CreateInfo</code>对象中。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">for</span>(<span style="color:#a90d91">uint32_t</span> <span style="color:#000">i</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">i</span> <span style="color:#000">&lt;</span> <span style="color:#000">ARRAY_SIZE</span>(<span style="color:#000">validationInstanceLayers</span>); <span style="color:#000">i</span><span style="color:#000">++</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">bool</span> <span style="color:#000">isFound</span> <span style="color:#000">=</span> <span style="color:#a90d91">false</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">for</span>(<span style="color:#a90d91">uint32_t</span> <span style="color:#000">j</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">j</span> <span style="color:#000">&lt;</span> <span style="color:#000">availableLayerCount</span>; <span style="color:#000">j</span><span style="color:#000">++</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">if</span> (<span style="color:#000">strcmp</span>(<span style="color:#000">validationInstanceLayers</span>[<span style="color:#000">i</span>], <span style="color:#000">availableLayerProps</span>[<span style="color:#000">j</span>].<span style="color:#000">layerName</span>) <span style="color:#000">==</span> <span style="color:#1c01ce">0</span> ) {
+</span></span><span style="display:flex;"><span>            <span style="color:#000">isFound</span> <span style="color:#000">=</span> <span style="color:#a90d91">true</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">break</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">if</span>(<span style="color:#000">!</span><span style="color:#000">isFound</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">Error</span>(<span style="color:#c41a16">&#34;Can not find %s instance layer!&#34;</span>, <span style="color:#000">validationInstanceLayers</span>[<span style="color:#000">i</span>]);
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">return</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在赋值时，无论实例还是设备，在<code>CreateInfo</code>对象中都有<code>enabledLayerCount</code>、<code>ppEnabledLayerNames</code>、<code>enabledExtensionCount</code>和<code>ppEnabledExtensionNames</code>四个属性，将我们最终需要的层和扩展赋值即可。</p>
+<h3 id="22-实例窗口表面设备和队列">2.2 实例、窗口表面、设备和队列</h3>
+<p>下图是实例、物理设备（一般就是GPU）、逻辑设备、队列族和队列之间的关系。</p>
+<p>
+        <a data-fancybox="gallery" href="../assets/image-20230615163929731.png">
+            <img class="mx-auto" alt="image-20230615163929731" src="../assets/image-20230615163929731.png" />
+        </a>
+    </p>
+<p>简要描述：</p>
+<ol>
+<li>
+<p>使用Vulkan渲染，我们需要先查询当前环境下支持的层和扩展，对应我们需要哪些额外功能，然后将层/扩展名传递给Vulkan API完成实例创建。接着创建一个实例（VkInstance)，每个应用程序应只有这么一个实例，接下来的所有Vulkan API调用都基于该实例。</p>
+</li>
+<li>
+<p>完成实例创建后，我们应根据不同系统平台创建一个窗口表面（Surface），以建立应用程序和显示之间的桥梁，这一步骤针对每个平台会有点不一致，具体在第3节详细描述。</p>
+</li>
+<li>
+<p>接下来，我们需要选择一个物理设备或者数个物理设备使用。那我们怎么选呢？需要哪些条件得到最佳的物理设备？其实可以从以下几个方面考虑：</p>
+</li>
+</ol>
+<ul>
+<li>这个物理设备是否支持步骤2创建的Surface，这个比较重要，如果不支持我们的Surface，那接下来渲染都会受到影响。</li>
+<li>这个物理设备队列族是否支持图形渲染管线或者计算渲染管线？这个需要根据我们后续的渲染管线配置来选择。</li>
+<li>检查物理设备的描述符（后续有案例，也就是Uniform变量）范围、最大的顶点属性参数量、最大视图数量、最大颜色附件数量等等属性。</li>
+<li>还可以检查物理设备的内存参数，比如内存类型数量、内存大小等。</li>
+</ul>
+<p>所以根据具体的需求，可以多个维度检查物理设备，最终得到最适合我们应用的物理设备就是好设备~</p>
+<p>这样的话，也就符合我们上图中关于物理设备的描述了（图中右半部分），<strong>我们环境中可能会有多个物理设备，每个物理设备可能有多个队列族，每种队列族中有多个队列</strong>。</p>
+<ol start="4">
+<li>
+<p>物理设备选好后，我们还可以根据实际情况检查设备的层和扩展。</p>
+</li>
+<li>
+<p>我们在步骤3中已经有队列族索引了，这里我们再配置好队列数量，然后给到创建逻辑设备的API就可以。所以这里不一样的是，队列是不单独创建的，而是在创建逻辑设备是传入，然后逻辑设备创建完成后才可以取到具体队列。</p>
+</li>
+</ol>
+<h4 id="221-创建实例">2.2.1 创建实例</h4>
+<ol>
+<li>构建实例级别的层和扩展。</li>
+<li>构建<code>VkInstanceCreateInfo</code>对象。</li>
+</ol>
+<p>在<code>ApplicationInfo</code>中。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">typedef</span> <span style="color:#a90d91">struct</span> <span style="color:#3f6e75">VkApplicationInfo</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkStructureType</span>    <span style="color:#000">sType</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#a90d91">void</span><span style="color:#000">*</span>        <span style="color:#000">pNext</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#a90d91">char</span><span style="color:#000">*</span>        <span style="color:#000">pApplicationName</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>           <span style="color:#000">applicationVersion</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#a90d91">char</span><span style="color:#000">*</span>        <span style="color:#000">pEngineName</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>           <span style="color:#000">engineVersion</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>           <span style="color:#000">apiVersion</span>;
+</span></span><span style="display:flex;"><span>} <span style="color:#000">VkApplicationInfo</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#177500">//use
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#000">VkApplicationInfo</span> <span style="color:#000">application</span> <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">sType</span> <span style="color:#000">=</span> <span style="color:#000">VK_STRUCTURE_TYPE_APPLICATION_INFO</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">pNext</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">pApplicationName</span> <span style="color:#000">=</span> <span style="color:#000">APP_NAME</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">applicationVersion</span> <span style="color:#000">=</span> <span style="color:#000">VK_MAKE_VERSION</span>(<span style="color:#1c01ce">1</span>, <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">0</span>),
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">pEngineName</span> <span style="color:#000">=</span> <span style="color:#000">APP_NAME</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">engineVersion</span> <span style="color:#000">=</span> <span style="color:#000">VK_MAKE_VERSION</span>(<span style="color:#1c01ce">1</span>, <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">0</span>),
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">apiVersion</span> <span style="color:#000">=</span> <span style="color:#000">VK_VERSION_1_0</span>
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><ul>
+<li>
+<p><code>sType</code>，Vulkan的结构体枚举类型，基本上都是&quot; VK_STRUCTURE_TYPE&quot;+XXX+&ldquo;INFO&rdquo;。</p>
+</li>
+<li>
+<p><code>pNext</code>，在不同对象中使用会不太一样，它指向的是一个链式结构。</p>
+</li>
+<li>
+<p><code>flags</code>，一个类型标识。</p>
+</li>
+</ul>
+<p>以上三个参数在很多地方都会看到。</p>
+<ul>
+<li>
+<p><code>pApplicationName</code>和<code>applicationVersion</code>是配置应用程序的信息，这部分自由指定即可，版本号可以用<code>VK_MAKE_VERSION()</code>完成构建。</p>
+</li>
+<li>
+<p><code>pEngineName</code>和<code>engineVersion</code>是配置引擎信息，这部分自由指定即可。</p>
+</li>
+<li>
+<p><code>apiVersion</code>是Vulkan API的版本号，可选值都是在<code>vulkan_core.h</code>中定义的宏，都是<code>VK_VERSION</code>开头。</p>
+</li>
+</ul>
+<p>接下来就是<code>VkInstanceCreateInfo</code>。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">typedef</span> <span style="color:#a90d91">struct</span> <span style="color:#3f6e75">VkInstanceCreateInfo</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkStructureType</span>             <span style="color:#000">sType</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#a90d91">void</span><span style="color:#000">*</span>                 <span style="color:#000">pNext</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkInstanceCreateFlags</span>       <span style="color:#000">flags</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#000">VkApplicationInfo</span><span style="color:#000">*</span>    <span style="color:#000">pApplicationInfo</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>                    <span style="color:#000">enabledLayerCount</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#a90d91">char</span><span style="color:#000">*</span> <span style="color:#a90d91">const</span><span style="color:#000">*</span>          <span style="color:#000">ppEnabledLayerNames</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>                    <span style="color:#000">enabledExtensionCount</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#a90d91">char</span><span style="color:#000">*</span> <span style="color:#a90d91">const</span><span style="color:#000">*</span>          <span style="color:#000">ppEnabledExtensionNames</span>;
+</span></span><span style="display:flex;"><span>} <span style="color:#000">VkInstanceCreateInfo</span>;
+</span></span></code></pre></div><p>对于<code>VkInstanceCreateInfo</code>，我们会发现其实核心就是三个：应用程序信息、层和扩展。我们把应用程序信息指针赋值给它，层和合成信息则提供数量和名称即可。</p>
+<p>这里需要注意的是，我们开启了<code>VK_LAYER_KHRONOS_validation</code>验证层后，这里还需要配置<code>VkDebugReportCallbackCreateInfoEXT</code>对象，完成错误回调配置。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#000">VkBool32</span> <span style="color:#000">debugReportCallback</span>(<span style="color:#000">VkDebugReportFlagsEXT</span> <span style="color:#000">msgFlags</span>, <span style="color:#000">VkDebugReportObjectTypeEXT</span> <span style="color:#000">objType</span>, <span style="color:#a90d91">uint64_t</span> <span style="color:#000">srcObject</span>,
+</span></span><span style="display:flex;"><span>                             <span style="color:#000">size_t</span> <span style="color:#000">location</span>, <span style="color:#a90d91">int32_t</span> <span style="color:#000">msgCode</span>, <span style="color:#a90d91">const</span> <span style="color:#a90d91">char</span> <span style="color:#000">*</span><span style="color:#000">pLayerPrefix</span>, <span style="color:#a90d91">const</span> <span style="color:#a90d91">char</span> <span style="color:#000">*</span><span style="color:#000">pMsg</span>, <span style="color:#a90d91">void</span> <span style="color:#000">*</span><span style="color:#000">pUserData</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">if</span>(<span style="color:#000">msgFlags</span> <span style="color:#000">==</span> <span style="color:#000">VK_DEBUG_REPORT_ERROR_BIT_EXT</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">Error</span>(<span style="color:#c41a16">&#34;%s: [%s] Code %d : %s&#34;</span>, <span style="color:#c41a16">&#34;Error&#34;</span>, <span style="color:#000">pLayerPrefix</span>, <span style="color:#000">msgCode</span>, <span style="color:#000">pMsg</span>);
+</span></span><span style="display:flex;"><span>    } <span style="color:#a90d91">else</span> <span style="color:#a90d91">if</span>(<span style="color:#000">msgFlags</span> <span style="color:#000">==</span> <span style="color:#000">VK_DEBUG_REPORT_WARNING_BIT_EXT</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#000">Warn</span>(<span style="color:#c41a16">&#34;%s: [%s] Code %d : %s&#34;</span>, <span style="color:#c41a16">&#34;Warning&#34;</span>, <span style="color:#000">pLayerPrefix</span>, <span style="color:#000">msgCode</span>, <span style="color:#000">pMsg</span>);
+</span></span><span style="display:flex;"><span>    } <span style="color:#a90d91">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#000">Print</span>(<span style="color:#c41a16">&#34;%s: [%s] Code %d : %s&#34;</span>, <span style="color:#c41a16">&#34;Info&#34;</span>, <span style="color:#000">pLayerPrefix</span>, <span style="color:#000">msgCode</span>, <span style="color:#000">pMsg</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">return</span> <span style="color:#000">VK_FALSE</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">if</span>(<span style="color:#000">bValidate</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkDebugReportCallbackCreateInfoEXT</span> <span style="color:#000">debugReport</span> <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">sType</span> <span style="color:#000">=</span> <span style="color:#000">VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">pNext</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">flags</span> <span style="color:#000">=</span> <span style="color:#000">VK_DEBUG_REPORT_ERROR_BIT_EXT</span> <span style="color:#000">|</span>				<span style="color:#177500">//错误信息
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>                     <span style="color:#000">VK_DEBUG_REPORT_WARNING_BIT_EXT</span> <span style="color:#000">|</span>				<span style="color:#177500">//警告信息
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>                     <span style="color:#000">VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT</span>,	<span style="color:#177500">//性能警告信息
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            .<span style="color:#000">pfnCallback</span> <span style="color:#000">=</span> (<span style="color:#000">PFN_vkDebugReportCallbackEXT</span>) <span style="color:#000">debugReportCallback</span>,
+</span></span><span style="display:flex;"><span>            .<span style="color:#000">pUserData</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>,
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">createInfo</span>.<span style="color:#000">pNext</span> <span style="color:#000">=</span> <span style="color:#000">&amp;</span><span style="color:#000">debugReport</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#177500">//use
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#000">VkInstanceCreateInfo</span> <span style="color:#000">createInfo</span> <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">sType</span> <span style="color:#000">=</span> <span style="color:#000">VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">pNext</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">flags</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">pApplicationInfo</span> <span style="color:#000">=</span> <span style="color:#000">&amp;</span><span style="color:#000">application</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">enabledLayerCount</span> <span style="color:#000">=</span> <span style="color:#000">enabledLayerCount</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">ppEnabledLayerNames</span> <span style="color:#000">=</span> <span style="color:#000">enabledLayerCount</span> <span style="color:#000">==</span> <span style="color:#1c01ce">0</span> <span style="color:#000">?</span> <span style="color:#a90d91">nullptr</span> <span style="color:#000">:</span> <span style="color:#000">enabledLayerNames</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">enabledExtensionCount</span> <span style="color:#000">=</span> <span style="color:#000">enableExtensionCount</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">ppEnabledExtensionNames</span> <span style="color:#000">=</span> <span style="color:#000">enableExtensionCount</span> <span style="color:#000">==</span> <span style="color:#1c01ce">0</span> <span style="color:#000">?</span> <span style="color:#a90d91">nullptr</span> <span style="color:#000">:</span> <span style="color:#000">enableExtensionNames</span>
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#000">CALL_VK</span>(<span style="color:#000">vkCreateInstance</span>(<span style="color:#000">&amp;</span><span style="color:#000">createInfo</span>, <span style="color:#000">VK_ALLOC</span>, <span style="color:#000">out_instance</span>));
+</span></span></code></pre></div><p>最后调用<code>vkCreateInstance()</code>完成实例创建。</p>
+<h4 id="222-创建窗口表面surface">2.2.2 创建窗口表面Surface</h4>
+<p>还记得上文提到的<code>VK_KHR_surface</code>、<code>VK_KHR_win32_surface</code>这两个扩展吗？因为不是所有的图形卡都支持窗口显示的，比如服务器。所以surface属于一个扩展。</p>
+<p>因为Vulkan是平台无关性API，并不是将渲染结果直接呈现给屏幕，而是需要Surface来作为Vulkan和窗体之间的连接（也称为窗口集成WSI）。在Windows平台上，如果我们使用GLFW作为窗口系统，会省下很多事，因为GLFW也支持Windows、Linux和Macos，而且集成了Vulkan中的Surface创建流程。所以可以利用<code>glfwCreateWindowSurface</code>完成Surface创建：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//TODO GLFW的一些初始化逻辑
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>...
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#000">window</span> <span style="color:#000">=</span> <span style="color:#000">glfwCreateWindow</span>(<span style="color:#000">WINDOW_WIDTH</span>, <span style="color:#000">WINDOW_HEIGHT</span>, <span style="color:#000">APP_NAME</span>, <span style="color:#a90d91">nullptr</span>, <span style="color:#a90d91">nullptr</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">if</span>(<span style="color:#000">!</span><span style="color:#000">window</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">throw</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">runtime_error</span>(<span style="color:#c41a16">&#34;Can not create glfw window&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">Print</span>(<span style="color:#c41a16">&#34;GLFW Vulkan Support: %d&#34;</span>, <span style="color:#000">glfwVulkanSupported</span>());
+</span></span><span style="display:flex;"><span><span style="color:#000">glfwMakeContextCurrent</span>(<span style="color:#000">window</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">if</span>(<span style="color:#000">glfwCreateWindowSurface</span>(<span style="color:#000">vk</span>.<span style="color:#000">instance</span>, <span style="color:#000">window</span>, <span style="color:#000">VK_ALLOC</span>, <span style="color:#000">&amp;</span><span style="color:#000">vk</span>.<span style="color:#000">surface</span>) <span style="color:#000">!=</span> <span style="color:#000">VK_SUCCESS</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">throw</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">runtime_error</span>(<span style="color:#c41a16">&#34;Can not creat surface.&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>GLFW帮助我们处理了很多平台差异性，比如在Windows平台需要使用<code>vkCreateWin32SurfaceKHR()</code>来完成窗口创建。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">// Windows
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#a90d91">typedef</span> <span style="color:#a90d91">struct</span> <span style="color:#3f6e75">VkWin32SurfaceCreateInfoKHR</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkStructureType</span>                 <span style="color:#000">sType</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#a90d91">void</span><span style="color:#000">*</span>                     <span style="color:#000">pNext</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkWin32SurfaceCreateFlagsKHR</span>    <span style="color:#000">flags</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">HINSTANCE</span>                       <span style="color:#000">hinstance</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">HWND</span>                            <span style="color:#000">hwnd</span>;
+</span></span><span style="display:flex;"><span>} <span style="color:#000">VkWin32SurfaceCreateInfoKHR</span>;
+</span></span></code></pre></div><p>可以看到，这里就是需要我们传入Windows窗口的<code>HWND</code>、<code>HINSTANCE</code>等参数。</p>
+<p>类似的，Linux中，如果是X11界面窗口系统，则是通过<code>vkCreateXcbSurfaceKHR()</code>完成了Surface创建。</p>
+<blockquote>
+<p>注意，如果要在Linux或者其他环境运行，还需要更改宏定义、扩展配置等。</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//Linux Xcb
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#a90d91">typedef</span> <span style="color:#a90d91">struct</span> <span style="color:#3f6e75">VkXcbSurfaceCreateInfoKHR</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkStructureType</span>               <span style="color:#000">sType</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#a90d91">void</span><span style="color:#000">*</span>                   <span style="color:#000">pNext</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkXcbSurfaceCreateFlagsKHR</span>    <span style="color:#000">flags</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">xcb_connection_t</span><span style="color:#000">*</span>             <span style="color:#000">connection</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">xcb_window_t</span>                  <span style="color:#000">window</span>;
+</span></span><span style="display:flex;"><span>} <span style="color:#000">VkXcbSurfaceCreateInfoKHR</span>;
+</span></span></code></pre></div><p>那在安卓系统中呢？</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#000">VkAndroidSurfaceCreateInfoKHR</span> <span style="color:#000">createInfo</span> {
+</span></span><span style="display:flex;"><span>    .<span style="color:#000">sType</span> <span style="color:#000">=</span> <span style="color:#000">VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR</span>,
+</span></span><span style="display:flex;"><span>    .<span style="color:#000">pNext</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>,
+</span></span><span style="display:flex;"><span>    .<span style="color:#000">flags</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>    .<span style="color:#000">window</span> <span style="color:#000">=</span> <span style="color:#000">app</span><span style="color:#000">-&gt;</span><span style="color:#000">nativeWindow</span>   <span style="color:#177500">// ====&gt; 核心就是这个参数。
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>};
+</span></span><span style="display:flex;"><span><span style="color:#000">CALL_VK</span>(<span style="color:#000">vkCreateAndroidSurfaceKHR</span>(<span style="color:#000">vkInstance</span>, <span style="color:#000">&amp;</span><span style="color:#000">createInfo</span>, <span style="color:#a90d91">nullptr</span>, <span style="color:#000">&amp;</span><span style="color:#000">vkSurface</span>));
+</span></span></code></pre></div><h4 id="223-选取物理设备">2.2.3 选取物理设备</h4>
+<p>在使用的时候分为以下步骤：</p>
+<ol>
+<li>查出来所有的物理设备；</li>
+<li>查询每个设备的基本属性；</li>
+<li>查询每个设备的队列族；</li>
+<li>查询指定设备的内存属性。</li>
+</ol>
+<p>对于查询所有物理设备，我们应该比较熟悉了，接下来就是查询每个物理设备属性。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">uint32_t</span> <span style="color:#000">physicalDevCount</span>;
+</span></span><span style="display:flex;"><span><span style="color:#000">CALL_VK</span>(<span style="color:#000">vkEnumeratePhysicalDevices</span>(<span style="color:#000">instance</span>, <span style="color:#000">&amp;</span><span style="color:#000">physicalDevCount</span>, <span style="color:#a90d91">nullptr</span>));
+</span></span><span style="display:flex;"><span><span style="color:#000">VkPhysicalDevice</span> <span style="color:#000">physicalDevs</span>[<span style="color:#000">physicalDevCount</span>];
+</span></span><span style="display:flex;"><span><span style="color:#000">CALL_VK</span>(<span style="color:#000">vkEnumeratePhysicalDevices</span>(<span style="color:#000">instance</span>, <span style="color:#000">&amp;</span><span style="color:#000">physicalDevCount</span>, <span style="color:#000">physicalDevs</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#177500">//选取的物理设备和队列索引
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#000">VkPhysicalDevice</span> <span style="color:#000">selectedPhysicalDev</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>;
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">uint16_t</span> <span style="color:#000">workQueueIndex</span>;
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">uint16_t</span> <span style="color:#000">presentQueueIndex</span>;
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">for</span>(<span style="color:#a90d91">int</span> <span style="color:#000">i</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">i</span> <span style="color:#000">&lt;</span> <span style="color:#000">physicalDevCount</span>; <span style="color:#000">i</span><span style="color:#000">++</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkPhysicalDeviceProperties</span> <span style="color:#000">devProps</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">vkGetPhysicalDeviceProperties</span>(<span style="color:#000">physicalDevs</span>[<span style="color:#000">i</span>], <span style="color:#000">&amp;</span><span style="color:#000">devProps</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>物理设备属性中，我们可以分析下每个字段。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">typedef</span> <span style="color:#a90d91">struct</span> <span style="color:#3f6e75">VkPhysicalDeviceProperties</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>                            <span style="color:#000">apiVersion</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>                            <span style="color:#000">driverVersion</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>                            <span style="color:#000">vendorID</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>                            <span style="color:#000">deviceID</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkPhysicalDeviceType</span>                <span style="color:#000">deviceType</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">char</span>                                <span style="color:#000">deviceName</span>[<span style="color:#000">VK_MAX_PHYSICAL_DEVICE_NAME_SIZE</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint8_t</span>                             <span style="color:#000">pipelineCacheUUID</span>[<span style="color:#000">VK_UUID_SIZE</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkPhysicalDeviceLimits</span>              <span style="color:#000">limits</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkPhysicalDeviceSparseProperties</span>    <span style="color:#000">sparseProperties</span>;
+</span></span><span style="display:flex;"><span>} <span style="color:#000">VkPhysicalDeviceProperties</span>;
+</span></span></code></pre></div><ul>
+<li>
+<p><code>apiVersion</code>  物理设备API的版本号。</p>
+<blockquote>
+<p>可以看到，Vulkan中如果要设置版本号，就用<code>VK_MAKE_VERSION()</code>这个宏，如果要解析版本号，就用 <code>VK_VERSION_MAJOR()</code>，<code>VK_VERSION_MINOR()</code>和<code>VK_VERSION_PATCH()</code>这三个宏。</p>
+</blockquote>
+</li>
+<li>
+<p><code>driverVersion </code> 驱动版本号。</p>
+</li>
+<li>
+<p><code>vendorID</code> 供应商ID标识。</p>
+</li>
+<li>
+<p><code>deviceID</code> 设备ID标识。</p>
+</li>
+<li>
+<p><code>deviceType</code> 可能是以下几种。</p>
+<ul>
+<li><code>VK_PHYSICAL_DEVICE_TYPE_CPU</code> CPU设备。</li>
+<li><code>VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU</code> 集成显卡。</li>
+<li><code>VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU</code> 独立显卡。</li>
+<li><code>VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU</code> 虚拟显卡。</li>
+</ul>
+</li>
+<li>
+<p><code>deviceName</code> 设备名称。</p>
+</li>
+<li>
+<p><code>pipelineCacheUUID</code> pipeline cache唯一标识。</p>
+</li>
+<li>
+<p><code>limits</code> 设备的限制属性，比如支持的最大贴图数量、最大描述符范围等等。</p>
+</li>
+<li>
+<p><code>sparseProperties</code> 设备的离散绑定信息。</p>
+</li>
+</ul>
+<p>以下是我的环境输出，可以看到有两个物理设备，一个是集显，一个是独显。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>---------------------------------
+</span></span><span style="display:flex;"><span>Physical Devices:
+</span></span><span style="display:flex;"><span>---------------------------------
+</span></span><span style="display:flex;"><span>Device Name          : Intel<span style="color:#000">(</span>R<span style="color:#000">)</span> Iris<span style="color:#000">(</span>R<span style="color:#000">)</span> Xe Graphics
+</span></span><span style="display:flex;"><span>Device Type          : integrated GPU
+</span></span><span style="display:flex;"><span>Vendor ID            : 0x8086
+</span></span><span style="display:flex;"><span>Device ID            : 0x9A49
+</span></span><span style="display:flex;"><span>Driver Version       : 0.405.50
+</span></span><span style="display:flex;"><span>API Version          : 1.3.238
+</span></span><span style="display:flex;"><span>---------------------------------
+</span></span><span style="display:flex;"><span>Device Name          : NVIDIA GeForce MX450
+</span></span><span style="display:flex;"><span>Device Type          : discrete GPU
+</span></span><span style="display:flex;"><span>Vendor ID            : 0x10DE
+</span></span><span style="display:flex;"><span>Device ID            : 0x1F97
+</span></span><span style="display:flex;"><span>Driver Version       : 516.216.0
+</span></span><span style="display:flex;"><span>API Version          : 1.3.205
+</span></span></code></pre></div><p>判断物理设备是否支持当前窗口表面Surface。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#000">VkBool32</span> <span style="color:#000">surfaceSupport</span>;
+</span></span><span style="display:flex;"><span><span style="color:#000">vkGetPhysicalDeviceSurfaceSupportKHR</span>(<span style="color:#000">physicalDevs</span>[<span style="color:#000">i</span>], <span style="color:#000">i</span>, <span style="color:#000">surface</span>, <span style="color:#000">&amp;</span><span style="color:#000">surfaceSupport</span>);
+</span></span><span style="display:flex;"><span><span style="color:#000">Print</span>(<span style="color:#c41a16">&#34;Surface Support: %d&#34;</span>, <span style="color:#000">surfaceSupport</span>);
+</span></span></code></pre></div><p>该API直接返回true/false。</p>
+<p>查询队列族。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">uint32_t</span> <span style="color:#000">queueFamilyPropCount</span>;
+</span></span><span style="display:flex;"><span><span style="color:#000">vkGetPhysicalDeviceQueueFamilyProperties</span>(<span style="color:#000">physicalDevs</span>[<span style="color:#000">i</span>], <span style="color:#000">&amp;</span><span style="color:#000">queueFamilyPropCount</span>, <span style="color:#a90d91">nullptr</span>);
+</span></span><span style="display:flex;"><span><span style="color:#000">VkQueueFamilyProperties</span> <span style="color:#000">queueFamilyProps</span>[<span style="color:#000">queueFamilyPropCount</span>];
+</span></span><span style="display:flex;"><span><span style="color:#000">vkGetPhysicalDeviceQueueFamilyProperties</span>(<span style="color:#000">physicalDevs</span>[<span style="color:#000">i</span>], <span style="color:#000">&amp;</span><span style="color:#000">queueFamilyPropCount</span>, <span style="color:#000">queueFamilyProps</span>);
+</span></span></code></pre></div><p>获得的<code>VkQueueFamilyProperties</code>数据结构如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">typedef</span> <span style="color:#a90d91">struct</span> <span style="color:#3f6e75">VkQueueFamilyProperties</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkQueueFlags</span>    <span style="color:#000">queueFlags</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>        <span style="color:#000">queueCount</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>        <span style="color:#000">timestampValidBits</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkExtent3D</span>      <span style="color:#000">minImageTransferGranularity</span>;
+</span></span><span style="display:flex;"><span>} <span style="color:#000">VkQueueFamilyProperties</span>;
+</span></span></code></pre></div><p>这里主要识别队列类型的就是<code>VkQueueFlags</code>，我们可以发现有以下这几种队列族类型。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">typedef</span> <span style="color:#a90d91">enum</span> <span style="color:#3f6e75">VkQueueFlagBits</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VK_QUEUE_GRAPHICS_BIT</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0x00000001</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VK_QUEUE_COMPUTE_BIT</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0x00000002</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VK_QUEUE_TRANSFER_BIT</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0x00000004</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VK_QUEUE_SPARSE_BINDING_BIT</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0x00000008</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VK_QUEUE_PROTECTED_BIT</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0x00000010</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VK_QUEUE_VIDEO_DECODE_BIT_KHR</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0x00000020</span>,
+</span></span><span style="display:flex;"><span><span style="color:#633820">#ifdef VK_ENABLE_BETA_EXTENSIONS
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>    <span style="color:#000">VK_QUEUE_VIDEO_ENCODE_BIT_KHR</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0x00000040</span>,
+</span></span><span style="display:flex;"><span><span style="color:#633820">#endif
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>    <span style="color:#000">VK_QUEUE_OPTICAL_FLOW_BIT_NV</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0x00000100</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VK_QUEUE_FLAG_BITS_MAX_ENUM</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0x7FFFFFFF</span>
+</span></span><span style="display:flex;"><span>} <span style="color:#000">VkQueueFlagBits</span>;
+</span></span></code></pre></div><ul>
+<li><code>GRAPHICS</code> 支持图形管线；</li>
+<li><code>COMPUTE</code> 支持计算管线；</li>
+<li><code>TRANSFER</code> 用以传输，例如复制缓冲区和图像内容；</li>
+<li><code>SPARSE_BINDING</code>离散绑定，用作离散资源时（暂时没用到过，以后补充）；</li>
+</ul>
+<p><code>queueCount</code>是当前队列族内的队列数量。</p>
+<p><code>timestampValidBits</code>表示当从这个队列里面获取时间戳时，多少位有效。如果这个值为0，表示不支持时间戳。如果不是0，保证至少32位。</p>
+<p>于是我们就可以用下面的方法判断是否是我们想要的队列族类型。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">if</span>(<span style="color:#000">queueFamilyProps</span>[<span style="color:#000">j</span>].<span style="color:#000">queueFlags</span> <span style="color:#000">&amp;</span> <span style="color:#000">VK_QUEUE_GRAPHICS_BIT</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#000">selectedPhysicalDev</span> <span style="color:#000">=</span> <span style="color:#000">physicalDevs</span>[<span style="color:#000">i</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#000">workQueueIndex</span> <span style="color:#000">=</span> <span style="color:#000">j</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">presentQueueIndex</span> <span style="color:#000">=</span> <span style="color:#000">j</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">break</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>接下来，在后续申请Buffer或者复制时会用到物理设备的内存类型，可以通过<code>vkGetPhysicalDeviceMemoryProperties()</code>获得。该函数返回以下结构体。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">typedef</span> <span style="color:#a90d91">struct</span> <span style="color:#3f6e75">VkPhysicalDeviceMemoryProperties</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>        <span style="color:#000">memoryTypeCount</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkMemoryType</span>    <span style="color:#000">memoryTypes</span>[<span style="color:#000">VK_MAX_MEMORY_TYPES</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>        <span style="color:#000">memoryHeapCount</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkMemoryHeap</span>    <span style="color:#000">memoryHeaps</span>[<span style="color:#000">VK_MAX_MEMORY_HEAPS</span>];
+</span></span><span style="display:flex;"><span>} <span style="color:#000">VkPhysicalDeviceMemoryProperties</span>;
+</span></span></code></pre></div><p>从结构体我们可以得到该设备的内存类型和内存大小。</p>
+<h4 id="224-创建逻辑设备和获取队列">2.2.4 创建逻辑设备和获取队列</h4>
+<p>我们在上文已经知道，层和扩展在实例和设备级别都可以配置。所以我们可以跟创建实例时一致，先查询目前环境支持的层和扩展列表。对设备级别层面，我们用到比较多的扩展就是交换链、几何着色器支持等。</p>
+<p>所以我们先建立好要判断的扩展列表。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">const</span> <span style="color:#000">DriverFeature</span> <span style="color:#000">validationDeviceExtensions</span>[] <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>        {<span style="color:#000">VK_KHR_SWAPCHAIN_EXTENSION_NAME</span>, <span style="color:#a90d91">false</span>, <span style="color:#a90d91">true</span>}		<span style="color:#177500">// 这个宏也就是：VK_KHR_swapchain
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>};
+</span></span></code></pre></div><p>然后判断是否支持。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">uint32_t</span> <span style="color:#000">availableDeviceExtensionCount</span>;
+</span></span><span style="display:flex;"><span><span style="color:#000">CALL_VK</span>(<span style="color:#000">vkEnumerateDeviceExtensionProperties</span>(<span style="color:#000">out_deviceInfo</span><span style="color:#000">-&gt;</span><span style="color:#000">physicalDev</span>, <span style="color:#a90d91">nullptr</span>, <span style="color:#000">&amp;</span><span style="color:#000">availableDeviceExtensionCount</span>, <span style="color:#a90d91">nullptr</span>));
+</span></span><span style="display:flex;"><span><span style="color:#000">VkExtensionProperties</span> <span style="color:#000">availableDeviceExtensions</span>[<span style="color:#000">availableDeviceExtensionCount</span>];
+</span></span><span style="display:flex;"><span><span style="color:#000">CALL_VK</span>(<span style="color:#000">vkEnumerateDeviceExtensionProperties</span>(<span style="color:#000">out_deviceInfo</span><span style="color:#000">-&gt;</span><span style="color:#000">physicalDev</span>, <span style="color:#a90d91">nullptr</span>, <span style="color:#000">&amp;</span><span style="color:#000">availableDeviceExtensionCount</span>, <span style="color:#000">availableDeviceExtensions</span>));
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">const</span> <span style="color:#a90d91">char</span> <span style="color:#000">*</span><span style="color:#000">enableDeviceExtensions</span>[<span style="color:#1c01ce">32</span>];
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">uint32_t</span> <span style="color:#000">enableDeviceExtensionCount</span>;
+</span></span><span style="display:flex;"><span><span style="color:#000">checkFeatures</span>(<span style="color:#c41a16">&#34;Device Extensions&#34;</span>, <span style="color:#a90d91">true</span>, <span style="color:#a90d91">true</span>, <span style="color:#000">validationDeviceExtensions</span>, <span style="color:#000">ARRAY_SIZE</span>(<span style="color:#000">validationDeviceExtensions</span>), <span style="color:#000">availableDeviceExtensions</span>, <span style="color:#000">availableDeviceExtensionCount</span>, <span style="color:#000">enableDeviceExtensions</span>, <span style="color:#000">&amp;</span><span style="color:#000">enableDeviceExtensionCount</span>);
+</span></span></code></pre></div><p>接下来我们需要配置逻辑设备的队列信息，也就是<code>VkDeviceQueueCreateInfo</code>对象。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">typedef</span> <span style="color:#a90d91">struct</span> <span style="color:#3f6e75">VkDeviceQueueCreateInfo</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkStructureType</span>             <span style="color:#000">sType</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#a90d91">void</span><span style="color:#000">*</span>                 <span style="color:#000">pNext</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkDeviceQueueCreateFlags</span>    <span style="color:#000">flags</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>                    <span style="color:#000">queueFamilyIndex</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>                    <span style="color:#000">queueCount</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#a90d91">float</span><span style="color:#000">*</span>                <span style="color:#000">pQueuePriorities</span>;
+</span></span><span style="display:flex;"><span>} <span style="color:#000">VkDeviceQueueCreateInfo</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#177500">//use
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#a90d91">float</span> <span style="color:#000">queuePriority</span> <span style="color:#000">=</span> <span style="color:#1c01ce">1.0f</span>;
+</span></span><span style="display:flex;"><span><span style="color:#000">VkDeviceQueueCreateInfo</span> <span style="color:#000">queueCreateInfo</span> <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">sType</span> <span style="color:#000">=</span> <span style="color:#000">VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">pNext</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">flags</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">queueFamilyIndex</span> <span style="color:#000">=</span> <span style="color:#000">out_queueInfo</span><span style="color:#000">-&gt;</span><span style="color:#000">workQueueIndex</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">queueCount</span> <span style="color:#000">=</span> <span style="color:#1c01ce">1</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">pQueuePriorities</span> <span style="color:#000">=</span> <span style="color:#000">&amp;</span><span style="color:#000">queuePriority</span>, <span style="color:#177500">//队列优先级
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>};
+</span></span></code></pre></div><ul>
+<li><code>queueFamilyIndex</code> 队列族索引，实在选取物理设备时记录下来的队列族索引。</li>
+<li><code>queueCount</code> 队列数量，也就是跟逻辑设备关联创建的队列数量。这里在后续获取队列时需要用到。</li>
+<li><code>pQueuePriorities</code> 队列优先级，当创建多个队列时，指定各队列的优先级（范围0.0~1.0）。</li>
+</ul>
+<p>接下来就是构造逻辑设备创建要用的<code>CreateInfo</code>。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">typedef</span> <span style="color:#a90d91">struct</span> <span style="color:#3f6e75">VkDeviceCreateInfo</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkStructureType</span>                    <span style="color:#000">sType</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#a90d91">void</span><span style="color:#000">*</span>                        <span style="color:#000">pNext</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkDeviceCreateFlags</span>                <span style="color:#000">flags</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>                           <span style="color:#000">queueCreateInfoCount</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#000">VkDeviceQueueCreateInfo</span><span style="color:#000">*</span>     <span style="color:#000">pQueueCreateInfos</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>                           <span style="color:#000">enabledLayerCount</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#a90d91">char</span><span style="color:#000">*</span> <span style="color:#a90d91">const</span><span style="color:#000">*</span>                 <span style="color:#000">ppEnabledLayerNames</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>                           <span style="color:#000">enabledExtensionCount</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#a90d91">char</span><span style="color:#000">*</span> <span style="color:#a90d91">const</span><span style="color:#000">*</span>                 <span style="color:#000">ppEnabledExtensionNames</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#000">VkPhysicalDeviceFeatures</span><span style="color:#000">*</span>    <span style="color:#000">pEnabledFeatures</span>;
+</span></span><span style="display:flex;"><span>} <span style="color:#000">VkDeviceCreateInfo</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#177500">//use
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#000">VkDeviceCreateInfo</span> <span style="color:#000">deviceCreateInfo</span> <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">sType</span> <span style="color:#000">=</span> <span style="color:#000">VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">pNext</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">flags</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">queueCreateInfoCount</span> <span style="color:#000">=</span> <span style="color:#1c01ce">1</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">pQueueCreateInfos</span> <span style="color:#000">=</span> <span style="color:#000">&amp;</span><span style="color:#000">queueCreateInfo</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">enabledLayerCount</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">ppEnabledLayerNames</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">enabledExtensionCount</span> <span style="color:#000">=</span> <span style="color:#000">enableDeviceExtensionCount</span>,
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">ppEnabledExtensionNames</span> <span style="color:#000">=</span> <span style="color:#000">enableDeviceExtensionCount</span> <span style="color:#000">==</span> <span style="color:#1c01ce">0</span> <span style="color:#000">?</span> <span style="color:#a90d91">nullptr</span> <span style="color:#000">:</span> <span style="color:#000">enableDeviceExtensions</span>
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><ul>
+<li><code>queueCreateInfoCount</code> 配置的<code>VkDeviceQueueCreateInfo</code>有多少个，注意不是队列数量。我们这里是一个。</li>
+<li><code>pQueueCreateInfos</code> 具体的队列配置信息。</li>
+<li><code>enabledLayerCount</code>、<code>ppEnabledLayerNames</code>、<code>enabledExtensionCount</code>和<code>ppEnabledExtensionNames</code>还是我们熟悉的层/扩展配置。</li>
+<li><code>pEnabledFeatures</code> 启用/停用物理设备中功能，这个需要根据具体程序要求配置。</li>
+</ul>
+<p>接着我们可以把逻辑设备中刚刚创建的队列指针拿出来，后续提交命令缓冲直接使用即可。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#000">vkGetDeviceQueue</span>(<span style="color:#000">out_deviceInfo</span><span style="color:#000">-&gt;</span><span style="color:#000">device</span>, <span style="color:#000">out_queueInfo</span><span style="color:#000">-&gt;</span><span style="color:#000">workQueueIndex</span>, <span style="color:#1c01ce">0</span>, <span style="color:#000">&amp;</span><span style="color:#000">out_queueInfo</span><span style="color:#000">-&gt;</span><span style="color:#000">queue</span>);
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#000">VKAPI_ATTR</span> <span style="color:#a90d91">void</span> <span style="color:#000">VKAPI_CALL</span> <span style="color:#000">vkGetDeviceQueue</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkDevice</span>                                    <span style="color:#000">device</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>                                    <span style="color:#000">queueFamilyIndex</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span>                                    <span style="color:#000">queueIndex</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkQueue</span><span style="color:#000">*</span>                                    <span style="color:#000">pQueue</span>);
+</span></span></code></pre></div><p>在这里我们需要一个<code>queueIndex</code>参数，这就是为什么上文要注意队列数量的原因。</p>
+<h3 id="23-交换链">2.3 交换链</h3>
+<p>交换链是渲染结果和窗口之间的传输媒介，应用程序为从交换链中获取图像进行绘制，然后将其返回给交换链，等待屏幕显示完成。</p>
+<p>
+        <a data-fancybox="gallery" href="../assets/image-20230615170514402.png">
+            <img class="mx-auto" alt="image-20230615170514402" src="../assets/image-20230615170514402.png" />
+        </a>
+    </p>
+<p>如图，我们在创建交换链的时候需要指定Surface，以及交换链内图像的大小、格式、用途等参数。创建完交换链后，渲染时由逻辑设备取得交换链内的图像，执行渲染后返回给交换链，最终完成提交显示。</p>
+<h4 id="231-表面参数适配">2.3.1 表面参数适配</h4>
+<p>首先我们看一下交换链的创建流程，为了得到适配参数，我们需要通过Surface查询图片的格式、颜色空间、呈现模式等参数，为了方便，我这里将其称为<code>SwapchainParam</code>。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">struct</span> <span style="color:#3f6e75">SwapchainParam</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkSurfaceCapabilitiesKHR</span> <span style="color:#000">capabilities</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkSurfaceFormatKHR</span> <span style="color:#000">format</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">VkPresentModeKHR</span> <span style="color:#000">presentMode</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><ul>
+<li><code>capabilities</code> 表面支持能力，包含最小图片数量(<code>minImageCount</code>)、最大图片数量(<code>maxImageCount</code>)、当前尺寸范围(<code>currentExtent</code>)、最小尺寸范围(<code>minImageExtent</code>)、最大尺寸范围(<code>maxImageExtent</code>)等参数。</li>
+<li><code>format</code> 表面格式，包含格式和色彩空间两个参数。通过<code>VkFormat</code>枚举来看，Vulkan内定义的格式非常繁多，不过很多是RGB颜色的色彩通道和类型，比如<code>VK_FORMAT_B8G8R8A8_SRGB</code>、<code>VK_FORMAT_R8G8B8_SRGB</code>&hellip;</li>
+<li><code>presentMode</code> 呈现模式，该参数对于交换链是非常重要的，其指定了呈现到屏幕上的条件。有以下几种类型：
+<ul>
+<li><code>VK_PRESENT_MODE_IMMEDIATE_KHR</code> 应用程序提交的图像会被立即呈现到屏幕，因为没有缓冲和等待的概念，该模式可能会导致撕裂（不过可以配合Vsync信号来解决这个问题）。</li>
+<li><code>VK_PRESENT_MODE_FIFO_KHR</code> 交换链被看作是一个队列，当屏幕刷新时，会从队列前面中获取图像。并且应用程序渲染完成的图像，会被放到队列后面，等待渲染。如果队列满了的话，应用程序需要等待。这种模式和游戏中的垂直同步机制类似。</li>
+<li><code>VK_PRESENT_MODE_FIFO_RELAXED_KHR</code> 与第二种模式略微不同，如果应用程序没有及时渲染图像，即队列空了，此时不会等待下一个Vsync信号，而是直接传输图像，这样可能导致撕裂。</li>
+<li><code>VK_PRESENT_MODE_MAILBOX_KHR</code> 该模式是第二种模式的变种，在队列满了的情况下，会选择旧的图像代替新的图像，从而达到不阻塞应用程序的作用。这种模式经常用作三级缓冲，和标准的垂直同步双缓冲相比，它可以有效避免延迟带来的撕裂效果。</li>
+</ul>
+</li>
+</ul>
+<p>我们一般优先选择<code>VK_PRESENT_MODE_MAILBOX_KHR</code>或<code>VK_PRESENT_MODE_FIFO_KHR</code>模式，但现在很多驱动还未支持这些模式，这种情况就只能使用<code>VK_PRESENT_MODE_IMMEDIATE_KHR</code>模式了。</p>
+<p>了解完上边的这些参数之后，我们实现一个函数<code>querySwapchainParam()</code>，用以查询最适配的表面参数。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">void</span> <span style="color:#000">querySwapchainParam</span>(<span style="color:#000">VkPhysicalDevice</span> <span style="color:#000">physicalDev</span>, <span style="color:#000">VkSurfaceKHR</span> <span style="color:#000">surface</span>, <span style="color:#000">SwapchainParam</span> <span style="color:#000">*</span><span style="color:#000">out_swapchainParam</span>){
+</span></span><span style="display:flex;"><span> 	   
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ol>
+<li>查询表面支持<code>vkGetPhysicalDeviceSurfaceCapabilitiesKHR</code>。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">//capabilities
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#000">CALL_VK</span>(<span style="color:#000">vkGetPhysicalDeviceSurfaceCapabilitiesKHR</span>(<span style="color:#000">physicalDev</span>, <span style="color:#000">surface</span>, <span style="color:#000">&amp;</span><span style="color:#000">out_swapchainParam</span><span style="color:#000">-&gt;</span><span style="color:#000">capabilities</span>));
+</span></span></code></pre></div><ol start="2">
+<li>选择最佳的表面格式<code>vkGetPhysicalDeviceSurfaceFormatsKHR</code>。</li>
+</ol>
+<p>我们这里尽可能选择<code>VK_FORMAT_B8G8R8A8_UNORM/VK_COLORSPACE_SRGB_NONLINEAR_KHR</code>，如果表面格式是<code>VK_FORMAT_UNDEFINED</code>，则表示我们可以自定义，所以直接返回我们想要的格式即可。最后如果实在找不到我们想要的格式，就返回某一个支持格式。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">uint32_t</span> <span style="color:#000">formatCount</span>;
+</span></span><span style="display:flex;"><span><span style="color:#000">vkGetPhysicalDeviceSurfaceFormatsKHR</span>(<span style="color:#000">physicalDev</span>, <span style="color:#000">surface</span>, <span style="color:#000">&amp;</span><span style="color:#000">formatCount</span>, <span style="color:#a90d91">nullptr</span>);
+</span></span><span style="display:flex;"><span><span style="color:#000">VkSurfaceFormatKHR</span> <span style="color:#000">formats</span>[<span style="color:#000">formatCount</span>];
+</span></span><span style="display:flex;"><span><span style="color:#000">vkGetPhysicalDeviceSurfaceFormatsKHR</span>(<span style="color:#000">physicalDev</span>, <span style="color:#000">surface</span>, <span style="color:#000">&amp;</span><span style="color:#000">formatCount</span>, <span style="color:#000">formats</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span> <span style="color:#a90d91">bool</span> <span style="color:#000">bFindFormat</span> <span style="color:#000">=</span> <span style="color:#a90d91">false</span>;
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">if</span>(<span style="color:#000">formatCount</span> <span style="color:#000">==</span> <span style="color:#1c01ce">1</span> <span style="color:#000">&amp;&amp;</span> <span style="color:#000">formats</span>[<span style="color:#1c01ce">0</span>].<span style="color:#000">format</span> <span style="color:#000">==</span> <span style="color:#000">VK_FORMAT_UNDEFINED</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#000">out_swapchainParam</span><span style="color:#000">-&gt;</span><span style="color:#000">format</span> <span style="color:#000">=</span> {<span style="color:#000">VK_FORMAT_B8G8R8A8_UNORM</span>, <span style="color:#000">VK_COLORSPACE_SRGB_NONLINEAR_KHR</span>};
+</span></span><span style="display:flex;"><span>    <span style="color:#000">bFindFormat</span> <span style="color:#000">=</span> <span style="color:#a90d91">true</span>;
+</span></span><span style="display:flex;"><span>}  <span style="color:#a90d91">else</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">for</span> (<span style="color:#a90d91">const</span> <span style="color:#a90d91">auto</span> <span style="color:#000">&amp;</span><span style="color:#000">item</span>: <span style="color:#000">formats</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">if</span>(<span style="color:#000">item</span>.<span style="color:#000">format</span> <span style="color:#000">==</span> <span style="color:#000">VK_FORMAT_B8G8R8A8_UNORM</span> <span style="color:#000">&amp;&amp;</span> <span style="color:#000">item</span>.<span style="color:#000">colorSpace</span> <span style="color:#000">==</span> <span style="color:#000">VK_COLORSPACE_SRGB_NONLINEAR_KHR</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#000">out_swapchainParam</span><span style="color:#000">-&gt;</span><span style="color:#000">format</span> <span style="color:#000">=</span> <span style="color:#000">item</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#000">bFindFormat</span> <span style="color:#000">=</span> <span style="color:#a90d91">true</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">break</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">if</span>(<span style="color:#000">!</span><span style="color:#000">bFindFormat</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#000">out_swapchainParam</span><span style="color:#000">-&gt;</span><span style="color:#000">format</span> <span style="color:#000">=</span> <span style="color:#000">formats</span>[<span style="color:#1c01ce">0</span>];
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ol start="3">
+<li>选择最佳的呈现模式<code>vkGetPhysicalDeviceSurfacePresentModesKHR</code>。</li>
+</ol>
+<p>类似的，如果支持显示模式<code>VK_PRESENT_MODE_MAILBOX_KHR</code>，我们优先使用，不行就<code>VK_PRESENT_MODE_FIFO_KHR</code>，如果都不支持这两种格式，则使用<code>VK_PRESENT_MODE_IMMEDIATE_KHR</code>。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">uint32_t</span> <span style="color:#000">presentModeCount</span>;
+</span></span><span style="display:flex;"><span><span style="color:#000">vkGetPhysicalDeviceSurfacePresentModesKHR</span>(<span style="color:#000">physicalDev</span>, <span style="color:#000">surface</span>, <span style="color:#000">&amp;</span><span style="color:#000">presentModeCount</span>, <span style="color:#a90d91">nullptr</span>);
+</span></span><span style="display:flex;"><span><span style="color:#000">VkPresentModeKHR</span> <span style="color:#000">presentModes</span>[<span style="color:#000">presentModeCount</span>];
+</span></span><span style="display:flex;"><span><span style="color:#000">vkGetPhysicalDeviceSurfacePresentModesKHR</span>(<span style="color:#000">physicalDev</span>, <span style="color:#000">surface</span>, <span style="color:#000">&amp;</span><span style="color:#000">presentModeCount</span>, <span style="color:#000">presentModes</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">bool</span> <span style="color:#000">bFoundPrentMode</span> <span style="color:#000">=</span> <span style="color:#a90d91">false</span>;
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">for</span> (<span style="color:#a90d91">const</span> <span style="color:#a90d91">auto</span> <span style="color:#000">&amp;</span><span style="color:#000">item</span>: <span style="color:#000">presentModes</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">if</span>(<span style="color:#000">VK_PRESENT_MODE_MAILBOX_KHR</span> <span style="color:#000">==</span> <span style="color:#000">item</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">out_swapchainParam</span><span style="color:#000">-&gt;</span><span style="color:#000">presentMode</span> <span style="color:#000">=</span> <span style="color:#000">item</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">bFoundPrentMode</span> <span style="color:#000">=</span> <span style="color:#a90d91">true</span>;
+</span></span><span style="display:flex;"><span>    } <span style="color:#a90d91">else</span> <span style="color:#000">if</span>(<span style="color:#000">VK_PRESENT_MODE_FIFO_KHR</span> <span style="color:#000">==</span> <span style="color:#000">item</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">out_swapchainParam</span><span style="color:#000">-&gt;</span><span style="color:#000">presentMode</span> <span style="color:#000">=</span> <span style="color:#000">item</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">bFoundPrentMode</span> <span style="color:#000">=</span> <span style="color:#a90d91">true</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">if</span>(<span style="color:#000">!</span><span style="color:#000">bFoundPrentMode</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#000">out_swapchainParam</span><span style="color:#000">-&gt;</span><span style="color:#000">presentMode</span> <span style="color:#000">=</span> <span style="color:#000">VK_PRESENT_MODE_IMMEDIATE_KHR</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="3-总结">3 总结</h2>
+<p>本文描述了使用Vulkan渲染中需要配置的几个重要对象。因为Vulkan的很多细节交给了开发者，所以在编写Vulkan程序时，会发现很多工作都是在各种配置。除了本文提到外，还有一些重要的对象，比如渲染流程、渲染管线、帧缓冲、命令缓冲和同步对象等，这些在具体使用了再详细描述。</p>
+<h2 id="4-参考">4 参考</h2>
+<p>Vulkan Tutorial: <a href="https://vulkan-tutorial.com">https://vulkan-tutorial.com</a></p>
+<p>Vulkan-Guide: <a href="https://github.com/KhronosGroup/Vulkan-Guide">https://github.com/KhronosGroup/Vulkan-Guide</a></p>
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="http://www.adiosy.com">xingchen</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html">http://www.adiosy.com/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html">Learn_Vulkan00_第一个三角形</a></li>
+        
+        <li><a href="/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html">OpenGL渲染器04_绘制点线面</a></li>
+        
+        <li><a href="/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">OpenGL渲染器03_OpenGL环境 </a></li>
+        
+        <li><a href="/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">OpenGL渲染器02_C&#43;&#43;环境</a></li>
+        
+        <li><a href="/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html">OpenGL渲染器01_开篇</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/vulkan' target="_blank">Vulkan</a></li>
+                
+                <li><a href='/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6' target="_blank">图形学</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "xingchen0085/doc"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+
+    
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">飞雪无情</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+
+    <br />
+        
+        <div>
+            <span id="busuanzi_container_site_uv" style="font-family: auto;">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+            </span>
+            &copy; 2024 <a href="http://www.adiosy.com">Adiosy&#39;s blog By xingchen</a>
+                
+                | <a rel="nofollow" target="_blank" href="http://beian.miit.gov.cn/">滇ICP备2022000560号-1</a>
+            
+    </div>
+</footer>
+
+
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.2.8/raphael.min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/flowchart/1.12.2/flowchart.min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+                if (!window.flowchart) return;
+                const blocks = document.querySelectorAll('pre code.language-flowchart, pre code.language-flow');
+                for (let i = 0; i < blocks.length; i++) {
+                    const block = blocks[i];
+                    const rootElement = block.parentNode;
+                    const container = document.createElement('div');
+                    const id = `js-flowchart-diagrams-${i}`;
+                    container.id = id;
+                    container.className = 'align-center';
+                    container.setAttribute("style", "overFlow-x:auto");
+                    rootElement.parentNode.replaceChild(container, rootElement);
+                    const diagram = flowchart.parse(block.childNodes[0].nodeValue);
+                    diagram.drawSVG(id, window.flowchartDiagramsOptions ? window.flowchartDiagramsOptions : {});
+                }
+            })();
+        </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+            if (!window.Diagram) return;
+            const blocks = document.querySelectorAll('pre code.language-sequence');
+            for (let i = 0; i < blocks.length; i++) {
+                const block = blocks[i];
+                
+                const rootElement = block.parentNode;
+                const container = document.createElement('div');
+                const id = `js-sequence-diag-${i}`;
+                container.id = id;
+                container.className = 'align-center';
+                container.setAttribute("style", "overFlow-x:auto");
+                rootElement.parentNode.replaceChild(container, rootElement);
+
+                const diagram = Diagram.parse(block.childNodes[0].nodeValue);
+                diagram.drawSVG(id, window.sequenceDiagramsOptions
+                    ? window.sequenceDiagramsOptions
+                    : { theme: 'simple' });
+            }
+        })();
+        </script><script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        
+<form id="search" action='http://www.adiosy.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://www.adiosy.com">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html" title="Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境" target="_blank">Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html" title="OpenGL或Vulkan渲染YUV格式数据" target="_blank">OpenGL或Vulkan渲染YUV格式数据</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan02_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E5%BC%80%E7%AF%87.html" title="Learn_Vulkan02_渲染框架实现_开篇" target="_blank">Learn_Vulkan02_渲染框架实现_开篇</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html" title="Learn_Vulkan01_重要对象浅析" target="_blank">Learn_Vulkan01_重要对象浅析</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html" title="Learn_Vulkan00_第一个三角形" target="_blank">Learn_Vulkan00_第一个三角形</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/hello-openxr-%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html" title="Hello OpenXR - 第一个OpenXR程序" target="_blank">Hello OpenXR - 第一个OpenXR程序</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面" target="_blank">OpenGL渲染器04_绘制点线面</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 " target="_blank">OpenGL渲染器03_OpenGL环境 </a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器02_C&#43;&#43;环境" target="_blank">OpenGL渲染器02_C&#43;&#43;环境</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html" title="OpenGL渲染器01_开篇" target="_blank">OpenGL渲染器01_开篇</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">微信公众号</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="#" title="微信公众号" target="_blank" style="color:red">
+                
+                    <img src="/posts/assets/qrcode.jpg">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="http://www.adiosy.com/categories/opengl.html">OpenGL (4)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/vulkan.html">Vulkan (4)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/yuv.html">YUV (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="http://www.adiosy.com/tags/monado.html">Monado</a>
+    
+    <a href="http://www.adiosy.com/tags/opengl.html">OpenGL</a>
+    
+    <a href="http://www.adiosy.com/tags/opengl%E6%B8%B2%E6%9F%93.html">OpenGL渲染</a>
+    
+    <a href="http://www.adiosy.com/tags/openxr.html">OpenXR</a>
+    
+    <a href="http://www.adiosy.com/tags/vr/ar.html">VR/AR</a>
+    
+    <a href="http://www.adiosy.com/tags/vulkan.html">Vulkan</a>
+    
+    <a href="http://www.adiosy.com/tags/yuv.html">YUV</a>
+    
+    <a href="http://www.adiosy.com/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6.html">图形学</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://github.com/xingchen0085" title="我的Github">我的Github</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://gitee.com/xingchen0085" title="我的Gitee">我的Gitee</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://potatomelon.com" title="土豆社区">土豆社区</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="http://www.adiosy.com/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

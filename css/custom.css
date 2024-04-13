@@ -43,6 +43,10 @@ blockquote{
 	font-size: 12px !important;
 }
 
+.post-toc .post-toc-content{
+  border-right: 1px solid #f1f1f1;
+}
+
 figcaption{
 	text-align: center;
 }

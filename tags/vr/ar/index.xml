@@ -7,15 +7,13 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language><atom:link href="http://www.adiosy.com/tags/vr/ar/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Monado渲染流程</title>
-      <link>http://www.adiosy.com/posts/01_monado%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B.html</link>
-      <pubDate>Thu, 09 Mar 2023 14:34:07 +0800</pubDate>
+      <title>Hello OpenXR - 第一个OpenXR程序</title>
+      <link>http://www.adiosy.com/posts/hello-openxr-%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html</link>
+      <pubDate>Tue, 07 Mar 2023 14:34:07 +0800</pubDate>
       
-      <guid>http://www.adiosy.com/posts/01_monado%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B.html</guid>
-      <description>因为渲染流程和Session的生命周期息息相关，所以在进入渲染流程之前，先探讨Session的状态机变化流程。
-1 Session生命周期 1、应用程序调用xrCreateSession创建一个Session，需要指定参数：System和渲染API，新创建的Session默认状态是 IDLE。
-2、应用程序通过XrEventDataSessionStateChanged监测Session的状态变化。
-3、当应用程序准备好呈现XR的内容时，会将Session状态切换到 READY 状态，并通知到应用程序。应用程序准备好渲染内容后，需要调用xrBeginSession，开始渲染循环。</description>
+      <guid>http://www.adiosy.com/posts/hello-openxr-%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html</guid>
+      <description>1 概要 本文目标是实现一个最小化OpenXR应用程序，只渲染一个三角形，渲染库采用的是OpenGL，窗口管理使用GLFW，OpenXR Runtime使用的是Monado。因为Monado目前支持的是安卓和Linux平台，本人测试使用的是Ubuntu系统，所以这个DEMO可以在Ubuntu系统下正常运行，但别的系统还没有经过严格测试。
+2 环境准备 点击下载cmake，如果使用apt安装，可能版本号过低。</description>
     </item>
     
   </channel>
