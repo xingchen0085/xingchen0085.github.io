@@ -268,76 +268,76 @@ It has a modular architecture based on a rich set of modern and efficient compon
 <p>首先，前往 <strong><code>james-2.3.2.1\bin</code></strong> 找到 <strong><code>run.bat</code></strong>，双击启动，会发现启动以后窗口自动关闭，这是因为没有配置的原因，可能会启动失败，不过不要紧，这一次启动会生成一个文件，它就在 **<code>james-2.3.2.1\apps\james\SAR-INF\</code>**目录下，文件名 <strong><code>config.xml</code></strong>,现在配置的重点就是这个文件（如果不启动一次，这个文件是没有的）。</p>
 <p>#####配置config.xml</p>
 <p>修改xml代码，将所有localhost 替换为你的邮箱域名，这个可以随便写一个，等会配置一下hosts文件，将域名指向本机，即可将本机的james作为邮件服务器。</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#177500">&lt;!-- 配置这里，将这个xml文件的localhost替换成你的域名(这里测试使用xingchen.cn)--&gt;</span>
-</span></span><span style="display:flex;"><span><span style="color:#000">&lt;postmaster&gt;</span>Postmaster@xingchen.cn<span style="color:#000">&lt;/postmaster&gt;</span>
-</span></span></code></pre></div><p>邮件数据存储选择，根据xml来看，提供的有3中数据存储方式：
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#177500">&lt;!-- 配置这里，将这个xml文件的localhost替换成你的域名(这里测试使用xingchen.cn)--&gt;</span>
+<span style="color:#000">&lt;postmaster&gt;</span>Postmaster@xingchen.cn<span style="color:#000">&lt;/postmaster&gt;</span>
+</code></pre></div><p>邮件数据存储选择，根据xml来看，提供的有3中数据存储方式：
 1.file:// 文件存储
 2.db:// 数据库存储
 3.dbfile:// 数据文件式存储</p>
 <p>这些数据存储方式可以根据自己实际需求来定，不过如果选择文件存储方式，在启动时会出现找不到文件等错误，所以需要确认已经创建好文件夹再启动。当时为了方便，所以选择的是数据库存储方式，数据库使用Mysql数据库存储，因此需要作一下代码变更。如果你不需要使用数据库存储，就可以跳过数据库相关配置，包括 驱动包的导入，DBCP连接池配置等。</p>
 <p>Mysql数据库配置 1：</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#177500">&lt;!-- 	重要说明：	注释掉默认的  file://  ，这个在文件中有好几处地方，修改方式雷同，都要注释掉默认的这个，再打开数据库存储方式的配置
-</span></span></span><span style="display:flex;"><span><span style="color:#177500">&lt;inboxRepository&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#177500">	&lt;repository destinationURL=&#34;file://var/mail/inboxes/&#34; type=&#34;MAIL&#34;/&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#177500">	&lt;/inboxRepository&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#177500">--&gt;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#177500">&lt;!--使用数据库作为数据存储--&gt;</span>
-</span></span><span style="display:flex;"><span><span style="color:#000">&lt;inboxRepository&gt;</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#000">&lt;repository</span> <span style="color:#836c28">destinationURL=</span><span style="color:#c41a16">&#34;db://maildb/inbox/&#34;</span> <span style="color:#836c28">type=</span><span style="color:#c41a16">&#34;MAIL&#34;</span><span style="color:#000">/&gt;</span>
-</span></span><span style="display:flex;"><span><span style="color:#000">&lt;/inboxRepository&gt;</span>
-</span></span></code></pre></div><p>Mysql数据库配置 2：
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#177500">&lt;!-- 	重要说明：	注释掉默认的  file://  ，这个在文件中有好几处地方，修改方式雷同，都要注释掉默认的这个，再打开数据库存储方式的配置
+</span><span style="color:#177500">&lt;inboxRepository&gt;
+</span><span style="color:#177500">	&lt;repository destinationURL=&#34;file://var/mail/inboxes/&#34; type=&#34;MAIL&#34;/&gt;
+</span><span style="color:#177500">	&lt;/inboxRepository&gt;
+</span><span style="color:#177500">--&gt;</span>
+
+<span style="color:#177500">&lt;!--使用数据库作为数据存储--&gt;</span>
+<span style="color:#000">&lt;inboxRepository&gt;</span>
+	<span style="color:#000">&lt;repository</span> <span style="color:#836c28">destinationURL=</span><span style="color:#c41a16">&#34;db://maildb/inbox/&#34;</span> <span style="color:#836c28">type=</span><span style="color:#c41a16">&#34;MAIL&#34;</span><span style="color:#000">/&gt;</span>
+<span style="color:#000">&lt;/inboxRepository&gt;</span>
+</code></pre></div><p>Mysql数据库配置 2：
 将mysql的驱动包拷贝到 **<code>james2.3.2\lib</code>**目录下</p>
 <p>Mysql数据库配置 3：
 找到 <code>&lt;data-source&gt;</code> 节点 配置数据库连接</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#000">&lt;data-source</span> <span style="color:#836c28">name=</span><span style="color:#c41a16">&#34;maildb&#34;</span> <span style="color:#836c28">class=</span><span style="color:#c41a16">&#34;org.apache.james.util.dbcp.JdbcDataSource&#34;</span><span style="color:#000">&gt;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#000">&lt;driver&gt;</span>com.mysql.jdbc.Driver<span style="color:#000">&lt;/driver&gt;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#000">&lt;dburl&gt;</span>jdbc:mysql://127.0.0.1/mail?autoReconnect=true<span style="color:#000">&lt;/dburl&gt;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#000">&lt;user&gt;</span>username<span style="color:#000">&lt;/user&gt;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#000">&lt;password&gt;</span>password<span style="color:#000">&lt;/password&gt;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#000">&lt;max&gt;</span>20<span style="color:#000">&lt;/max&gt;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#000">&lt;/data-source&gt;</span>
-</span></span></code></pre></div><p>Mysql数据库配置 4：在Mysql数据库中添加一个空的数据库 mail ,数据库只能是mail,以后的数据都将会存储在这个数据库中。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000">&lt;data-source</span> <span style="color:#836c28">name=</span><span style="color:#c41a16">&#34;maildb&#34;</span> <span style="color:#836c28">class=</span><span style="color:#c41a16">&#34;org.apache.james.util.dbcp.JdbcDataSource&#34;</span><span style="color:#000">&gt;</span>
+
+	<span style="color:#000">&lt;driver&gt;</span>com.mysql.jdbc.Driver<span style="color:#000">&lt;/driver&gt;</span>
+
+	<span style="color:#000">&lt;dburl&gt;</span>jdbc:mysql://127.0.0.1/mail?autoReconnect=true<span style="color:#000">&lt;/dburl&gt;</span>
+
+	<span style="color:#000">&lt;user&gt;</span>username<span style="color:#000">&lt;/user&gt;</span>
+
+	<span style="color:#000">&lt;password&gt;</span>password<span style="color:#000">&lt;/password&gt;</span>
+
+	<span style="color:#000">&lt;max&gt;</span>20<span style="color:#000">&lt;/max&gt;</span>
+
+<span style="color:#000">&lt;/data-source&gt;</span>
+</code></pre></div><p>Mysql数据库配置 4：在Mysql数据库中添加一个空的数据库 mail ,数据库只能是mail,以后的数据都将会存储在这个数据库中。</p>
 <p>找到 <code>&lt;administrator_accounts&gt;</code>,将<code>!changeme!</code>改掉,等会登录使用的就是这个密码。</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#000">&lt;administrator_accounts&gt;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#177500">&lt;!-- CHECKME! --&gt;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#177500">&lt;!-- Change the default login/password. --&gt;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#000">&lt;account</span> <span style="color:#836c28">login=</span><span style="color:#c41a16">&#34;root&#34;</span> <span style="color:#836c28">password=</span><span style="color:#c41a16">&#34;!changeme!&#34;</span><span style="color:#000">/&gt;</span>
-</span></span><span style="display:flex;"><span><span style="color:#000">&lt;/administrator_accounts&gt;</span>
-</span></span></code></pre></div><p>找到<code> &lt;servernames&gt;</code>,将两true改为false</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#000">&lt;servernames</span> <span style="color:#836c28">autodetect=</span><span style="color:#c41a16">&#34;false&#34;</span> <span style="color:#836c28">autodetectIP=</span><span style="color:#c41a16">&#34;false&#34;</span><span style="color:#000">&gt;</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#177500">&lt;!-- CONFIRM? --&gt;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#000">&lt;servername&gt;</span>xingchen.cn<span style="color:#000">&lt;/servername&gt;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#000">&lt;/servernames&gt;</span>
-</span></span></code></pre></div><p>​</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000">&lt;administrator_accounts&gt;</span>
+
+	<span style="color:#177500">&lt;!-- CHECKME! --&gt;</span>
+
+	<span style="color:#177500">&lt;!-- Change the default login/password. --&gt;</span>
+
+	<span style="color:#000">&lt;account</span> <span style="color:#836c28">login=</span><span style="color:#c41a16">&#34;root&#34;</span> <span style="color:#836c28">password=</span><span style="color:#c41a16">&#34;!changeme!&#34;</span><span style="color:#000">/&gt;</span>
+<span style="color:#000">&lt;/administrator_accounts&gt;</span>
+</code></pre></div><p>找到<code> &lt;servernames&gt;</code>,将两true改为false</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000">&lt;servernames</span> <span style="color:#836c28">autodetect=</span><span style="color:#c41a16">&#34;false&#34;</span> <span style="color:#836c28">autodetectIP=</span><span style="color:#c41a16">&#34;false&#34;</span><span style="color:#000">&gt;</span>
+	<span style="color:#177500">&lt;!-- CONFIRM? --&gt;</span>
+
+	<span style="color:#000">&lt;servername&gt;</span>xingchen.cn<span style="color:#000">&lt;/servername&gt;</span>
+
+<span style="color:#000">&lt;/servernames&gt;</span>
+</code></pre></div><p>​</p>
 <p>找到下面的代码，注释掉。</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#177500">&lt;!--
-</span></span></span><span style="display:flex;"><span><span style="color:#177500">&lt;mailet match=&#34;InSpammerBlacklist=dnsbl.njabl.org.&#34; class=&#34;ToProcessor&#34;&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#177500">
-</span></span></span><span style="display:flex;"><span><span style="color:#177500">	&lt;processor&gt; spam &lt;/processor&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#177500">
-</span></span></span><span style="display:flex;"><span><span style="color:#177500">	&lt;notice&gt;550 Requested action not taken: rejected - see https://njabl.org/&lt;/notice&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#177500">
-</span></span></span><span style="display:flex;"><span><span style="color:#177500">&lt;/mailet&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#177500">--&gt;</span>
-</span></span></code></pre></div><p>​</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#177500">&lt;!--
+</span><span style="color:#177500">&lt;mailet match=&#34;InSpammerBlacklist=dnsbl.njabl.org.&#34; class=&#34;ToProcessor&#34;&gt;
+</span><span style="color:#177500">
+</span><span style="color:#177500">	&lt;processor&gt; spam &lt;/processor&gt;
+</span><span style="color:#177500">
+</span><span style="color:#177500">	&lt;notice&gt;550 Requested action not taken: rejected - see https://njabl.org/&lt;/notice&gt;
+</span><span style="color:#177500">
+</span><span style="color:#177500">&lt;/mailet&gt;
+</span><span style="color:#177500">--&gt;</span>
+</code></pre></div><p>​</p>
 <p>配置 DNSServer, 使用Google 的 Public DNS (还可以使用阿里云的DNSServer，之前我测试没毛病，可以使用，查阅地址参考：https://baike.baidu.com/item/dns/427444?fr=aladdin#14 )： </p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#000">&lt;servers&gt;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#000">&lt;server&gt;</span>8.8.8.8<span style="color:#000">&lt;/server&gt;</span>         
-</span></span><span style="display:flex;"><span>  <span style="color:#000">&lt;server&gt;</span>8.8.4.4<span style="color:#000">&lt;/server&gt;</span> 
-</span></span><span style="display:flex;"><span><span style="color:#000">&lt;/servers&gt;</span>
-</span></span></code></pre></div><p>此时，再次运行 <code>run.bat </code>即可。如果看到以下界面，说明安装成功。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000">&lt;servers&gt;</span>
+  <span style="color:#000">&lt;server&gt;</span>8.8.8.8<span style="color:#000">&lt;/server&gt;</span>         
+  <span style="color:#000">&lt;server&gt;</span>8.8.4.4<span style="color:#000">&lt;/server&gt;</span> 
+<span style="color:#000">&lt;/servers&gt;</span>
+</code></pre></div><p>此时，再次运行 <code>run.bat </code>即可。如果看到以下界面，说明安装成功。</p>
 <p><figure class="max-w-2xl mx-auto overflow-hidden">
     
     <a data-fancybox="gallery" href="./assets/1240-1678086526733-6.png">
@@ -348,18 +348,18 @@ It has a modular architecture based on a rich set of modern and efficient compon
 </figure>
 3.客户端登录</p>
 <p>使用telnet指令登录</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>telnet localhost <span style="color:#1c01ce">4555</span>
-</span></span><span style="display:flex;"><span><span style="color:#177500">#因为是本机服务，所以直接使用localhost连接邮件服务器</span>
-</span></span></code></pre></div><p>4.添加用户</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>adduser <span style="color:#a90d91">test</span> <span style="color:#a90d91">test</span>
-</span></span></code></pre></div><p>这个命令很简单，就是添加一个用户名为 <code>test@yourdomain.com</code> ，密码 test 的用户只要在注册一个用户，就可以实现邮件互发了。下面举例使用 Foxmail 测试邮件收发。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">telnet localhost <span style="color:#1c01ce">4555</span>
+<span style="color:#177500">#因为是本机服务，所以直接使用localhost连接邮件服务器</span>
+</code></pre></div><p>4.添加用户</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">adduser <span style="color:#a90d91">test</span> <span style="color:#a90d91">test</span>
+</code></pre></div><p>这个命令很简单，就是添加一个用户名为 <code>test@yourdomain.com</code> ，密码 test 的用户只要在注册一个用户，就可以实现邮件互发了。下面举例使用 Foxmail 测试邮件收发。</p>
 <h4 id="windows测试邮件收发">Windows测试邮件收发</h4>
 <p>1.测试工具 ： Foxmail客户端
 2.前提：两个注册在你的邮件服务器的帐号
 3.预计实现结果：正常收发邮件，包括普通文本、富文本格式和附件收发。</p>
 <h5 id="注册帐号">注册帐号</h5>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>adduser test2 test2
-</span></span></code></pre></div><p>因为上文中也提到，已经有一个帐号 test 了，所以这里添加另外一个，这里的密码已经加密，由James内部实现。你可以前往数据库 Mail 的users表中查看相关信息。如下图</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">adduser test2 test2
+</code></pre></div><p>因为上文中也提到，已经有一个帐号 test 了，所以这里添加另外一个，这里的密码已经加密，由James内部实现。你可以前往数据库 Mail 的users表中查看相关信息。如下图</p>
 <p><figure class="max-w-2xl mx-auto overflow-hidden">
     
     <a data-fancybox="gallery" href="./assets/1240-1678086533632-9.png">
@@ -421,11 +421,11 @@ It has a modular architecture based on a rich set of modern and efficient compon
 </blockquote>
 <h3 id="上传安装包-解压">上传安装包 解压</h3>
 <p>软件包在上文已经提供，直接将 tar.gz 安装包下载下来，并上传至服务器解压即可。</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#177500">#解压命令</span>
-</span></span><span style="display:flex;"><span>tar -zxvf james-binary-2.3.2.1.tar.gz
-</span></span></code></pre></div><h3 id="首次启动">首次启动</h3>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>./run.sh
-</span></span></code></pre></div><p>如果出现 <code>-bash: ./run.sh: Permission denied</code>,说明没有执行的权限，需要给当前用户添加一个可执行的权限。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#177500">#解压命令</span>
+tar -zxvf james-binary-2.3.2.1.tar.gz
+</code></pre></div><h3 id="首次启动">首次启动</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">./run.sh
+</code></pre></div><p>如果出现 <code>-bash: ./run.sh: Permission denied</code>,说明没有执行的权限，需要给当前用户添加一个可执行的权限。</p>
 <p><figure class="max-w-2xl mx-auto overflow-hidden">
     
     <a data-fancybox="gallery" href="./assets/1240-1678086558703-27.png">
@@ -437,27 +437,27 @@ It has a modular architecture based on a rich set of modern and efficient compon
 <p>可以发现执行成功。此时 使用 Ctrl + C  终止程序 。</p>
 <h3 id="配置">配置</h3>
 <p>1.开始配置 <code>//apps/james/SAR-INF/config.xml</code> .具体配置和windows上配置大同小异，DNSServer使用Google 的 Public DNS ： </p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#000">&lt;servers&gt;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#000">&lt;server&gt;</span>8.8.8.8<span style="color:#000">&lt;/server&gt;</span>         
-</span></span><span style="display:flex;"><span>  <span style="color:#000">&lt;server&gt;</span>8.8.4.4<span style="color:#000">&lt;/server&gt;</span> 
-</span></span><span style="display:flex;"><span><span style="color:#000">&lt;/servers&gt;</span>
-</span></span></code></pre></div><p>2.同样，数据库相关也要根据你的服务器中安装的Mysql做相应配置。</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#000">&lt;data-source</span> <span style="color:#836c28">name=</span><span style="color:#c41a16">&#34;maildb&#34;</span> <span style="color:#836c28">class=</span><span style="color:#c41a16">&#34;org.apache.james.util.dbcp.JdbcDataSource&#34;</span><span style="color:#000">&gt;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#000">&lt;driver&gt;</span>com.mysql.jdbc.Driver<span style="color:#000">&lt;/driver&gt;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#000">&lt;dburl&gt;</span>jdbc:mysql://127.0.0.1/mail?autoReconnect=true<span style="color:#000">&lt;/dburl&gt;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#000">&lt;user&gt;</span>root<span style="color:#000">&lt;/user&gt;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#000">&lt;password&gt;</span>yourMysqlPwd<span style="color:#000">&lt;/password&gt;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#000">&lt;max&gt;</span>20<span style="color:#000">&lt;/max&gt;</span>
-</span></span><span style="display:flex;"><span><span style="color:#000">&lt;/data-source&gt;</span>
-</span></span></code></pre></div><p>3.将数据库驱动添加到 <code>//lib</code> 目录下。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000">&lt;servers&gt;</span>
+  <span style="color:#000">&lt;server&gt;</span>8.8.8.8<span style="color:#000">&lt;/server&gt;</span>         
+  <span style="color:#000">&lt;server&gt;</span>8.8.4.4<span style="color:#000">&lt;/server&gt;</span> 
+<span style="color:#000">&lt;/servers&gt;</span>
+</code></pre></div><p>2.同样，数据库相关也要根据你的服务器中安装的Mysql做相应配置。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000">&lt;data-source</span> <span style="color:#836c28">name=</span><span style="color:#c41a16">&#34;maildb&#34;</span> <span style="color:#836c28">class=</span><span style="color:#c41a16">&#34;org.apache.james.util.dbcp.JdbcDataSource&#34;</span><span style="color:#000">&gt;</span>
+  <span style="color:#000">&lt;driver&gt;</span>com.mysql.jdbc.Driver<span style="color:#000">&lt;/driver&gt;</span>
+  <span style="color:#000">&lt;dburl&gt;</span>jdbc:mysql://127.0.0.1/mail?autoReconnect=true<span style="color:#000">&lt;/dburl&gt;</span>
+  <span style="color:#000">&lt;user&gt;</span>root<span style="color:#000">&lt;/user&gt;</span>
+  <span style="color:#000">&lt;password&gt;</span>yourMysqlPwd<span style="color:#000">&lt;/password&gt;</span>
+  <span style="color:#000">&lt;max&gt;</span>20<span style="color:#000">&lt;/max&gt;</span>
+<span style="color:#000">&lt;/data-source&gt;</span>
+</code></pre></div><p>3.将数据库驱动添加到 <code>//lib</code> 目录下。</p>
 <p>4.创建数据库 mail</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>mysql&gt; create database mail;
-</span></span><span style="display:flex;"><span>Query OK, <span style="color:#1c01ce">1</span> row affected <span style="color:#000">(</span>0.00 sec<span style="color:#000">)</span>
-</span></span></code></pre></div><p>5.启动</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">mysql&gt; create database mail;
+Query OK, <span style="color:#1c01ce">1</span> row affected <span style="color:#000">(</span>0.00 sec<span style="color:#000">)</span>
+</code></pre></div><p>5.启动</p>
 <p>6.测试连接</p>
 <p>可以使用本机或者别的电脑测试连接 4555端口，如下：</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>telnet 你的IP  <span style="color:#1c01ce">4555</span>
-</span></span></code></pre></div><p><figure class="max-w-2xl mx-auto overflow-hidden">
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">telnet 你的IP  <span style="color:#1c01ce">4555</span>
+</code></pre></div><p><figure class="max-w-2xl mx-auto overflow-hidden">
     
     <a data-fancybox="gallery" href="./assets/1240-1678086563438-30.png">
         <img alt="Telnet登录" src="./assets/1240-1678086563438-30.png" />
@@ -466,15 +466,15 @@ It has a modular architecture based on a rich set of modern and efficient compon
     <figcaption class="p-2 text-center">Telnet登录</figcaption>
 </figure>]</p>
 <p>似曾相识页面出来了，这样就可以添加用户，邮件收发啦&hellip;</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>adduser admin@yourdomain password
-</span></span></code></pre></div><h3 id="foxmail测试">Foxmail测试</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">adduser admin@yourdomain password
+</code></pre></div><h3 id="foxmail测试">Foxmail测试</h3>
 <p>此时，将刚新建的用户配置到foxmail客户端中即可收发所有邮件。</p>
 <p>与上文的Windows测试大同小异，不细述。</p>
 <h2 id="常见的坑">常见的坑</h2>
 <p>1.报错一 ： <strong><code>java.io.IOException: 文件名、目录名或卷标语法不正确。</code></strong></p>
 <p>原因：这个报错的原因是用户信息，邮件收发产生的数据存储路径有误，默认使用的是文件存储。</p>
 <p>解决：参考文章前半部分</p>
-<p>​	a. 找到 <strong>所有的 destinationURL</strong> ,默认配置的是 &lsquo;file://var/mail&hellip;.&rsquo;，就是使用文件存储，这里将其注释。如下图所示：</p>
+<p>​	a. 找到 <strong>所有的 destinationURL</strong> ,默认配置的是 &lsquo;file://var/mail&hellip;.'，就是使用文件存储，这里将其注释。如下图所示：</p>
 <p><figure class="max-w-2xl mx-auto overflow-hidden">
     
     <a data-fancybox="gallery" href="./assets/1240-1678086571406-33.png">
@@ -496,14 +496,14 @@ It has a modular architecture based on a rich set of modern and efficient compon
 <p>​	此时，再次启动，应该就成功了。</p>
 <p>2.报错二 ： <code>om.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Unknown database 'mail'</code></p>
 <p>原因：没有创建数据库 mail ,创建即可解决。这是由这项配置决定的，需要确认填写无误，还有数据库驱动已加入其中即可避免。</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#000">&lt;data-source</span> <span style="color:#836c28">name=</span><span style="color:#c41a16">&#34;maildb&#34;</span> <span style="color:#836c28">class=</span><span style="color:#c41a16">&#34;org.apache.james.util.dbcp.JdbcDataSource&#34;</span><span style="color:#000">&gt;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#000">&lt;driver&gt;</span>com.mysql.jdbc.Driver<span style="color:#000">&lt;/driver&gt;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#000">&lt;dburl&gt;</span>jdbc:mysql://127.0.0.1/mail?autoReconnect=true<span style="color:#000">&lt;/dburl&gt;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#000">&lt;user&gt;</span>root<span style="color:#000">&lt;/user&gt;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#000">&lt;password&gt;</span>yourMysqlPwd<span style="color:#000">&lt;/password&gt;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#000">&lt;max&gt;</span>20<span style="color:#000">&lt;/max&gt;</span> 
-</span></span><span style="display:flex;"><span><span style="color:#000">&lt;/data-source&gt;</span>
-</span></span></code></pre></div><p>3.无法收发外网邮件</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000">&lt;data-source</span> <span style="color:#836c28">name=</span><span style="color:#c41a16">&#34;maildb&#34;</span> <span style="color:#836c28">class=</span><span style="color:#c41a16">&#34;org.apache.james.util.dbcp.JdbcDataSource&#34;</span><span style="color:#000">&gt;</span>
+  <span style="color:#000">&lt;driver&gt;</span>com.mysql.jdbc.Driver<span style="color:#000">&lt;/driver&gt;</span>
+  <span style="color:#000">&lt;dburl&gt;</span>jdbc:mysql://127.0.0.1/mail?autoReconnect=true<span style="color:#000">&lt;/dburl&gt;</span>
+  <span style="color:#000">&lt;user&gt;</span>root<span style="color:#000">&lt;/user&gt;</span>
+  <span style="color:#000">&lt;password&gt;</span>yourMysqlPwd<span style="color:#000">&lt;/password&gt;</span>
+  <span style="color:#000">&lt;max&gt;</span>20<span style="color:#000">&lt;/max&gt;</span> 
+<span style="color:#000">&lt;/data-source&gt;</span>
+</code></pre></div><p>3.无法收发外网邮件</p>
 <p>原因：这个错误原因会比较多，也很难总结，包括安装，配置，帐号等方面都有可能出问题。不过大多数还是配置出错引起的。可以参考这篇文章：<a href="https://www.cnblogs.com/softidea/p/5348057.html">Apache James使用的方法及相关心得（转）</a>，这是博客园上的文章，感谢原作者的分享和总结，当时我也是根据这篇文章解决无法的收发外网邮件的BUG。</p>
 <p>4.说明：如果没有独立域名和服务器，没有独立的公网IP地址，无法真正做到收外网邮件,不过为了满足开发测试，可以在hosts文件中添加伪域名，实现其功能。</p>
 <h2 id="总结">总结</h2>
@@ -777,19 +777,19 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     </li>
     
     <li>
-        <a href="http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面" target="_blank">OpenGL渲染器04_绘制点线面</a>
+        <a href="http://www.adiosy.com/posts/%E5%A4%9A%E5%B1%82%E8%8F%9C%E5%8D%95%E6%95%B0%E6%8D%AE%E6%9F%A5%E8%AF%A2.html" title="多层菜单数据查询" target="_blank">多层菜单数据查询</a>
     </li>
     
     <li>
-        <a href="http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 " target="_blank">OpenGL渲染器03_OpenGL环境 </a>
+        <a href="http://www.adiosy.com/posts/%E9%82%AE%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8.html" title="基于Apache james实现的Java邮件服务器" target="_blank">基于Apache james实现的Java邮件服务器</a>
     </li>
     
     <li>
-        <a href="http://www.adiosy.com/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器02_C&#43;&#43;环境" target="_blank">OpenGL渲染器02_C&#43;&#43;环境</a>
+        <a href="http://www.adiosy.com/posts/linux%E4%B8%8B%E5%AE%89%E8%A3%85nginx.html" title="Linux下安装Nginx" target="_blank">Linux下安装Nginx</a>
     </li>
     
     <li>
-        <a href="http://www.adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html" title="OpenGL渲染器01_开篇" target="_blank">OpenGL渲染器01_开篇</a>
+        <a href="http://www.adiosy.com/posts/liunx%E4%B8%8B%E7%9A%84jdk%E5%92%8Cmysql%E5%AE%89%E8%A3%85.html" title="Liunx下的JDK和MySQL安装" target="_blank">Liunx下的JDK和MySQL安装</a>
     </li>
     
 </ul>
@@ -816,8 +816,6 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
         <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
 <ul class="widget-list">
     
-    <li><a href="http://www.adiosy.com/categories/opengl.html">OpenGL (4)</a></li>
-    
     <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
     
     <li><a href="http://www.adiosy.com/categories/vulkan.html">Vulkan (4)</a></li>
@@ -834,8 +832,6 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     <a href="http://www.adiosy.com/tags/monado.html">Monado</a>
     
     <a href="http://www.adiosy.com/tags/opengl.html">OpenGL</a>
-    
-    <a href="http://www.adiosy.com/tags/opengl%E6%B8%B2%E6%9F%93.html">OpenGL渲染</a>
     
     <a href="http://www.adiosy.com/tags/openxr.html">OpenXR</a>
     

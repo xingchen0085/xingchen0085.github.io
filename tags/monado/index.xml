@@ -14,7 +14,7 @@
       
       <guid>http://www.adiosy.com/posts/hello-openxr-%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html</guid>
       <description>1 概要 本文目标是实现一个最小化OpenXR应用程序，只渲染一个三角形，渲染库采用的是OpenGL，窗口管理使用GLFW，OpenXR Runtime使用的是Monado。因为Monado目前支持的是安卓和Linux平台，本人测试使用的是Ubuntu系统，所以这个DEMO可以在Ubuntu系统下正常运行，但别的系统还没有经过严格测试。
-2 环境准备 点击下载cmake，如果使用apt安装，可能版本号过低。</description>
+  2 环境准备 点击下载cmake，如果使用apt安装，可能版本号过低。</description>
     </item>
     
   </channel>
