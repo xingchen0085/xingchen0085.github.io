@@ -6,7 +6,17 @@
     <description>Recent content on Adiosy&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Thu, 11 Apr 2024 00:00:00 +0000</lastBuildDate><atom:link href="http://www.adiosy.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 16 Apr 2024 18:34:07 +0800</lastBuildDate><atom:link href="http://www.adiosy.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Android跨进程渲染-HardwareBuffer</title>
+      <link>http://www.adiosy.com/posts/android%E8%B7%A8%E8%BF%9B%E7%A8%8B%E6%B8%B2%E6%9F%93-hardwarebuffer.html</link>
+      <pubDate>Tue, 16 Apr 2024 18:34:07 +0800</pubDate>
+      
+      <guid>http://www.adiosy.com/posts/android%E8%B7%A8%E8%BF%9B%E7%A8%8B%E6%B8%B2%E6%9F%93-hardwarebuffer.html</guid>
+      <description>前言 图片流交换是非常常见的需求，为了保证程序的健壮性，可以将这些步骤分为各个进程分别处理，防止中间步骤错误导致主进程crash从而降低用户体验。比如人脸识别、场景识别、直播等场景，这些图片数据可能要经过很多个步骤流转，在各步骤中执行格式转换、图层叠加、图片畸变、颜色矫正等，比如直播中常见的特效和相机图片叠加。
+在查阅资料过程中，发现网上相应的资料较少。对我非常有帮助的是一位博主Robot 9写的《基于 HardwareBuffer 实现 Android 多进程渲染》，但我不太想使用aidl来实现跨进程，于是我研究一段时间之后，决定使用Socket+HardwareBuffer来完成跨进程渲染。</description>
+    </item>
+    
     <item>
       <title>Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境</title>
       <link>http://www.adiosy.com/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html</link>
