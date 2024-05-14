@@ -269,7 +269,7 @@ u0_a84        <span style="color:#1c01ce">9736</span>   <span style="color:#1c01
 root          <span style="color:#1c01ce">9949</span>  <span style="color:#1c01ce">9433</span> <span style="color:#1c01ce">13</span> 01:37:58 pts/3 00:00:00 grep com.example.Renderer
 </code></pre></div><ol start="2">
 <li>首先服务端启动Socket等待连接，然后在启动客户端时执行连接。</li>
-<li>初始化客户端，创建HardewareBuffer，然后将HadewareBuffer关联到EGLImage，还要将该EGLImage作为一个附件挂载到一个帧缓冲FrameBuffer上。</li>
+<li>初始化客户端，创建HardwareBuffer，然后将HardwareBuffer关联到EGLImage，还要将该EGLImage作为一个附件挂载到一个帧缓冲FrameBuffer上。</li>
 <li>通过<code>AHardwareBuffer_sendHandleToUnixSocket()</code>将HardwareBuffer发送给服务端。</li>
 <li>服务端接收到HardwareBuffer后，停止等待，并根据该HardwareBuffer初始化自己的EGLImage，然后将该EGLImage作为贴图绘制到四边形中，完成显示。</li>
 <li>上述步骤完成后，就通过HardwareBuffer把客户端和服务端的两个EGLImage关联起来了，后续客户端直接将虚拟场景渲染到帧缓冲中即可。</li>
@@ -1090,8 +1090,6 @@ root          <span style="color:#1c01ce">9949</span>  <span style="color:#1c01c
             </span>
             &copy; 2024 <a href="http://www.adiosy.com">Adiosy&#39;s blog By xingchen</a>
                 
-                | <a rel="nofollow" target="_blank" href="http://beian.miit.gov.cn/">滇ICP备2022000560号-1</a>
-            
     </div>
 </footer>
 
@@ -1295,13 +1293,13 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
 
     
 <section class="widget">
-    <h3 class="widget-title" style="color:red">微信公众号</h3>
+    <h3 class="widget-title" style="color:red">我的B站主页</h3>
     <ul class="widget-list">
         
         <li>
-            <a href="#" title="微信公众号" target="_blank" style="color:red">
+            <a href="https://b23.tv/ObMaagI" title="我的B站主页（求关注~）" target="_blank" style="color:red">
                 
-                    <img src="/posts/assets/qrcode.jpg">
+                    <img src="/posts/assets/qrcode_b.jpg">
                 
             </a>
         </li>
