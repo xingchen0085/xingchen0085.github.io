@@ -238,60 +238,60 @@
 <p>我这边除了mysql之外将所有软件放在 /usr/local/server/目录下，可以更改至其他目录，但因下面将会有很多路径会参照该路径，所以不建议更改。</p>
 </blockquote>
 <p>解压 jdk-8u151-linux-i586.tar.gz</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#000">[</span>root@Xingchen server<span style="color:#000">]</span> tar -zxvf jdk-8u151-linux-i586.tar.gz
-</code></pre></div><p>编辑配置文件，配置环境变量</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#000">[</span>root@Xingchen server<span style="color:#000">]</span> vim /etc/profile
-</code></pre></div><p>在 profile 末尾加上以下环境变量</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#000">JAVA_HOME</span><span style="color:#000">=</span>/usr/local/server/jdk1.8.0_151
-<span style="color:#000">CLASSPATH</span><span style="color:#000">=</span><span style="color:#000">$JAVA_HOME</span>/lib/
-<span style="color:#000">PATH</span><span style="color:#000">=</span><span style="color:#000">$PATH</span>:<span style="color:#000">$JAVA_HOME</span>/bin
-<span style="color:#a90d91">export</span> PATH JAVA_HOME CLASSPATH
-</code></pre></div><p>使配置文件立即生效</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#000">[</span>root@Xingchen server<span style="color:#000">]</span> <span style="color:#a90d91">source</span> /etc/profile
-</code></pre></div><p>测试是否安装成功</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#000">[</span>root@Xingchen server<span style="color:#000">]</span> java -version
-</code></pre></div><p>如果出现以下输出，说明安装成功</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">java version <span style="color:#c41a16">&#34;1.8.0_151&#34;</span>
-Java<span style="color:#000">(</span>TM<span style="color:#000">)</span> SE Runtime Environment <span style="color:#000">(</span>build 1.8.0_151-b12<span style="color:#000">)</span>
-Java HotSpot<span style="color:#000">(</span>TM<span style="color:#000">)</span> Client VM <span style="color:#000">(</span>build 25.151-b12, mixed mode<span style="color:#000">)</span>
-</code></pre></div><p>此时，java安装成功。Oh yes！</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen server<span style="color:#000">]</span> tar -zxvf jdk-8u151-linux-i586.tar.gz
+</span></span></code></pre></div><p>编辑配置文件，配置环境变量</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen server<span style="color:#000">]</span> vim /etc/profile
+</span></span></code></pre></div><p>在 profile 末尾加上以下环境变量</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000">JAVA_HOME</span><span style="color:#000">=</span>/usr/local/server/jdk1.8.0_151
+</span></span><span style="display:flex;"><span><span style="color:#000">CLASSPATH</span><span style="color:#000">=</span><span style="color:#000">$JAVA_HOME</span>/lib/
+</span></span><span style="display:flex;"><span><span style="color:#000">PATH</span><span style="color:#000">=</span><span style="color:#000">$PATH</span>:<span style="color:#000">$JAVA_HOME</span>/bin
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">export</span> PATH JAVA_HOME CLASSPATH
+</span></span></code></pre></div><p>使配置文件立即生效</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen server<span style="color:#000">]</span> <span style="color:#a90d91">source</span> /etc/profile
+</span></span></code></pre></div><p>测试是否安装成功</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen server<span style="color:#000">]</span> java -version
+</span></span></code></pre></div><p>如果出现以下输出，说明安装成功</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>java version <span style="color:#c41a16">&#34;1.8.0_151&#34;</span>
+</span></span><span style="display:flex;"><span>Java<span style="color:#000">(</span>TM<span style="color:#000">)</span> SE Runtime Environment <span style="color:#000">(</span>build 1.8.0_151-b12<span style="color:#000">)</span>
+</span></span><span style="display:flex;"><span>Java HotSpot<span style="color:#000">(</span>TM<span style="color:#000">)</span> Client VM <span style="color:#000">(</span>build 25.151-b12, mixed mode<span style="color:#000">)</span>
+</span></span></code></pre></div><p>此时，java安装成功。Oh yes！</p>
 <h2 id="mysql安装">MySQL安装</h2>
 <p>首先看看本地是否已经安装过MySQL</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> rpm -qa | grep mysql
-</code></pre></div><p>有的话通过下面的命令来卸载掉</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> rpm -e mysql <span style="color:#177500">#这里是文件名</span>
-</code></pre></div><p>注：如果以上方式无法成功删除原MySQL， 可以使用强力删除模式删除 ： rpm -e &ndash;nodeps mysql</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> rpm -qa | grep mysql
+</span></span></code></pre></div><p>有的话通过下面的命令来卸载掉</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> rpm -e mysql <span style="color:#177500">#这里是文件名</span>
+</span></span></code></pre></div><p>注：如果以上方式无法成功删除原MySQL， 可以使用强力删除模式删除 ： rpm -e &ndash;nodeps mysql</p>
 <p>安装编译源码所需的工具和库</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> yum -y install gcc gcc-c++ ncurses-devel bison-devel perl-devel  perl-Module-Install.noarch
-</code></pre></div><p>安装cmake</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> <span style="color:#a90d91">cd</span> /usr/local/src  
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> wget https://cmake.org/files/v3.5/cmake-3.5.2.tar.gz  
-</code></pre></div><p>如果wget工具未安装，先安装wget</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> yum -y install wget
-</code></pre></div><p>不使用wget也可以，就是把下载好的源码包上传到服务器</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> tar -xzf cmake-3.5.2.tar.gz
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> <span style="color:#a90d91">cd</span> cmake-3.5.2  
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> ./bootstrap
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> make
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> make install 
-</code></pre></div><p>检测cmake是否安装成功</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> cmake -version
-cmake version 3.5.2  		<span style="color:#177500">#说明安装成功</span>
-CMake suite maintained and supported by Kitware <span style="color:#000">(</span>kitware.com/cmake<span style="color:#000">)</span>.
-</code></pre></div><p>安装Mysql</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> yum -y install gcc gcc-c++ ncurses-devel bison-devel perl-devel  perl-Module-Install.noarch
+</span></span></code></pre></div><p>安装cmake</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> <span style="color:#a90d91">cd</span> /usr/local/src  
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> wget https://cmake.org/files/v3.5/cmake-3.5.2.tar.gz  
+</span></span></code></pre></div><p>如果wget工具未安装，先安装wget</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> yum -y install wget
+</span></span></code></pre></div><p>不使用wget也可以，就是把下载好的源码包上传到服务器</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> tar -xzf cmake-3.5.2.tar.gz
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> <span style="color:#a90d91">cd</span> cmake-3.5.2  
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> ./bootstrap
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> make
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> make install 
+</span></span></code></pre></div><p>检测cmake是否安装成功</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> cmake -version
+</span></span><span style="display:flex;"><span>cmake version 3.5.2  		<span style="color:#177500">#说明安装成功</span>
+</span></span><span style="display:flex;"><span>CMake suite maintained and supported by Kitware <span style="color:#000">(</span>kitware.com/cmake<span style="color:#000">)</span>.
+</span></span></code></pre></div><p>安装Mysql</p>
 <p>1.创建mysql的安装目录及数据库存放目录</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> mkdir -p /usr/local/mysql  //安装mysql  
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> mkdir -p /usr/local/mysql/data //存放数据库 
-</code></pre></div><p>2.开始安装</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> <span style="color:#a90d91">cd</span> /usr/local/src  
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> wget http://mirrors.sohu.com/mysql/MySQL-5.6/mysql-5.6.35.tar.gz  
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> tar -xzf mysql-5.6.35.tar.gz  
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> <span style="color:#a90d91">cd</span> mysql-5.6.35  
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> cmake . -DCMAKE_INSTALL_PREFIX<span style="color:#000">=</span>/usr/local/mysql -DMYSQL_DATADIR<span style="color:#000">=</span>/usr/local/mysql/data -DDEFAULT_CHARSET<span style="color:#000">=</span>utf8 -DDEFAULT_COLLATION<span style="color:#000">=</span>utf8_general_ci -DEXTRA_CHARSETS<span style="color:#000">=</span>all -DENABLED_LOCAL_INFILE<span style="color:#000">=</span><span style="color:#1c01ce">1</span>
-
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> make  <span style="color:#177500">#这个时间比较长  </span>
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> make install
-</code></pre></div><p><strong>cmake命令参数说明</strong>：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> mkdir -p /usr/local/mysql  //安装mysql  
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> mkdir -p /usr/local/mysql/data //存放数据库 
+</span></span></code></pre></div><p>2.开始安装</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> <span style="color:#a90d91">cd</span> /usr/local/src  
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> wget http://mirrors.sohu.com/mysql/MySQL-5.6/mysql-5.6.35.tar.gz  
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> tar -xzf mysql-5.6.35.tar.gz  
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> <span style="color:#a90d91">cd</span> mysql-5.6.35  
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> cmake . -DCMAKE_INSTALL_PREFIX<span style="color:#000">=</span>/usr/local/mysql -DMYSQL_DATADIR<span style="color:#000">=</span>/usr/local/mysql/data -DDEFAULT_CHARSET<span style="color:#000">=</span>utf8 -DDEFAULT_COLLATION<span style="color:#000">=</span>utf8_general_ci -DEXTRA_CHARSETS<span style="color:#000">=</span>all -DENABLED_LOCAL_INFILE<span style="color:#000">=</span><span style="color:#1c01ce">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> make  <span style="color:#177500">#这个时间比较长  </span>
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> make install
+</span></span></code></pre></div><p><strong>cmake命令参数说明</strong>：</p>
 <p>​-DENABLED_LOCAL_INFILE=1 //允许从本地导入数据
 -DCMAKE_INSTALL_PREFIX=/usr/local/mysql   //安装目录
 ​-DINSTALL_DATADIR=/usr/local/mysql/data   //数据库存放目录
@@ -299,60 +299,60 @@ CMake suite maintained and supported by Kitware <span style="color:#000">(</span
 ​-DDEFAULT_COLLATION=utf8_general_ci    //校验字符
 ​-DEXTRA_CHARSETS=all //安装所有扩展字符集</p>
 <p>注：如果要重新编译，需要清除就得对象和编译信息</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> make clean  
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> rm -f CMakeCache.txt  
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> rm -rf /etc/my.cnf 
-</code></pre></div><p>mysql配置</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> make clean  
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> rm -f CMakeCache.txt  
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> rm -rf /etc/my.cnf 
+</span></span></code></pre></div><p>mysql配置</p>
 <p>设置目录权限</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> <span style="color:#a90d91">cd</span> /usr/local/mysql
-</code></pre></div><p>把当前目录中所有文件的所有者所有者设为msyql，所属组为mysql；不要丢掉最后一个‘ . ’</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> chown -R mysql:mysql . 
-</code></pre></div><p>复制mysql服务启动配置文件到/usr/local/mysql下并重命名为my.cnf，/usr/local/mysql/my.cnf如存在则输入y和回车覆盖配置文件，如果没有的话，MySQL所有的参数将会是默认值。</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> cp support-files/my-default.cnf /usr/local/mysql/my.cnf
-</code></pre></div><p>创建系统数据库的表</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> scripts/mysql_install_db --user<span style="color:#000">=</span>mysql  
-</code></pre></div><p>设置环境变量</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> <span style="color:#a90d91">cd</span> /usr/local/mysql
+</span></span></code></pre></div><p>把当前目录中所有文件的所有者所有者设为msyql，所属组为mysql；不要丢掉最后一个‘ . ’</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> chown -R mysql:mysql . 
+</span></span></code></pre></div><p>复制mysql服务启动配置文件到/usr/local/mysql下并重命名为my.cnf，/usr/local/mysql/my.cnf如存在则输入y和回车覆盖配置文件，如果没有的话，MySQL所有的参数将会是默认值。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> cp support-files/my-default.cnf /usr/local/mysql/my.cnf
+</span></span></code></pre></div><p>创建系统数据库的表</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> scripts/mysql_install_db --user<span style="color:#000">=</span>mysql  
+</span></span></code></pre></div><p>设置环境变量</p>
 <pre tabindex="0"><code>[root@Xingchen] vi /etc/profile 
 </code></pre><p>在最下面添加下面代码 ,然后保存文件</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#177500">#mysql</span>
-<span style="color:#a90d91">export</span> <span style="color:#000">PATH</span><span style="color:#000">=</span>/usr/local/mysql/bin:<span style="color:#000">$PATH</span> 
-</code></pre></div><p>使文件立即生效，并查看是否生效</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> <span style="color:#a90d91">source</span> /etc/profile  
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> <span style="color:#a90d91">echo</span> <span style="color:#000">$PATH</span> 
-</code></pre></div><p>将mysql的启动服务添加到系统服务中</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> cp support-files/mysql.server /etc/init.d/mysql 
-</code></pre></div><p>这样配置完成之后就可以使用下面的命令启动和停止mysql服务</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> service mysql start //启动  
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> service mysql stop //停止  
-<span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> service mysql restart //重启 
-</code></pre></div><p>将mysq服务加入开机启动中</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> chkconfig --level <span style="color:#1c01ce">35</span> mysql on  
-</code></pre></div><p>检查mysql服务是否启动</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span>  netstat -tulnp | grep <span style="color:#1c01ce">3306</span>   
-</code></pre></div><p>修改MySQL的root用户的密码
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#177500">#mysql</span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">export</span> <span style="color:#000">PATH</span><span style="color:#000">=</span>/usr/local/mysql/bin:<span style="color:#000">$PATH</span> 
+</span></span></code></pre></div><p>使文件立即生效，并查看是否生效</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> <span style="color:#a90d91">source</span> /etc/profile  
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> <span style="color:#a90d91">echo</span> <span style="color:#000">$PATH</span> 
+</span></span></code></pre></div><p>将mysql的启动服务添加到系统服务中</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> cp support-files/mysql.server /etc/init.d/mysql 
+</span></span></code></pre></div><p>这样配置完成之后就可以使用下面的命令启动和停止mysql服务</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> service mysql start //启动  
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> service mysql stop //停止  
+</span></span><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> service mysql restart //重启 
+</span></span></code></pre></div><p>将mysq服务加入开机启动中</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> chkconfig --level <span style="color:#1c01ce">35</span> mysql on  
+</span></span></code></pre></div><p>检查mysql服务是否启动</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span>  netstat -tulnp | grep <span style="color:#1c01ce">3306</span>   
+</span></span></code></pre></div><p>修改MySQL的root用户的密码
 设置mysql的root用户密码，此处设成123456，此root用户与linux不是一个</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> mysqladmin -u root password <span style="color:#c41a16">&#39;123456&#39;</span> 
-</code></pre></div><p>登陆mysql，用刚才设置的密码</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> mysql -u root -p
-Enter password: 					<span style="color:#177500">#输入密码</span>
-Welcome to the MySQL monitor.  Commands end with ; or <span style="color:#c41a16">\g</span>.
-Your MySQL connection id is <span style="color:#1c01ce">11</span>
-Server version: 5.6.35 Source distribution
-
-Copyright <span style="color:#000">(</span>c<span style="color:#000">)</span> 2000, 2016, Oracle and/or its affiliates. All rights reserved.
-
-Oracle is a registered trademark of Oracle Corporation and/or its
-affiliates. Other names may be trademarks of their respective
-owners.
-
-Type <span style="color:#c41a16">&#39;help;&#39;</span> or <span style="color:#c41a16">&#39;\h&#39;</span> <span style="color:#a90d91">for</span> help. Type <span style="color:#c41a16">&#39;\c&#39;</span> to clear the current input statement.
-
-mysql&gt; 
-</code></pre></div><p>MySQL安装成功，本机可以使用了。但是很多时候我们需要配置数据库为远程调用，这个配置方法有很多种，这里使用其中一种。如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> mysqladmin -u root password <span style="color:#c41a16">&#39;123456&#39;</span> 
+</span></span></code></pre></div><p>登陆mysql，用刚才设置的密码</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">[</span>root@Xingchen<span style="color:#000">]</span> mysql -u root -p
+</span></span><span style="display:flex;"><span>Enter password: 					<span style="color:#177500">#输入密码</span>
+</span></span><span style="display:flex;"><span>Welcome to the MySQL monitor.  Commands end with ; or <span style="color:#c41a16">\g</span>.
+</span></span><span style="display:flex;"><span>Your MySQL connection id is <span style="color:#1c01ce">11</span>
+</span></span><span style="display:flex;"><span>Server version: 5.6.35 Source distribution
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Copyright <span style="color:#000">(</span>c<span style="color:#000">)</span> 2000, 2016, Oracle and/or its affiliates. All rights reserved.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Oracle is a registered trademark of Oracle Corporation and/or its
+</span></span><span style="display:flex;"><span>affiliates. Other names may be trademarks of their respective
+</span></span><span style="display:flex;"><span>owners.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Type <span style="color:#c41a16">&#39;help;&#39;</span> or <span style="color:#c41a16">&#39;\h&#39;</span> <span style="color:#a90d91">for</span> help. Type <span style="color:#c41a16">&#39;\c&#39;</span> to clear the current input statement.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>mysql&gt; 
+</span></span></code></pre></div><p>MySQL安装成功，本机可以使用了。但是很多时候我们需要配置数据库为远程调用，这个配置方法有很多种，这里使用其中一种。如下：</p>
 <p>首先使用root账户登录mysql,然后执行以下语句。</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#177500"># 添加一个用户admin并授权可从任何其它主机发起的访问（通配符％）。使用这一条语句即可。something就是远程登录帐号密码</span>
-mysql&gt;grant all privileges on *.* to admin@<span style="color:#c41a16">&#34;%&#34;</span> identified by <span style="color:#c41a16">&#39;something&#39;</span> with grant option;
-</code></pre></div><p>至此，MySQL安装完成。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#177500"># 添加一个用户admin并授权可从任何其它主机发起的访问（通配符％）。使用这一条语句即可。something就是远程登录帐号密码</span>
+</span></span><span style="display:flex;"><span>mysql&gt;grant all privileges on *.* to admin@<span style="color:#c41a16">&#34;%&#34;</span> identified by <span style="color:#c41a16">&#39;something&#39;</span> with grant option;
+</span></span></code></pre></div><p>至此，MySQL安装完成。</p>
 
         </div>
 
@@ -437,6 +437,8 @@ mysql&gt;grant all privileges on *.* to admin@<span style="color:#c41a16">&#34;%
             </span>
             &copy; 2024 <a href="http://www.adiosy.com">Adiosy&#39;s blog By xingchen</a>
                 
+                | <a rel="nofollow" target="_blank" href="http://beian.miit.gov.cn/">滇ICP备2022000560号-1</a>
+            
     </div>
 </footer>
 
@@ -596,6 +598,10 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
 <ul class="widget-list">
     
     <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan04_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E6%9D%90%E8%B4%A8%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html" title="Learn_Vulkan04_渲染框架实现_材质系统设计" target="_blank">Learn_Vulkan04_渲染框架实现_材质系统设计</a>
+    </li>
+    
+    <li>
         <a href="http://www.adiosy.com/posts/android%E8%B7%A8%E8%BF%9B%E7%A8%8B%E6%B8%B2%E6%9F%93-hardwarebuffer.html" title="Android跨进程渲染-HardwareBuffer" target="_blank">Android跨进程渲染-HardwareBuffer</a>
     </li>
     
@@ -624,15 +630,11 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     </li>
     
     <li>
-        <a href="http://www.adiosy.com/posts/%E5%A4%9A%E5%B1%82%E8%8F%9C%E5%8D%95%E6%95%B0%E6%8D%AE%E6%9F%A5%E8%AF%A2.html" title="多层菜单数据查询" target="_blank">多层菜单数据查询</a>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面" target="_blank">OpenGL渲染器04_绘制点线面</a>
     </li>
     
     <li>
-        <a href="http://www.adiosy.com/posts/%E9%82%AE%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8.html" title="基于Apache james实现的Java邮件服务器" target="_blank">基于Apache james实现的Java邮件服务器</a>
-    </li>
-    
-    <li>
-        <a href="http://www.adiosy.com/posts/linux%E4%B8%8B%E5%AE%89%E8%A3%85nginx.html" title="Linux下安装Nginx" target="_blank">Linux下安装Nginx</a>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 " target="_blank">OpenGL渲染器03_OpenGL环境 </a>
     </li>
     
 </ul>
@@ -640,13 +642,13 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
 
     
 <section class="widget">
-    <h3 class="widget-title" style="color:red">我的B站主页</h3>
+    <h3 class="widget-title" style="color:red">微信公众号</h3>
     <ul class="widget-list">
         
         <li>
-            <a href="https://b23.tv/ObMaagI" title="我的B站主页（求关注~）" target="_blank" style="color:red">
+            <a href="#" title="微信公众号" target="_blank" style="color:red">
                 
-                    <img src="/posts/assets/qrcode_b.jpg">
+                    <img src="/posts/assets/qrcode.jpg">
                 
             </a>
         </li>
@@ -659,9 +661,11 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
         <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
 <ul class="widget-list">
     
+    <li><a href="http://www.adiosy.com/categories/opengl.html">OpenGL (4)</a></li>
+    
     <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
     
-    <li><a href="http://www.adiosy.com/categories/vulkan.html">Vulkan (4)</a></li>
+    <li><a href="http://www.adiosy.com/categories/vulkan.html">Vulkan (5)</a></li>
     
     <li><a href="http://www.adiosy.com/categories/yuv.html">YUV (1)</a></li>
     
@@ -675,6 +679,8 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     <a href="http://www.adiosy.com/tags/monado.html">Monado</a>
     
     <a href="http://www.adiosy.com/tags/opengl.html">OpenGL</a>
+    
+    <a href="http://www.adiosy.com/tags/opengl%E6%B8%B2%E6%9F%93.html">OpenGL渲染</a>
     
     <a href="http://www.adiosy.com/tags/openxr.html">OpenXR</a>
     

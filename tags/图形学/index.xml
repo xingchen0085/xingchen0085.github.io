@@ -15,7 +15,7 @@
       <guid>http://www.adiosy.com/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html</guid>
       <description>1 概述 前面一篇文章是Learn_Vulkan00_第一个三角形，渲染出来了第一个彩色三角形。学习新事物的是一个很枯燥的过程，所以我们应该每个阶段想办法获得一些成就感，比如上一篇的三角形，先用最快的方式得到效果，能看到效果就能给我们带来进一步的学习动力。
 上一个案例中用到的对象我只是列了一个列表，简单描述了各个对象的作用。但描述还是较为简短，在进入更复杂的Vulkan程序之前，还是想把几个重要对象梳理一遍。
- 层和扩展 实例 窗口表面 物理设备和队列族 逻辑设备和队列 交换链   说明：本文中的代码就是上篇文章中的代码，编程环境是Windows，如果要在Linux/MacOS中运行，还需要修改配置文件。</description>
+层和扩展 实例 窗口表面 物理设备和队列族 逻辑设备和队列 交换链 说明：本文中的代码就是上篇文章中的代码，编程环境是Windows，如果要在Linux/MacOS中运行，还需要修改配置文件。</description>
     </item>
     
     <item>
@@ -24,7 +24,50 @@
       <pubDate>Tue, 13 Jun 2023 00:00:00 +0000</pubDate>
       
       <guid>http://www.adiosy.com/posts/learn_vulkan/learn_vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html</guid>
-      <description>1 概述 本文将描述一个基于C++/Vulkan渲染彩色三角形的案例。因为Vulkan API较为底层，对象也繁多，所以我尽可能只保留必要内容，目的是梳理出来一个Vulkan程序的基础框架，也是对Vulkan各个对象的初步理解。当然也出于这个关系，本文不会对每个API参数都进行详细解释。</description>
+      <description>1 概述 本文将描述一个基于C++/Vulkan渲染彩色三角形的案例。因为Vulkan API较为底层，对象也繁多，所以我尽可能只保留必要内容，目的是梳理出来一个Vulkan程序的基础框架，也是对Vulkan各个对象的初步理解。当然也出于这个关系，本文不会对每个API参数都进行详细解释。
+1.1 Vulkan的概念 Vulkan是一套渲染图形API，于2015由Khronos组织发布，另外OpenGL也是这个组织发布的图形API。</description>
+    </item>
+    
+    <item>
+      <title>OpenGL渲染器04_绘制点线面</title>
+      <link>http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html</link>
+      <pubDate>Mon, 29 Nov 2021 14:34:07 +0800</pubDate>
+      
+      <guid>http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html</guid>
+      <description>回顾 上一篇《OpenGL环境搭建》给接下来的内容创造了基础，我们拥有了glfw提供的窗口，也有了ImGui提供的GUI，接下来就磨刀霍霍向猪羊，准备大干一场。
+不过，最开始，我们还只能绘制简单的东西：点、线、三角形和四边形。
+目标 各种华丽的二维、三维图形，虚拟现实，都是由点线面基本图元构成的。如果接触过Maya、Blender等建模工具，会发现，模型的基础就是点线面，建模就是构建点线面，然后挤出立体，从而形成三维。
+然而最简单的面就是拥有三个顶点的面：三角形。所以目标就是：</description>
+    </item>
+    
+    <item>
+      <title>OpenGL渲染器03_OpenGL环境 </title>
+      <link>http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html</link>
+      <pubDate>Tue, 23 Nov 2021 14:34:07 +0800</pubDate>
+      
+      <guid>http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html</guid>
+      <description>目标 原本计划是OpenGL环境就放在上一节（C++环境搭建）中一起记录的，后面发现内容太多了，所以就分开记录。
+使用glfw、glad和ImGui完成OpenGL环境的搭建； 创建第一个glfw窗口； 使用ImGui，显示ImGui的demo窗口。 计算机图形学 计算机图形学是使用数学算法将二维或三维图形转化计算机显示的栅格形式的科学，计算机图形学的主要研究内容就是研究如何在计算机中表示图形、以及利用计算机进行图形的计算、处理和显示的相关原理和算法。</description>
+    </item>
+    
+    <item>
+      <title>OpenGL渲染器02_C&#43;&#43;环境</title>
+      <link>http://www.adiosy.com/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html</link>
+      <pubDate>Fri, 19 Nov 2021 14:34:07 +0800</pubDate>
+      
+      <guid>http://www.adiosy.com/posts/opengl_renderer/02_c&#43;&#43;%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html</guid>
+      <description>目标 使用CMake+MinGW搭建C++编译环境。 使用CLion搭建C++开发环境，实现C++程序开发、生成、编译、运行； 构建和编译 C++源码“转译”为机器语言，就是编译过程。最常用的编译器是GNU的C/C++编译器。也就是gcc/g++。
+如果我们要编译和运行C++程序，下载安装g++后：</description>
+    </item>
+    
+    <item>
+      <title>OpenGL渲染器01_开篇</title>
+      <link>http://www.adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html</link>
+      <pubDate>Thu, 18 Nov 2021 14:34:07 +0800</pubDate>
+      
+      <guid>http://www.adiosy.com/posts/opengl_renderer/01_%E5%BC%80%E7%AF%87.html</guid>
+      <description>概述 在真正开始之前，我想先说说我的情况，目前我从事软件开发，不过工作上主要语言还是Java。
+编程基础，四年Java编程基础；工作上没用到C++，不过自己业余学习和使用C++大概1.5年左右，差不多是用到了才查，断断续续，没有系统性学习。 图形学线性代数基础，目前才了解向量、矩阵的基本运算和变换基础，更高级的还没学。 OpenGL编程的一些基础知识，基础几何绘制、MVP变换、材质、光照等基础。 还有一点WebGL的经验，实现了基础材质和光照。 为什么要写关于图形学的内容呢，缘由悠长。这一段可能会有些啰嗦，可以直接略过。</description>
     </item>
     
   </channel>

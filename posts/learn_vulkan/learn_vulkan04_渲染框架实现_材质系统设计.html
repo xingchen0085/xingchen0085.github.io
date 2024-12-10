@@ -1,0 +1,1308 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Learn_Vulkan04_渲染框架实现_材质系统设计 | Adiosy&#39;s blog</title>
+    <meta property="og:title" content="Learn_Vulkan04_渲染框架实现_材质系统设计 - Adiosy&#39;s blog">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2024-07-18T00:00:00&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2024-07-18T00:00:00&#43;08:00'>
+        
+    <meta name="Keywords" content="C/C&#43;&#43;,Java,计算机图形学,渲染,动画">
+    <meta name="description" content="Learn_Vulkan04_渲染框架实现_材质系统设计">
+        
+    <meta name="author" content="xingchen">
+    <meta property="og:url" content="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan04_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E6%9D%90%E8%B4%A8%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+        <link href="https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet">
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/custom.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://www.adiosy.com">
+                        Adiosy&#39;s blog
+                    </a>
+                
+                <p class="description">民间图形学爱好者.</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://www.adiosy.com">Home</a>
+                    
+                    <a  href="http://www.adiosy.com/archives.html" title="归档">归档</a>
+                    
+                    <a  href="http://www.adiosy.com/books.html" title="读书">读书</a>
+                    
+                    <a  href="http://www.adiosy.com/about.html" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 0px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 20px;
+        word-wrap: break-word;
+        white-space: nowrap;
+        z-index: 999;
+        cursor: pointer;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 13px;
+         
+        filter: drop-shadow(rgb(150, 150, 150) 0px 0px 6px) !important;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+        list-style: none;
+        padding-inline-start: 1px !important;
+    }
+
+    .post-toc .post-toc-content ul {
+        list-style: none;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: inherit;
+    }
+
+    .post-toc .post-toc-content>nav>ul>li{
+        background-color: #fff;
+        border-left: 5px solid #666;
+        padding: 2px 5px 2px 5px;
+    }
+
+    .post-toc .post-toc-content ul li:hover{
+ 
+ 
+    }
+
+    .post-toc .post-toc-content ul li a{
+        display: inline-block;
+        width: 100%;
+    }
+
+    .post-toc .post-toc-content ul li a:hover{
+        background-color: #666;
+        color: #fff;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 153px;">
+    <h2 class="post-toc-title">目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#渲染循环">渲染循环</a></li>
+    <li><a href="#材质参数-material">材质参数 Material</a></li>
+    <li><a href="#材质组件-material-component">材质组件 Material Component</a></li>
+    <li><a href="#材质系统-material-system">材质系统 Material System</a></li>
+    <li><a href="#设计规则">设计规则</a>
+      <ul>
+        <li><a href="#1-descriptorset规范">1. DescriptorSet规范</a></li>
+        <li><a href="#2-descriptorset和material参数隔离">2. DescriptorSet和Material参数隔离</a></li>
+        <li><a href="#3-descriptorpool根据material的数量动态增长">3. DescriptorPool根据Material的数量动态增长</a></li>
+      </ul>
+    </li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 15, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 125,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 125
+                    },
+                };
+
+            var e = $(window).animate({scrollTop: 0}, 600);
+            e < t ? postToc.css(a.start) : postToc.css(a.process);
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+
+    <article class="post">
+        <header>
+            <h1 class="post-title">Learn_Vulkan04_渲染框架实现_材质系统设计</h1>
+        </header>
+        
+  <time datetime="2024-07-18T00:00:00Z" class="post-meta meta-date dt-published">
+    2024-07-18
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/vulkan' target="_blank">Vulkan</a>
+  
+</div>
+
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">Table of Contents</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="前言">前言</h2>
+<p>工程源码：<a href="https://gitee.com/xingchen0085/adiosy_engine">https://gitee.com/xingchen0085/adiosy_engine</a></p>
+<p>视频：<a href="https://b23.tv/ObMaagI">XINGCHEN0085的个人空间-哔哩哔哩</a></p>
+<p>网格（Mesh）用作定义虚拟物体的形状，材质（Material）则是描述这些物体表面的外观，需要借助纹理和材质参数，参数包括光照参数、UV偏移、基础颜色等等。在渲染系统渲染某个网格体时，将对应材质参数传递给着色器，即可完成不同表面的渲染。如下图，这些网格体利用了不同的材质参数完成渲染。</p>
+<blockquote>
+<p>说明：本文出现的代码，只是为了标明主要流程和设计，大部分只是<strong>伪代码</strong>，具体实现可查看工程源码。</p>
+</blockquote>
+<p>
+        <a data-fancybox="gallery" href="../assets/image-20240719140757715.png">
+            <img class="mx-auto" alt="image-20240719140757715" src="../assets/image-20240719140757715.png" />
+        </a>
+    </p>
+<h2 id="渲染循环">渲染循环</h2>
+<p>以下是该渲染器的主循环伪代码：</p>
+<p>
+        <a data-fancybox="gallery" href="../assets/image.png">
+            <img class="mx-auto" alt="image" src="../assets/image.png" />
+        </a>
+    </p>
+<p>伪代码简要描述：</p>
+<ul>
+<li>RenderPass为渲染流程，内部可以包含多个渲染子流程，也是使用RenderPass定义后续需要用的颜色、深度等附件。可以根据RenderPass创建多个RenderTarget。一个Application中可以定义N个RenderPass，所以第一层循环从RenderPass开始。</li>
+<li>RenderTarget为渲染目标，对应的就是不同的FrameBuffer。满足同时预览多个相机的画面的需求，比如对虚拟物体在不同视图下编辑（透视图、正视图、左视图等）。RenderTarget是基于RenderPass创建的，所以第二层循环是RenderTarget，绑定某个RenderTarget，相当于绑定某一套FrameBuffer。</li>
+<li>Material System为材质系统，真正的渲染代码在这里完成。材质系统绑定到了每个RenderTarget上，也就是每个RenderTarget可以自定义处理某些材质系统。所以第三层循环是材质系统。</li>
+<li>Material为材质信息，每个材质系统要渲染绑定了某材质组件的Entity，也就是每个材质系统下会有很多Material。所以第四层循环就是绑定某个材质。</li>
+<li>Mesh为网格体，也就是在这里，正式的提交Draw Call。</li>
+</ul>
+<p>以上就是该工程的循环主循环。对于材质系统相关流程，设计主要考虑以下几点：</p>
+<p>1/ 不同的RenderTarget绑定不同的材质系统，比如有的RendertTarget只处理非光照材质的Mesh渲染；有的RenderTarget只处理Phong式光照材质的渲染；有的RenderTarget则处理非光照材质、Phong式光照材质、PBR材质等渲染。RenderTarget支持添加或删除某些材质系统。</p>
+<p>2/ 材质系统会跟Shader、Pipeline、DescriptorSet图形API对象产生关联，为了渲染和场景树解耦，所以把材质系统作为一种特殊的ECS系统，场景树种的Entity只需要添加某个Material Component即可，相当于标识这个Entity下的Mesh渲染都是使用这个Material System来完成。</p>
+<p>3/ 为了性能考虑，减少绑定Descriptor的次数，所以在循环种先循环所有材质，再循环所有绑定该材质下的网格体提交渲染。</p>
+<h2 id="材质参数-material">材质参数 Material</h2>
+<p>材质内容包含两个重要信息：<strong>材质参数和纹理列表</strong>。渲染时，使用Uniform Buffer/Stoage Buffer等将材质参数打包发送给Shader；通过Tetxure/Sampler传递给着色器进行采样。如下图：</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240719220108914.png">
+            <img class="mx-auto" alt="image-20240719220108914" src="./assets/image-20240719220108914.png" />
+        </a>
+    </p>
+<p>材质参数可能是：基础颜色（base color）、漫反射颜色（diffuse）、镜面反射颜色（specular），或者是PBR材质的一些参数等。</p>
+<p>不过针纹理列表的话，这里有延申设计了两个概念：</p>
+<p>1/ 每个材质内用到的纹理，一般只会读取一次，并将其放入纹理池中以供复用。</p>
+<p>2/ 渲染时可以指定一些参数进行采样，额外添加一个TextureView的对象，内部包含纹理指针、采样方式（Sampler，比如过滤、UV寻址方式、Lod等）和UV变换（UV唯一、缩放、旋转）数据。</p>
+<p>材质基类定义了基础的数据，然后可以由此派生出其他材质类，比如无光照材质（Unlit）、Phong式光照材质、PBR材质等。</p>
+<p>材质基类的基础定义：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span> <span style="color:#a90d91">struct</span> <span style="color:#3f6e75">TextureView</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#000">AdTexture</span> <span style="color:#000">*</span><span style="color:#000">texture</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>;						<span style="color:#177500">// 纹理
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">AdSampler</span> <span style="color:#000">*</span><span style="color:#000">sampler</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>;						<span style="color:#177500">// 采样方式
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#a90d91">bool</span> <span style="color:#000">bEnable</span> <span style="color:#000">=</span> <span style="color:#a90d91">true</span>;								<span style="color:#177500">// 是否启用
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">glm</span><span style="color:#000">::</span><span style="color:#000">vec2</span> <span style="color:#000">uvTranslation</span>{ <span style="color:#1c01ce">0.f</span>, <span style="color:#1c01ce">0.f</span> };				<span style="color:#177500">// UV位移
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#a90d91">float</span> <span style="color:#000">uvRotation</span>{ <span style="color:#1c01ce">0.f</span> };							<span style="color:#177500">// UV旋转
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">glm</span><span style="color:#000">::</span><span style="color:#000">vec2</span> <span style="color:#000">uvScale</span> { <span style="color:#1c01ce">1.f</span>, <span style="color:#1c01ce">1.f</span> };						<span style="color:#177500">// UV缩放
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">bool</span> <span style="color:#000">IsValid</span>() <span style="color:#a90d91">const</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">return</span> <span style="color:#000">bEnable</span> <span style="color:#000">&amp;&amp;</span> <span style="color:#000">texture</span> <span style="color:#000">!=</span> <span style="color:#a90d91">nullptr</span> <span style="color:#000">&amp;&amp;</span> <span style="color:#000">sampler</span> <span style="color:#000">!=</span> <span style="color:#a90d91">nullptr</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdMaterial</span>{
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">public</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">private</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">int32_t</span> <span style="color:#000">mIndex</span> <span style="color:#000">=</span> <span style="color:#000">-</span><span style="color:#1c01ce">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">unordered_map</span><span style="color:#000">&lt;</span><span style="color:#a90d91">uint32_t</span>, <span style="color:#000">TextureView</span><span style="color:#000">&gt;</span> <span style="color:#000">mTextures</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">friend</span> <span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdMaterialFactory</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p><strong>材质工厂</strong></p>
+<p>为了方便创建不同材质，材质的维护统一交给材质工厂来作，不提供外界实例化材质的。重点需要实现的函数就是创建材质。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span> <span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdMaterialFactory</span>{
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">public</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">AdMaterialFactory</span>(<span style="color:#a90d91">const</span> <span style="color:#000">AdMaterialFactory</span><span style="color:#000">&amp;</span>) <span style="color:#000">=</span> <span style="color:#a90d91">delete</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">AdMaterialFactory</span> <span style="color:#000">&amp;</span><span style="color:#a90d91">operator</span><span style="color:#000">=</span>(<span style="color:#a90d91">const</span> <span style="color:#000">AdMaterialFactory</span><span style="color:#000">&amp;</span>) <span style="color:#000">=</span> <span style="color:#a90d91">delete</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">static</span> <span style="color:#000">AdMaterialFactory</span><span style="color:#000">*</span> <span style="color:#000">GetInstance</span>(){
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">return</span> <span style="color:#000">&amp;</span><span style="color:#000">s_MaterialFactory</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">~</span><span style="color:#000">AdMaterialFactory</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#000">mMaterials</span>.<span style="color:#000">clear</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">template</span><span style="color:#000">&lt;</span><span style="color:#a90d91">typename</span> <span style="color:#000">T</span><span style="color:#000">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">T</span><span style="color:#000">*</span> <span style="color:#000">CreateMaterial</span>(){
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">auto</span> <span style="color:#000">mat</span> <span style="color:#000">=</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">make_shared</span><span style="color:#000">&lt;</span><span style="color:#000">T</span><span style="color:#000">&gt;</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">uint32_t</span> <span style="color:#000">typeId</span> <span style="color:#000">=</span> <span style="color:#000">entt</span><span style="color:#000">::</span><span style="color:#000">type_id</span><span style="color:#000">&lt;</span><span style="color:#000">T</span><span style="color:#000">&gt;</span>().<span style="color:#000">hash</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">uint32_t</span> <span style="color:#000">index</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">if</span>(<span style="color:#000">mMaterials</span>.<span style="color:#000">find</span>(<span style="color:#000">typeId</span>) <span style="color:#000">==</span> <span style="color:#000">mMaterials</span>.<span style="color:#000">end</span>()){
+</span></span><span style="display:flex;"><span>            <span style="color:#000">mMaterials</span>.<span style="color:#000">insert</span>({ <span style="color:#000">typeId</span>, { <span style="color:#000">mat</span> }});
+</span></span><span style="display:flex;"><span>        } <span style="color:#a90d91">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#000">index</span> <span style="color:#000">=</span> <span style="color:#000">mMaterials</span>[<span style="color:#000">typeId</span>].<span style="color:#000">size</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#000">mMaterials</span>[<span style="color:#000">typeId</span>].<span style="color:#000">push_back</span>(<span style="color:#000">mat</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#000">mat</span><span style="color:#000">-&gt;</span><span style="color:#000">mIndex</span> <span style="color:#000">=</span> <span style="color:#000">index</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">return</span> <span style="color:#000">mat</span>.<span style="color:#000">get</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">private</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">AdMaterialFactory</span>() <span style="color:#000">=</span> <span style="color:#a90d91">default</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">static</span> <span style="color:#000">AdMaterialFactory</span> <span style="color:#000">s_MaterialFactory</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">// 所有材质
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">unordered_map</span><span style="color:#000">&lt;</span><span style="color:#a90d91">uint32_t</span>, <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">vector</span><span style="color:#000">&lt;</span><span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">shared_ptr</span><span style="color:#000">&lt;</span><span style="color:#000">AdMaterial</span><span style="color:#000">&gt;&gt;&gt;</span> <span style="color:#000">mMaterials</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>材质的创建：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">auto</span> <span style="color:#000">matFactory</span> <span style="color:#000">=</span> <span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdMaterialFactory</span><span style="color:#000">::</span><span style="color:#000">GetInstance</span>();
+</span></span><span style="display:flex;"><span><span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdUnlitMaterial</span> <span style="color:#000">*</span><span style="color:#000">unlitMat</span> <span style="color:#000">=</span> <span style="color:#000">matFactory</span><span style="color:#000">-&gt;</span><span style="color:#000">CreateMaterial</span><span style="color:#000">&lt;</span><span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdUnlitMaterial</span><span style="color:#000">&gt;</span>();
+</span></span><span style="display:flex;"><span><span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdPhongMaterial</span> <span style="color:#000">*</span><span style="color:#000">phongMat</span> <span style="color:#000">=</span> <span style="color:#000">matFactory</span><span style="color:#000">-&gt;</span><span style="color:#000">CreateMaterial</span><span style="color:#000">&lt;</span><span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdPhongMaterial</span><span style="color:#000">&gt;</span>();
+</span></span><span style="display:flex;"><span><span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdPBRMaterial</span> <span style="color:#000">*</span><span style="color:#000">pbrMat</span> <span style="color:#000">=</span> <span style="color:#000">matFactory</span><span style="color:#000">-&gt;</span><span style="color:#000">CreateMaterial</span><span style="color:#000">&lt;</span><span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdPBRMaterial</span><span style="color:#000">&gt;</span>();
+</span></span></code></pre></div><p>以上，就是材质数据的维护。材质数据包有了之后，怎么将网格体跟材质扯上关系呢？这就需要材质组件来完成绑定了。</p>
+<h2 id="材质组件-material-component">材质组件 Material Component</h2>
+<p>材质组件由两个重要作用：</p>
+<p>1/ 标识某个Entity使用某个材质系统。</p>
+<p>2/ 绑定网格体和材质参数。</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240719220258297.png">
+            <img class="mx-auto" alt="image-20240719220258297" src="./assets/image-20240719220258297.png" />
+        </a>
+    </p>
+<p>材质组件的定义：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span> <span style="color:#a90d91">template</span><span style="color:#000">&lt;</span><span style="color:#a90d91">typename</span> <span style="color:#000">T</span><span style="color:#000">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdMaterialComponent</span> <span style="color:#000">:</span> <span style="color:#a90d91">public</span> <span style="color:#000">AdComponent</span>{
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">public</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">void</span> <span style="color:#000">AddMesh</span>(<span style="color:#000">AdMesh</span> <span style="color:#000">*</span><span style="color:#000">mesh</span>, <span style="color:#000">T</span> <span style="color:#000">*</span><span style="color:#000">material</span> <span style="color:#000">=</span> <span style="color:#a90d91">nullptr</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">if</span>(<span style="color:#000">!</span><span style="color:#000">mesh</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">uint32_t</span> <span style="color:#000">meshIndex</span> <span style="color:#000">=</span> <span style="color:#000">mMeshList</span>.<span style="color:#000">size</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#000">mMeshList</span>.<span style="color:#000">push_back</span>(<span style="color:#000">mesh</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">if</span>(<span style="color:#000">mMeshMaterials</span>.<span style="color:#000">find</span>(<span style="color:#000">material</span>) <span style="color:#000">!=</span> <span style="color:#000">mMeshMaterials</span>.<span style="color:#000">end</span>()){
+</span></span><span style="display:flex;"><span>            <span style="color:#000">mMeshMaterials</span>[<span style="color:#000">material</span>].<span style="color:#000">push_back</span>(<span style="color:#000">meshIndex</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#a90d91">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#000">mMeshMaterials</span>.<span style="color:#000">insert</span>({ <span style="color:#000">material</span>, { <span style="color:#000">meshIndex</span> } });
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span> <span style="color:#000">GetMaterialCount</span>() <span style="color:#a90d91">const</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">return</span> <span style="color:#000">mMeshMaterials</span>.<span style="color:#000">size</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">unordered_map</span><span style="color:#000">&lt;</span><span style="color:#000">T</span><span style="color:#000">*</span>, <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">vector</span><span style="color:#000">&lt;</span><span style="color:#a90d91">uint32_t</span><span style="color:#000">&gt;&gt;</span> <span style="color:#000">&amp;</span><span style="color:#000">GetMeshMaterials</span>() <span style="color:#a90d91">const</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">return</span> <span style="color:#000">mMeshMaterials</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">AdMesh</span> <span style="color:#000">*</span><span style="color:#000">GetMesh</span>(<span style="color:#a90d91">uint32_t</span> <span style="color:#000">index</span>) <span style="color:#a90d91">const</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">if</span>(<span style="color:#000">index</span> <span style="color:#000">&lt;</span> <span style="color:#000">mMeshList</span>.<span style="color:#000">size</span>()){
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">return</span> <span style="color:#000">mMeshList</span>[<span style="color:#000">index</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">return</span> <span style="color:#a90d91">nullptr</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">private</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">vector</span><span style="color:#000">&lt;</span><span style="color:#000">AdMesh</span><span style="color:#000">*&gt;</span> <span style="color:#000">mMeshList</span>;									<span style="color:#177500">// 网格体列表
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">unordered_map</span><span style="color:#000">&lt;</span><span style="color:#000">T</span><span style="color:#000">*</span>, <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">vector</span><span style="color:#000">&lt;</span><span style="color:#a90d91">uint32_t</span><span style="color:#000">&gt;&gt;</span> <span style="color:#000">mMeshMaterials</span>;	<span style="color:#177500">// 材质对应的网格体列表
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#177500">// 具体的材质组件
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#a90d91">enum</span> <span style="color:#3f6e75">UnlitMaterialTexture</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#000">UNLIT_MAT_BASE_COLOR_0</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#000">UNLIT_MAT_BASE_COLOR_1</span>
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">struct</span> <span style="color:#3f6e75">UnlitMaterialUbo</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">alignas</span>(<span style="color:#1c01ce">16</span>) <span style="color:#000">glm</span><span style="color:#000">::</span><span style="color:#000">vec3</span> <span style="color:#000">baseColor0</span>{ <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">0</span> };
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">alignas</span>(<span style="color:#1c01ce">16</span>) <span style="color:#000">glm</span><span style="color:#000">::</span><span style="color:#000">vec3</span> <span style="color:#000">baseColor1</span>{ <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">0</span> };
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">alignas</span>(<span style="color:#1c01ce">4</span>)  <span style="color:#a90d91">float</span> <span style="color:#000">mixValue</span>{ <span style="color:#1c01ce">0.5f</span> };
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">alignas</span>(<span style="color:#1c01ce">16</span>) <span style="color:#000">TextureParam</span> <span style="color:#000">textureParam0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">alignas</span>(<span style="color:#1c01ce">16</span>) <span style="color:#000">TextureParam</span> <span style="color:#000">textureParam1</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdUnlitMaterial</span> <span style="color:#000">:</span> <span style="color:#a90d91">public</span> <span style="color:#000">AdMaterial</span>{
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">public</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#000">UnlitMaterialUbo</span><span style="color:#000">&amp;</span> <span style="color:#000">GetParams</span>() <span style="color:#a90d91">const</span> { <span style="color:#a90d91">return</span> <span style="color:#000">mParams</span>; }
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">void</span> <span style="color:#000">SetParams</span>(<span style="color:#a90d91">const</span> <span style="color:#000">UnlitMaterialUbo</span> <span style="color:#000">&amp;</span><span style="color:#000">params</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">mParams</span> <span style="color:#000">=</span> <span style="color:#000">params</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">bShouldFlushParams</span> <span style="color:#000">=</span> <span style="color:#a90d91">true</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">private</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">UnlitMaterialUbo</span> <span style="color:#000">mParams</span>{};
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdUnlitMaterialComponent</span> <span style="color:#000">:</span> <span style="color:#a90d91">public</span> <span style="color:#000">AdMaterialComponent</span><span style="color:#000">&lt;</span><span style="color:#000">AdUnlitMaterial</span><span style="color:#000">&gt;</span>{
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><blockquote>
+<p><strong>alignas 是为了手动内存对齐。改工程中，给Shader传输的数据包全部采用 std140 形式打包。</strong></p>
+</blockquote>
+<p><strong>材质组件的第一个作用如何体现呢？</strong></p>
+<p>可以通过下述代码，给Enity添加一个材质组件。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdEntity</span> <span style="color:#000">*</span><span style="color:#000">entity</span> <span style="color:#000">=</span> <span style="color:#000">scene</span><span style="color:#000">-&gt;</span><span style="color:#000">CreateEntity</span>(<span style="color:#c41a16">&#34;Cube&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">auto</span> <span style="color:#000">&amp;</span><span style="color:#000">materialComp</span> <span style="color:#000">=</span> <span style="color:#000">entity</span><span style="color:#000">-&gt;</span><span style="color:#000">AddComponent</span><span style="color:#000">&lt;</span><span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdUnlitMaterialComponent</span><span style="color:#000">&gt;</span>();
+</span></span><span style="display:flex;"><span><span style="color:#000">materialComp</span>.<span style="color:#000">AddMesh</span>(<span style="color:#000">mesh1</span>, <span style="color:#000">material0</span>);
+</span></span><span style="display:flex;"><span><span style="color:#000">materialComp</span>.<span style="color:#000">AddMesh</span>(<span style="color:#000">mesh2</span>, <span style="color:#000">material0</span>);
+</span></span><span style="display:flex;"><span><span style="color:#000">materialComp</span>.<span style="color:#000">AddMesh</span>(<span style="color:#000">mesh3</span>, <span style="color:#000">material2</span>);
+</span></span></code></pre></div><p>基于此，添加一个MaterialSystem，来专门处理拥有这种MaterialComponent的Entity渲染。</p>
+<h2 id="材质系统-material-system">材质系统 Material System</h2>
+<p>材质系统的重要流程如下：</p>
+<p>1/ 初始化渲染管线；包括DescriptorSetLayout、DescriptorPool、Uniform Buffer和PipelineLayout等对象。一个材质系统中可以使用多个Shader、多套渲染管线。</p>
+<p>2/ 渲染主循环调用 OnRender() 函数后，根据ECS架构查询出拥有对应材质组件的Entity列表，然后循环所有材质、所有网格执行Draw提交。</p>
+<p>3/ 资源销毁。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdUnlitMaterialSystem</span> <span style="color:#000">:</span> <span style="color:#a90d91">public</span> <span style="color:#000">AdMaterialSystem</span>{
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">public</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">void</span> <span style="color:#000">OnInit</span>(<span style="color:#000">AdVKRenderPass</span> <span style="color:#000">*</span><span style="color:#000">renderPass</span>) <span style="color:#a90d91">override</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">void</span> <span style="color:#000">OnRender</span>(<span style="color:#000">VkCommandBuffer</span> <span style="color:#000">cmdBuffer</span>, <span style="color:#000">AdRenderTarget</span> <span style="color:#000">*</span><span style="color:#000">renderTarget</span>) <span style="color:#a90d91">override</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">void</span> <span style="color:#000">OnDestroy</span>() <span style="color:#a90d91">override</span>;
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>材质系统初始化/销毁</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">void</span> <span style="color:#000">AdUnlitMaterialSystem</span><span style="color:#000">::</span><span style="color:#000">OnInit</span>(<span style="color:#000">AdVKRenderPass</span> <span style="color:#000">*</span><span style="color:#000">renderPass</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#177500">// ---------------------------------------------------------------------------
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#177500">// 1. Pipeline Layout
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">ShaderLayout</span> <span style="color:#000">shaderLayout</span> <span style="color:#000">=</span> {
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">descriptorSetLayouts</span> <span style="color:#000">=</span> { ... },
+</span></span><span style="display:flex;"><span>        .<span style="color:#000">pushConstants</span> <span style="color:#000">=</span> { ... }
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mPipelineLayout</span> <span style="color:#000">=</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">make_shared</span><span style="color:#000">&lt;</span><span style="color:#000">AdVKPipelineLayout</span><span style="color:#000">&gt;</span>(<span style="color:#000">device</span>, <span style="color:#000">shaders</span>, <span style="color:#000">shaderLayout</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">// 2. Pipeline
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">mPipeline</span> <span style="color:#000">=</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">make_shared</span><span style="color:#000">&lt;</span><span style="color:#000">AdVKPipeline</span><span style="color:#000">&gt;</span>(<span style="color:#000">device</span>, <span style="color:#000">renderPass</span>, <span style="color:#000">mPipelineLayout</span>.<span style="color:#000">get</span>());
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mPipeline</span><span style="color:#000">-&gt;</span><span style="color:#000">SetVertexInputState</span>(...);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mPipeline</span><span style="color:#000">-&gt;</span><span style="color:#000">SetInputAssemblyState</span>(...)<span style="color:#000">-&gt;</span><span style="color:#000">EnableDepthTest</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mPipeline</span><span style="color:#000">-&gt;</span><span style="color:#000">SetDynamicState</span>(...);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mPipeline</span><span style="color:#000">-&gt;</span><span style="color:#000">Create</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">// ---------------------------------------------------------------------------
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>	<span style="color:#000">mDescriptorPool</span> <span style="color:#000">=</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">make_shared</span><span style="color:#000">&lt;</span><span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdVKDescriptorPool</span><span style="color:#000">&gt;</span>(<span style="color:#000">device</span>, <span style="color:#1c01ce">1</span>, <span style="color:#000">poolSizes</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mFrameUboDescSet</span> <span style="color:#000">=</span> <span style="color:#000">mDescriptorPool</span><span style="color:#000">-&gt;</span><span style="color:#000">AllocateDescriptorSet</span>(...)
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">// ---------------------------------------------------------------------------
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">void</span> <span style="color:#000">AdUnlitMaterialSystem</span><span style="color:#000">::</span><span style="color:#000">OnDestroy</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mDescriptorPool</span>.<span style="color:#000">reset</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mPipelineLayout</span>.<span style="color:#000">reset</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mPipeline</span>.<span style="color:#000">reset</span>();
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>材质系统渲染</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">void</span> <span style="color:#000">AdUnlitMaterialSystem</span><span style="color:#000">::</span><span style="color:#000">OnRender</span>(<span style="color:#000">VkCommandBuffer</span> <span style="color:#000">cmdBuffer</span>, <span style="color:#000">AdRenderTarget</span> <span style="color:#000">*</span><span style="color:#000">renderTarget</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">// 1. Context params
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">AdAppContext</span> <span style="color:#000">*</span><span style="color:#000">appContext</span> <span style="color:#000">=</span> <span style="color:#000">AdApplication</span><span style="color:#000">::</span><span style="color:#000">GetAppContext</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#000">AdScene</span> <span style="color:#000">*</span><span style="color:#000">scene</span> <span style="color:#000">=</span> <span style="color:#000">appContext</span><span style="color:#000">-&gt;</span><span style="color:#000">scene</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">if</span>(<span style="color:#000">!</span><span style="color:#000">scene</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">return</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#177500">// ---------------------------------------------------------------------------
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#177500">// 2. !!! 这里是重点，这个使用entt::view函数，筛选出材质组件
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">entt</span><span style="color:#000">::</span><span style="color:#000">registry</span> <span style="color:#000">&amp;</span><span style="color:#000">reg</span> <span style="color:#000">=</span> <span style="color:#000">scene</span><span style="color:#000">-&gt;</span><span style="color:#000">GetEcsRegistry</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">auto</span> <span style="color:#000">view</span> <span style="color:#000">=</span> <span style="color:#000">reg</span>.<span style="color:#000">view</span><span style="color:#000">&lt;</span><span style="color:#000">AdTransformComponent</span>, <span style="color:#000">AdUnlitMaterialComponent</span><span style="color:#000">&gt;</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">if</span>(<span style="color:#000">view</span>.<span style="color:#000">begin</span>() <span style="color:#000">==</span> <span style="color:#000">view</span>.<span style="color:#000">end</span>()){
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">return</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">// ---------------------------------------------------------------------------
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">// 3. bind pipeline
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">mPipeline</span><span style="color:#000">-&gt;</span><span style="color:#000">Bind</span>(<span style="color:#000">cmdBuffer</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">vkCmdSetViewport</span>(<span style="color:#000">cmdBuffer</span>, ...);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">vkCmdSetScissor</span>(<span style="color:#000">cmdBuffer</span>, ...);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">// 4. Update frame descriptor set
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">UpdateFrameUboDescSet</span>(<span style="color:#000">renderTarget</span><span style="color:#000">-&gt;</span><span style="color:#000">GetCamera</span>(), ...);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">// 5. Render
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">view</span>.<span style="color:#000">each</span>([<span style="color:#a90d91">this</span>](<span style="color:#a90d91">const</span> <span style="color:#000">AdTransformComponent</span> <span style="color:#000">&amp;</span><span style="color:#000">transComp</span>, <span style="color:#a90d91">const</span> <span style="color:#000">AdUnlitMaterialComponent</span> <span style="color:#000">&amp;</span><span style="color:#000">materialComp</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">for</span> (<span style="color:#a90d91">const</span> <span style="color:#a90d91">auto</span> <span style="color:#000">&amp;</span><span style="color:#000">entry</span>: <span style="color:#000">materialComp</span>.<span style="color:#000">GetMeshMaterials</span>()){
+</span></span><span style="display:flex;"><span>            <span style="color:#000">AdUnlitMaterial</span> <span style="color:#000">*</span><span style="color:#000">material</span> <span style="color:#000">=</span> <span style="color:#000">entry</span>.<span style="color:#000">first</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">int32_t</span> <span style="color:#000">materialIndex</span> <span style="color:#000">=</span> <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">GetIndex</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#000">VkDescriptorSet</span> <span style="color:#000">paramDescSet</span> <span style="color:#000">=</span> <span style="color:#000">mMaterialDescSets</span>[<span style="color:#000">materialIndex</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#000">VkDescriptorSet</span> <span style="color:#000">resourceDescSet</span> <span style="color:#000">=</span> <span style="color:#000">mMaterialResourceDescSets</span>[<span style="color:#000">materialIndex</span>];
+</span></span><span style="display:flex;"><span>            ...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    		<span style="color:#177500">// ---------------------------------------------------------------------------
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#177500">// Update material descriptor set
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#a90d91">if</span>(<span style="color:#000">shouldForceUpdateMaterial</span> <span style="color:#000">||</span> <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">ShouldFlushParams</span>()){
+</span></span><span style="display:flex;"><span>                <span style="color:#000">UpdateMaterialParamsDescSet</span>(<span style="color:#000">paramDescSet</span>, <span style="color:#000">material</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">FinishFlushParams</span>();
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">if</span>(<span style="color:#000">shouldForceUpdateMaterial</span> <span style="color:#000">||</span> <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">ShouldFlushResource</span>()){
+</span></span><span style="display:flex;"><span>                <span style="color:#000">UpdateMaterialResourceDescSet</span>(<span style="color:#000">resourceDescSet</span>, <span style="color:#000">material</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">FinishFlushResource</span>();
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            ...
+</span></span><span style="display:flex;"><span>            <span style="color:#177500">// ---------------------------------------------------------------------------
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>
+</span></span><span style="display:flex;"><span>            <span style="color:#177500">// Bind Descriptor set and push constant
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#000">VkDescriptorSet</span> <span style="color:#000">descriptorSets</span>[] <span style="color:#000">=</span> { <span style="color:#000">mFrameUboDescSet</span>, <span style="color:#000">paramDescSet</span>, <span style="color:#000">resourceDescSet</span> ... };
+</span></span><span style="display:flex;"><span>            <span style="color:#000">vkCmdBindDescriptorSets</span>(<span style="color:#000">descriptorSets</span>);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#000">vkCmdPushConstants</span>(...);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#177500">// Draw Meshes...
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#a90d91">for</span> (<span style="color:#a90d91">const</span> <span style="color:#a90d91">auto</span> <span style="color:#000">&amp;</span><span style="color:#000">meshId</span>: <span style="color:#000">entry</span>.<span style="color:#000">second</span>){
+</span></span><span style="display:flex;"><span>                <span style="color:#000">materialComp</span>.<span style="color:#000">GetMesh</span>(<span style="color:#000">meshId</span>)<span style="color:#000">-&gt;</span><span style="color:#000">Draw</span>(<span style="color:#000">cmdBuffer</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="设计规则">设计规则</h2>
+<p>上文把该工程材质系统设计用到的内容都列了以下，但其实内部还有很多小的细节，又或者有的是困惑了非常之久的问题。所以我将部分再详细描述以下。</p>
+<h3 id="1-descriptorset规范">1. DescriptorSet规范</h3>
+<p>上文提到，关于渲染的大部分内容其实实在Material System中实现的。和Shader打交道的就是Material System，我们可以通过Uniform Buffer和Texture等方式将数据传递给Shader。但有一个问题是，VkDescriptorSet是一个透明对象，它和CommandBuffer类似，也是需要从Pool中申请处理，然后执行”录制“，再提交给GPU。只不过这里的”录制“就是将材质参数和纹理绑定到DescriptorSet，调用的是<code>vkUpdateDescriptorSets()</code>这个API。</p>
+<p>但是，当后期渲染场景变大，材质数量变多之后，如果每次都执行一边vkUpdateDescriptorSets()，会导致极大的性能问题。所以<strong>控制<code>vkUpdateDescriptorSets()</code>的调用次数，对于性能来说较为重要。</strong></p>
+<p>那怎么做呢？</p>
+<p>一般的方案是：<strong>传递给着色器的数据，根据不同的更新频率分类，将其分为若干个DescriptorSet，单独更新</strong>。切记不要将不同更新频率的数据放在同一个DescriptorSet中，这样会白白浪费性能。</p>
+<p>举个例子：我们可以分为一下几种DescriptorSet。</p>
+<blockquote>
+<p>注：每个Pipeline的DescriptorSet数量也是有限制的，可以通过查询VkPhysicalDeviceProperties::limits::maxBoundDescriptorSets 得到。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Descriptor set</th>
+<th>数据类型</th>
+<th>更新频率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DS0</td>
+<td>全局/每帧的数据；比如环境纹理、雾或当前时间、鼠标位置、当前选中物体、风速等数据</td>
+<td>只更新一次或每帧更新一次</td>
+</tr>
+<tr>
+<td>DS1</td>
+<td>每个材质的参数</td>
+<td>每个材质更新一次</td>
+</tr>
+<tr>
+<td>DS2</td>
+<td>每个材质的纹理数据，纹理数据一般更新频率会比材质参数低，所以跟材质参数分开</td>
+<td>每个材质更新一次</td>
+</tr>
+<tr>
+<td>DS3</td>
+<td>每个Entity的参数（最好使用PushConstant）</td>
+<td>每个物体更新一次</td>
+</tr>
+<tr>
+<td>DS4</td>
+<td>每个Mesh的参数（最好使用PushConstant）</td>
+<td>每个Mesh更新一次</td>
+</tr>
+</tbody>
+</table>
+<p>DS0 更新频率稳定，基本上不会有太大性能问题。</p>
+<p>DS1/DS2 每个材质参数和纹理数据，则需要在材质中维护两个变量，标识这个材质是否发生变更了，如果发生变更了，更新对应的DescriptorSet后，再将其标识更新为false即可。如下代码：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdMaterial</span>{
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">public</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">// 提供给 Material System 查询
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#a90d91">bool</span> <span style="color:#000">ShouldFlushParams</span>() <span style="color:#a90d91">const</span> { <span style="color:#a90d91">return</span> <span style="color:#000">bShouldFlushParams</span>; }
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">// 提供给 Material System 查询
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#a90d91">bool</span> <span style="color:#000">ShouldFlushResource</span>() <span style="color:#a90d91">const</span> { <span style="color:#a90d91">return</span> <span style="color:#000">bShouldFlushResource</span>; }
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">// 提供给 Material System 设置
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#a90d91">void</span> <span style="color:#000">FinishFlushParams</span>() { <span style="color:#000">bShouldFlushParams</span> <span style="color:#000">=</span> <span style="color:#a90d91">false</span>; }
+</span></span><span style="display:flex;"><span>    <span style="color:#177500">// 提供给 Material System 设置
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#a90d91">void</span> <span style="color:#000">FinishFlushResource</span>() { <span style="color:#000">bShouldFlushResource</span> <span style="color:#000">=</span> <span style="color:#a90d91">false</span>; }
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">void</span> <span style="color:#000">AdMaterial</span><span style="color:#000">::</span><span style="color:#000">SetTextureView</span>(<span style="color:#a90d91">uint32_t</span> <span style="color:#000">id</span>, <span style="color:#000">AdTexture</span> <span style="color:#000">*</span><span style="color:#000">texture</span>, <span style="color:#000">AdSampler</span> <span style="color:#000">*</span><span style="color:#000">sampler</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">if</span>(<span style="color:#000">HasTexture</span>(<span style="color:#000">id</span>)){
+</span></span><span style="display:flex;"><span>            <span style="color:#000">mTextures</span>[<span style="color:#000">id</span>].<span style="color:#000">texture</span> <span style="color:#000">=</span> <span style="color:#000">texture</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#000">mTextures</span>[<span style="color:#000">id</span>].<span style="color:#000">sampler</span> <span style="color:#000">=</span> <span style="color:#000">sampler</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#a90d91">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#000">mTextures</span>[<span style="color:#000">id</span>] <span style="color:#000">=</span> { <span style="color:#000">texture</span>, <span style="color:#000">sampler</span> };
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#000">bShouldFlushResource</span> <span style="color:#000">=</span> <span style="color:#a90d91">true</span>;		<span style="color:#177500">// texture替换时更新标识   !!! (1)
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    }
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">protected</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">bool</span> <span style="color:#000">bShouldFlushParams</span> <span style="color:#000">=</span> <span style="color:#a90d91">false</span>;		<span style="color:#177500">// params是否发生变更，material内部设置
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#a90d91">bool</span> <span style="color:#000">bShouldFlushResource</span> <span style="color:#000">=</span> <span style="color:#a90d91">false</span>;		<span style="color:#177500">// texture是否发生替换，material内部设置
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>	...
+</span></span><span style="display:flex;"><span>	...
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdUnlitMaterial</span> <span style="color:#000">:</span> <span style="color:#a90d91">public</span> <span style="color:#000">AdMaterial</span>{
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">public</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">const</span> <span style="color:#000">UnlitMaterialUbo</span><span style="color:#000">&amp;</span> <span style="color:#000">GetParams</span>() <span style="color:#a90d91">const</span> { <span style="color:#a90d91">return</span> <span style="color:#000">mParams</span>; }
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">void</span> <span style="color:#000">SetParams</span>(<span style="color:#a90d91">const</span> <span style="color:#000">UnlitMaterialUbo</span> <span style="color:#000">&amp;</span><span style="color:#000">params</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">mParams</span> <span style="color:#000">=</span> <span style="color:#000">params</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">bShouldFlushParams</span> <span style="color:#000">=</span> <span style="color:#a90d91">true</span>;			<span style="color:#177500">//params发生变更时更新标识   !!! (2)	
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    }
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">private</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">UnlitMaterialUbo</span> <span style="color:#000">mParams</span>{};
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">void</span> <span style="color:#000">AdUnlitMaterialSystem</span><span style="color:#000">::</span><span style="color:#000">OnRender</span>(<span style="color:#000">VkCommandBuffer</span> <span style="color:#000">cmdBuffer</span>, <span style="color:#000">AdRenderTarget</span> <span style="color:#000">*</span><span style="color:#000">renderTarget</span>) {
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    <span style="color:#000">view</span>.<span style="color:#000">each</span>([](...){
+</span></span><span style="display:flex;"><span>		...
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">int32_t</span> <span style="color:#000">materialIndex</span> <span style="color:#000">=</span> <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">GetIndex</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkDescriptorSet</span> <span style="color:#000">paramDescSet</span> <span style="color:#000">=</span> <span style="color:#000">mMaterialDescSets</span>[<span style="color:#000">materialIndex</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkDescriptorSet</span> <span style="color:#000">resourceDescSet</span> <span style="color:#000">=</span> <span style="color:#000">mMaterialResourceDescSets</span>[<span style="color:#000">materialIndex</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">if</span>(<span style="color:#000">shouldForceUpdateMaterial</span> <span style="color:#000">||</span> <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">ShouldFlushParams</span>()){
+</span></span><span style="display:flex;"><span>            <span style="color:#000">UpdateMaterialParamsDescSet</span>(<span style="color:#000">paramDescSet</span>, <span style="color:#000">material</span>);      <span style="color:#177500">//更新params descset   !!! (3)	
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">FinishFlushParams</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">if</span>(<span style="color:#000">shouldForceUpdateMaterial</span> <span style="color:#000">||</span> <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">ShouldFlushResource</span>()){
+</span></span><span style="display:flex;"><span>            <span style="color:#000">UpdateMaterialResourceDescSet</span>(<span style="color:#000">resourceDescSet</span>, <span style="color:#000">material</span>);<span style="color:#177500">//更新resource descset   !!! (4)	
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>            <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">FinishFlushResource</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>DS3 每个Enity的数据，比如Enity的状态，模型矩阵等信息，这类数据每个Enitity都需要更新。<strong>最好使用Push_Constant常量推送方式，只有在数据量超过了Push_Constant范围后再考虑使用DescriptorSet。</strong></p>
+<p>DS4 每个Mesh的数据，比如Mesh额外信息，这类数据每个Mesh都需要更新。<strong>最好使用Push_Constant常量推送方式，只有在数据量超过了Push_Constant范围后再考虑使用DescriptorSet。</strong></p>
+<p>举个例子：我设计了一个UnlitMaterial的材质，它是一个无光照材质。片元着色器中接收两个base_color的值，这两个base_color通过mix()函数混合；另外base_color也可以是两张纹理提供颜色数据。所以我的着色器编写如下：</p>
+<p>
+        <a data-fancybox="gallery" href="./assets/image-20240719220343111.png">
+            <img class="mx-auto" alt="image-20240719220343111" src="./assets/image-20240719220343111.png" />
+        </a>
+    </p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-glsl" data-lang="glsl"><span style="display:flex;"><span><span style="color:#633820">#version 450</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">layout</span>(<span style="color:#000">location</span><span style="color:#000">=</span><span style="color:#1c01ce">0</span>)      <span style="color:#a90d91">in</span> <span style="color:#a90d91">vec3</span> <span style="color:#000">a_Pos</span>;
+</span></span><span style="display:flex;"><span><span style="color:#000">layout</span>(<span style="color:#000">location</span><span style="color:#000">=</span><span style="color:#1c01ce">1</span>)      <span style="color:#a90d91">in</span> <span style="color:#a90d91">vec2</span> <span style="color:#000">a_Texcoord</span>;
+</span></span><span style="display:flex;"><span><span style="color:#000">layout</span>(<span style="color:#000">location</span><span style="color:#000">=</span><span style="color:#1c01ce">2</span>)      <span style="color:#a90d91">in</span> <span style="color:#a90d91">vec3</span> <span style="color:#000">a_Normal</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">out</span> <span style="color:#000">gl_PerVertex</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">vec4</span> <span style="color:#000">gl_Position</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">layout</span>(<span style="color:#000">set</span><span style="color:#000">=</span><span style="color:#1c01ce">0</span>, <span style="color:#000">binding</span><span style="color:#000">=</span><span style="color:#1c01ce">0</span>, <span style="color:#000">std140</span>) <span style="color:#a90d91">uniform</span> <span style="color:#000">FrameUbo</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mat4</span>  <span style="color:#000">projMat</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mat4</span>  <span style="color:#000">viewMat</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">ivec2</span> <span style="color:#000">resolution</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">uint</span>  <span style="color:#000">frameId</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">float</span> <span style="color:#000">time</span>;
+</span></span><span style="display:flex;"><span>} <span style="color:#000">frameUbo</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">layout</span>(<span style="color:#000">push_constant</span>) <span style="color:#a90d91">uniform</span> <span style="color:#000">PushConstants</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mat4</span> <span style="color:#000">modelMat</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mat3</span> <span style="color:#000">normalMat</span>;
+</span></span><span style="display:flex;"><span>} <span style="color:#000">PC</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">out</span> <span style="color:#000">layout</span>(<span style="color:#000">location</span><span style="color:#000">=</span><span style="color:#1c01ce">1</span>) <span style="color:#a90d91">vec2</span> <span style="color:#000">v_Texcoord</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">void</span> <span style="color:#000">main</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#000">gl_Position</span> <span style="color:#000">=</span> <span style="color:#000">frameUbo</span>.<span style="color:#000">projMat</span> <span style="color:#000">*</span> <span style="color:#000">frameUbo</span>.<span style="color:#000">viewMat</span> <span style="color:#000">*</span> <span style="color:#000">PC</span>.<span style="color:#000">modelMat</span> <span style="color:#000">*</span> <span style="color:#a90d91">vec4</span>(<span style="color:#000">a_Pos</span>.<span style="color:#000">x</span>, <span style="color:#000">a_Pos</span>.<span style="color:#000">y</span>, <span style="color:#000">a_Pos</span>.<span style="color:#000">z</span>, <span style="color:#1c01ce">1.</span><span style="color:#000">f</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">v_Texcoord</span> <span style="color:#000">=</span> <span style="color:#000">a_Texcoord</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#633820">#version 450
+</span></span></span><span style="display:flex;"><span><span style="color:#633820"></span>
+</span></span><span style="display:flex;"><span><span style="color:#000">layout</span>(<span style="color:#000">location</span><span style="color:#000">=</span><span style="color:#1c01ce">1</span>) <span style="color:#000">in</span> <span style="color:#000">vec2</span> <span style="color:#000">v_Texcoord</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">struct</span> <span style="color:#3f6e75">TextureParam</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">bool</span>  <span style="color:#000">enable</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">float</span> <span style="color:#000">uvRotation</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">vec4</span>  <span style="color:#000">uvTransform</span>;   <span style="color:#177500">// x,y --&gt; scale, z,w --&gt; translation
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">vec2</span> <span style="color:#000">getTextureUV</span>(<span style="color:#000">TextureParam</span> <span style="color:#000">param</span>, <span style="color:#000">vec2</span> <span style="color:#000">inUV</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#000">vec2</span> <span style="color:#000">retUV</span> <span style="color:#000">=</span> <span style="color:#000">inUV</span> <span style="color:#000">*</span> <span style="color:#000">param</span>.<span style="color:#000">uvTransform</span>.<span style="color:#000">xy</span>;           <span style="color:#177500">// scale
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">retUV</span> <span style="color:#000">=</span> <span style="color:#000">vec2</span>(                                       <span style="color:#177500">// rotation
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>        <span style="color:#000">retUV</span>.<span style="color:#000">x</span> <span style="color:#000">*</span> <span style="color:#000">sin</span>(<span style="color:#000">param</span>.<span style="color:#000">uvRotation</span>) <span style="color:#000">+</span> <span style="color:#000">retUV</span>.<span style="color:#000">y</span> <span style="color:#000">*</span> <span style="color:#000">cos</span>(<span style="color:#000">param</span>.<span style="color:#000">uvRotation</span>),
+</span></span><span style="display:flex;"><span>        <span style="color:#000">retUV</span>.<span style="color:#000">y</span> <span style="color:#000">*</span> <span style="color:#000">sin</span>(<span style="color:#000">param</span>.<span style="color:#000">uvRotation</span>) <span style="color:#000">+</span> <span style="color:#000">retUV</span>.<span style="color:#000">x</span> <span style="color:#000">*</span> <span style="color:#000">cos</span>(<span style="color:#000">param</span>.<span style="color:#000">uvRotation</span>)
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>    <span style="color:#000">inUV</span> <span style="color:#000">=</span> <span style="color:#000">retUV</span> <span style="color:#000">+</span> <span style="color:#000">param</span>.<span style="color:#000">uvTransform</span>.<span style="color:#000">zw</span>;                <span style="color:#177500">// translation
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#a90d91">return</span> <span style="color:#000">inUV</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">layout</span>(<span style="color:#000">set</span><span style="color:#000">=</span><span style="color:#1c01ce">0</span>, <span style="color:#000">binding</span><span style="color:#000">=</span><span style="color:#1c01ce">0</span>, <span style="color:#000">std140</span>) <span style="color:#000">uniform</span> <span style="color:#000">FrameUbo</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mat4</span>  <span style="color:#000">projMat</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mat4</span>  <span style="color:#000">viewMat</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">ivec2</span> <span style="color:#000">resolution</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">uint</span>  <span style="color:#000">frameId</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">float</span> <span style="color:#000">time</span>;
+</span></span><span style="display:flex;"><span>} <span style="color:#000">frameUbo</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">layout</span>(<span style="color:#000">set</span><span style="color:#000">=</span><span style="color:#1c01ce">1</span>, <span style="color:#000">binding</span><span style="color:#000">=</span><span style="color:#1c01ce">0</span>, <span style="color:#000">std140</span>) <span style="color:#000">uniform</span> <span style="color:#000">MaterialUbo</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#000">vec3</span> <span style="color:#000">baseColor0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">vec3</span> <span style="color:#000">baseColor1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">float</span> <span style="color:#000">mixValue</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">TextureParam</span> <span style="color:#000">textureParam0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">TextureParam</span> <span style="color:#000">textureParam1</span>;
+</span></span><span style="display:flex;"><span>} <span style="color:#000">materialUbo</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">layout</span>(<span style="color:#000">set</span><span style="color:#000">=</span><span style="color:#1c01ce">2</span>, <span style="color:#000">binding</span><span style="color:#000">=</span><span style="color:#1c01ce">0</span>) <span style="color:#000">uniform</span> <span style="color:#000">sampler2D</span> <span style="color:#000">texture0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#000">layout</span>(<span style="color:#000">set</span><span style="color:#000">=</span><span style="color:#1c01ce">2</span>, <span style="color:#000">binding</span><span style="color:#000">=</span><span style="color:#1c01ce">1</span>) <span style="color:#000">uniform</span> <span style="color:#000">sampler2D</span> <span style="color:#000">texture1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">layout</span>(<span style="color:#000">location</span><span style="color:#000">=</span><span style="color:#1c01ce">0</span>) <span style="color:#000">out</span> <span style="color:#000">vec4</span> <span style="color:#000">fragColor</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">void</span> <span style="color:#000">main</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#000">vec3</span> <span style="color:#000">color0</span> <span style="color:#000">=</span> <span style="color:#000">materialUbo</span>.<span style="color:#000">baseColor0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">vec3</span> <span style="color:#000">color1</span> <span style="color:#000">=</span> <span style="color:#000">materialUbo</span>.<span style="color:#000">baseColor1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">if</span>(<span style="color:#000">materialUbo</span>.<span style="color:#000">textureParam0</span>.<span style="color:#000">enable</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">TextureParam</span> <span style="color:#000">param</span> <span style="color:#000">=</span> <span style="color:#000">materialUbo</span>.<span style="color:#000">textureParam0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">param</span>.<span style="color:#000">uvTransform</span>.<span style="color:#000">w</span> <span style="color:#000">=</span> <span style="color:#000">-</span><span style="color:#000">frameUbo</span>.<span style="color:#000">time</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#000">color0</span> <span style="color:#000">=</span> <span style="color:#000">texture</span>(<span style="color:#000">texture0</span>, <span style="color:#000">getTextureUV</span>(<span style="color:#000">param</span>, <span style="color:#000">v_Texcoord</span>)).<span style="color:#000">rgb</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">if</span>(<span style="color:#000">materialUbo</span>.<span style="color:#000">textureParam1</span>.<span style="color:#000">enable</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">color1</span> <span style="color:#000">=</span> <span style="color:#000">texture</span>(<span style="color:#000">texture1</span>, <span style="color:#000">getTextureUV</span>(<span style="color:#000">materialUbo</span>.<span style="color:#000">textureParam1</span>, <span style="color:#000">v_Texcoord</span>)).<span style="color:#000">rgb</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">fragColor</span> <span style="color:#000">=</span> <span style="color:#000">vec4</span>(<span style="color:#000">mix</span>(<span style="color:#000">color0</span>, <span style="color:#000">color1</span>, <span style="color:#000">materialUbo</span>.<span style="color:#000">mixValue</span>), <span style="color:#1c01ce">1.0</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="2-descriptorset和material参数隔离">2. DescriptorSet和Material参数隔离</h3>
+<p>问题：更新Material数据需要DescriptorSet和UniformBuffer等Vulkan对象，但问题是，申请DescriptorSet需要DescriptorPool和DescriptorSetLayout参数，并且DescriptorSetLayout和Shader定义挂钩，也跟Pipeline有关系。所以如果把DescriptorSet和UniformBuffer加到Material中，会导致Material对象和图形API关联过大，无法解耦。</p>
+<p>先说一下目前的解决方案：</p>
+<p>1/ Material中只维护参数和纹理信息，不维护DescriptorSet信息；</p>
+<p>2/ 在Material System中维护N个DescriptorSet，并且DescriptorPool和DescriptorSetLayout等参数都在Material System中维护，Material作为一种”数据包“给到Material System使用；</p>
+<p>3/ Material的不提供外部直接创建，而是由Material Factory统一维护，并且在Material中维护一个Material index字段（int32_t类型），并通过该字段和Material System中的Descriptor Set关联，index是两套数据的下标，时间复杂度为O1。</p>
+<p>优劣势分析。</p>
+<p>优势：</p>
+<ul>
+<li>Material 和 DescriptorSet解耦。</li>
+<li>不需要将Material System中的Pipeline、DescriptorPool和DescriptorSetLayout等参数对外提供，内部处理即可。</li>
+<li>Material System中可以自由指定DescriptorSet，分配和释放由Material System内部处理。</li>
+</ul>
+<p>劣势：</p>
+<ul>
+<li>过度依赖Material Index字段，且该字段没有实际意义，仅为了程序识别。</li>
+<li>需要两边数据（Material和DescriptorSet）协调配合，处理不好的话出问题概率较大。</li>
+</ul>
+<p>实现：</p>
+<p>1/ Material中维护一个Index字段。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdMaterial</span>{
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">public</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>   ...
+</span></span><span style="display:flex;"><span>   ...
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">private</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">int32_t</span> <span style="color:#000">mIndex</span> <span style="color:#000">=</span> <span style="color:#000">-</span><span style="color:#1c01ce">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">unordered_map</span><span style="color:#000">&lt;</span><span style="color:#a90d91">uint32_t</span>, <span style="color:#000">TextureView</span><span style="color:#000">&gt;</span> <span style="color:#000">mTextures</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">friend</span> <span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdMaterialFactory</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>2/ AdMaterialFactory在创建Material时，赋值Index字段。并且支持查询某种类型Material的总数量。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">class</span> <span style="color:#3f6e75">AdMaterialFactory</span>{
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">public</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">template</span><span style="color:#000">&lt;</span><span style="color:#a90d91">typename</span> <span style="color:#000">T</span><span style="color:#000">&gt;</span>					<span style="color:#177500">// 返回某种类型Material的数量
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">size_t</span> <span style="color:#000">GetMaterialSize</span>(){
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">uint32_t</span> <span style="color:#000">typeId</span> <span style="color:#000">=</span> <span style="color:#000">entt</span><span style="color:#000">::</span><span style="color:#000">type_id</span><span style="color:#000">&lt;</span><span style="color:#000">T</span><span style="color:#000">&gt;</span>().<span style="color:#000">hash</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">if</span>(<span style="color:#000">mMaterials</span>.<span style="color:#000">find</span>(<span style="color:#000">typeId</span>) <span style="color:#000">==</span> <span style="color:#000">mMaterials</span>.<span style="color:#000">end</span>()){
+</span></span><span style="display:flex;"><span>            <span style="color:#a90d91">return</span> <span style="color:#1c01ce">0</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">return</span> <span style="color:#000">mMaterials</span>[<span style="color:#000">typeId</span>].<span style="color:#000">size</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">template</span><span style="color:#000">&lt;</span><span style="color:#a90d91">typename</span> <span style="color:#000">T</span><span style="color:#000">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">T</span><span style="color:#000">*</span> <span style="color:#000">CreateMaterial</span>(){
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">auto</span> <span style="color:#000">mat</span> <span style="color:#000">=</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">make_shared</span><span style="color:#000">&lt;</span><span style="color:#000">T</span><span style="color:#000">&gt;</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">uint32_t</span> <span style="color:#000">typeId</span> <span style="color:#000">=</span> <span style="color:#000">entt</span><span style="color:#000">::</span><span style="color:#000">type_id</span><span style="color:#000">&lt;</span><span style="color:#000">T</span><span style="color:#000">&gt;</span>().<span style="color:#000">hash</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">uint32_t</span> <span style="color:#000">index</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">if</span>(<span style="color:#000">mMaterials</span>.<span style="color:#000">find</span>(<span style="color:#000">typeId</span>) <span style="color:#000">==</span> <span style="color:#000">mMaterials</span>.<span style="color:#000">end</span>()){
+</span></span><span style="display:flex;"><span>            <span style="color:#000">mMaterials</span>.<span style="color:#000">insert</span>({ <span style="color:#000">typeId</span>, { <span style="color:#000">mat</span> }});
+</span></span><span style="display:flex;"><span>        } <span style="color:#a90d91">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#000">index</span> <span style="color:#000">=</span> <span style="color:#000">mMaterials</span>[<span style="color:#000">typeId</span>].<span style="color:#000">size</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#000">mMaterials</span>[<span style="color:#000">typeId</span>].<span style="color:#000">push_back</span>(<span style="color:#000">mat</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#000">mat</span><span style="color:#000">-&gt;</span><span style="color:#000">mIndex</span> <span style="color:#000">=</span> <span style="color:#000">index</span>;					<span style="color:#177500">// material index
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>        <span style="color:#a90d91">return</span> <span style="color:#000">mat</span>.<span style="color:#000">get</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">private</span><span style="color:#000">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">AdMaterialFactory</span>() <span style="color:#000">=</span> <span style="color:#a90d91">default</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">static</span> <span style="color:#000">AdMaterialFactory</span> <span style="color:#000">s_MaterialFactory</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">unordered_map</span><span style="color:#000">&lt;</span><span style="color:#a90d91">uint32_t</span>, <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">vector</span><span style="color:#000">&lt;</span><span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">shared_ptr</span><span style="color:#000">&lt;</span><span style="color:#000">AdMaterial</span><span style="color:#000">&gt;&gt;&gt;</span> <span style="color:#000">mMaterials</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>3/ 在Material System中，根据material Index取出对应的Descriptor set使用。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">// 维护Material descriptor pool 和 descriptor sets
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#a90d91">void</span> <span style="color:#000">AdUnlitMaterialSystem</span><span style="color:#000">::</span><span style="color:#000">ReCreateMaterialDescPool</span>(<span style="color:#a90d91">uint32_t</span> <span style="color:#000">materialCount</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mMaterialDescriptorPool</span> <span style="color:#000">=</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">make_shared</span><span style="color:#000">&lt;</span><span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdVKDescriptorPool</span><span style="color:#000">&gt;</span>(...);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mMaterialDescSets</span> <span style="color:#000">=</span> <span style="color:#000">mMaterialDescriptorPool</span><span style="color:#000">-&gt;</span><span style="color:#000">AllocateDescriptorSet</span>(...);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mMaterialResourceDescSets</span> <span style="color:#000">=</span> <span style="color:#000">mMaterialDescriptorPool</span><span style="color:#000">-&gt;</span><span style="color:#000">AllocateDescriptorSet</span>(...);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#177500">// 渲染
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#a90d91">void</span> <span style="color:#000">AdUnlitMaterialSystem</span><span style="color:#000">::</span><span style="color:#000">OnRender</span>(<span style="color:#000">VkCommandBuffer</span> <span style="color:#000">cmdBuffer</span>, <span style="color:#000">AdRenderTarget</span> <span style="color:#000">*</span><span style="color:#000">renderTarget</span>) {
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    <span style="color:#000">view</span>.<span style="color:#000">each</span>([](...){
+</span></span><span style="display:flex;"><span>		...
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">int32_t</span> <span style="color:#000">materialIndex</span> <span style="color:#000">=</span> <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">GetIndex</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkDescriptorSet</span> <span style="color:#000">paramDescSet</span> <span style="color:#000">=</span> <span style="color:#000">mMaterialDescSets</span>[<span style="color:#000">materialIndex</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkDescriptorSet</span> <span style="color:#000">resourceDescSet</span> <span style="color:#000">=</span> <span style="color:#000">mMaterialResourceDescSets</span>[<span style="color:#000">materialIndex</span>];
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="3-descriptorpool根据material的数量动态增长">3. DescriptorPool根据Material的数量动态增长</h3>
+<p>其实这个问题是和【2.DescriptorSet和Material参数隔离】有关系的，我上面列出来的代码有个函数名为<code>ReCreateMaterialDescPool()</code>，为什么需要重新创建DescriptorSetPool呢？这是因为有这个矛盾点：系统内部的材质总数量是未知的，可能只有10个，也可能有10000个。但DescriptorSetPool是需要指定每种DescriptorSet的数量和总数量(maxSets字段)的。</p>
+<p>也就意味着，如果DescriptorSetPool可申请的DescriptorSet数量过少，会报错<code>VK_ERROR_OUT_OF_POOL_MEMORY</code>，但如果给设置的数量过大，也会浪费内存。</p>
+<p>解决这个问题，目前我了解到的有三种解决方案：</p>
+<p>1/ 创建DescriptorSetPool时，指定VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT 标识。当指定该标识后，Descriptor的释放需要手动进行，所以可以做到动态的申请和是否DescriptorSet。但这就没用到DescriptorPool原生释放上的一些优化，针对Material，也不应该每一帧都重新申请再释放DescriptorSet，这样意味着每一帧都需要vkUpdateDescriptorSets()。所以弃用该方案。</p>
+<p>2/ 手动指定vkResetDescriptorPool()，重置Pool，但也需要每一帧都需要vkUpdateDescriptorSets()。所以弃用该方案。</p>
+<p>3/ 申请一定量的DescriptorSet后，将其缓存，然后复用这些DescriptorSet。最终Destory DescriptorPool时自动释放这些DescriptorSet。这个方案可行，但这个”一定量“不容把控。</p>
+<p>我目前考虑使用的方案是：<strong>采用方案三，然后默认初始化16个DescriptorSet，当发现Material数量超过16时，以2倍的速率扩容，知道数量大于等于Material数量，这一期间再重新创建一次DescriptorPool</strong>。该方案使用这样的扩容机制：16 -&gt; 32 -&gt; 48 -&gt; 96 -&gt; 128 -&gt; 256 -&gt; 512 -&gt; 1024 -&gt; 2048&hellip;</p>
+<p>实现：</p>
+<p>1/ 定义默认DescriptorSet数量和最大数量。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#633820">#define NUM_MATERIAL_BATCH              16
+</span></span></span><span style="display:flex;"><span><span style="color:#633820">#define NUM_MATERIAL_BATCH_MAX          2048
+</span></span></span></code></pre></div><p>2/ 扩容机制实现。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#a90d91">void</span> <span style="color:#000">AdUnlitMaterialSystem</span><span style="color:#000">::</span><span style="color:#000">ReCreateMaterialDescPool</span>(<span style="color:#a90d91">uint32_t</span> <span style="color:#000">materialCount</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span> <span style="color:#000">newMaterialCount</span> <span style="color:#000">=</span> <span style="color:#000">mLastMaterialCount</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">if</span>(<span style="color:#000">mLastMaterialCount</span> <span style="color:#000">==</span> <span style="color:#1c01ce">0</span>){						<span style="color:#177500">// init
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>        <span style="color:#000">newMaterialCount</span> <span style="color:#000">=</span> <span style="color:#000">NUM_MATERIAL_BATCH</span>;			
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">while</span> (<span style="color:#000">newMaterialCount</span> <span style="color:#000">&lt;</span> <span style="color:#000">materialCount</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">newMaterialCount</span> <span style="color:#000">*=</span> <span style="color:#1c01ce">2</span>;							<span style="color:#177500">// （1）计算扩容数量
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">if</span>(<span style="color:#000">newMaterialCount</span> <span style="color:#000">&gt;</span> <span style="color:#000">NUM_MATERIAL_BATCH_MAX</span>){		<span style="color:#177500">// 最大数量限制
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>        <span style="color:#000">LOG_E</span>(<span style="color:#c41a16">&#34;Material max count is : {0}, but request : {1}&#34;</span>, <span style="color:#000">NUM_MATERIAL_BATCH_MAX</span>, <span style="color:#000">newMaterialCount</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">return</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#000">LOG_W</span>(<span style="color:#c41a16">&#34;{0}: {1} -&gt; {2} S.&#34;</span>, <span style="color:#000">__FUNCTION__</span>, <span style="color:#000">mLastMaterialCount</span>, <span style="color:#000">newMaterialCount</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">AdRenderContext</span> <span style="color:#000">*</span><span style="color:#000">renderCxt</span> <span style="color:#000">=</span> <span style="color:#000">AdApplication</span><span style="color:#000">::</span><span style="color:#000">GetAppContext</span>()<span style="color:#000">-&gt;</span><span style="color:#000">renderCxt</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000">AdVKDevice</span> <span style="color:#000">*</span><span style="color:#000">device</span> <span style="color:#000">=</span> <span style="color:#000">renderCxt</span><span style="color:#000">-&gt;</span><span style="color:#000">GetDevice</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mMaterialDescSets</span>.<span style="color:#000">clear</span>();							<span style="color:#177500">// （2）销毁之前申请的DescriptorSet
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#000">mMaterialResourceDescSets</span>.<span style="color:#000">clear</span>();					<span style="color:#177500">// 因为DescriptorPool被销毁后，这些DescSet也不能使用了
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    <span style="color:#a90d91">if</span>(<span style="color:#000">mMaterialDescriptorPool</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">mMaterialDescriptorPool</span>.<span style="color:#000">reset</span>();				<span style="color:#177500">// 销毁旧的DescriptorPool
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mMaterialDescriptorPool</span> <span style="color:#000">=</span> <span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">make_shared</span><span style="color:#000">&lt;</span><span style="color:#000">ade</span><span style="color:#000">::</span><span style="color:#000">AdVKDescriptorPool</span><span style="color:#000">&gt;</span>(<span style="color:#000">device</span>, <span style="color:#000">newMaterialCount</span> <span style="color:#000">*</span> <span style="color:#1c01ce">2</span>, ...);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mMaterialDescSets</span> <span style="color:#000">=</span> <span style="color:#000">mMaterialDescriptorPool</span><span style="color:#000">-&gt;</span><span style="color:#000">AllocateDescriptorSet</span>(..., <span style="color:#000">newMaterialCount</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mMaterialResourceDescSets</span> <span style="color:#000">=</span> <span style="color:#000">mMaterialDescriptorPool</span><span style="color:#000">-&gt;</span><span style="color:#000">AllocateDescriptorSet</span>(..., <span style="color:#000">newMaterialCount</span>);
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">uint32_t</span> <span style="color:#000">diffCount</span> <span style="color:#000">=</span> <span style="color:#000">newMaterialCount</span> <span style="color:#000">-</span> <span style="color:#000">mLastMaterialCount</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">for</span>(<span style="color:#a90d91">int</span> <span style="color:#000">i</span> <span style="color:#000">=</span> <span style="color:#1c01ce">0</span>; <span style="color:#000">i</span> <span style="color:#000">&lt;</span> <span style="color:#000">diffCount</span>; <span style="color:#000">i</span><span style="color:#000">++</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">mMaterialBuffers</span>.<span style="color:#000">push_back</span>(<span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">make_shared</span><span style="color:#000">&lt;</span><span style="color:#000">AdVKBuffer</span><span style="color:#000">&gt;</span>(...));	<span style="color:#177500">// （3）添加新的Uniform Buffer
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#000">mLastMaterialCount</span> <span style="color:#000">=</span> <span style="color:#000">newMaterialCount</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>3/ 扩容后，因为旧的DescriptorSet被销毁，所以需要重新更新Material数据到DescriptorSet中。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#177500">// 判断是否扩容
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#a90d91">bool</span> <span style="color:#000">shouldForceUpdateMaterial</span> <span style="color:#000">=</span> <span style="color:#a90d91">false</span>;
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">uint32_t</span> <span style="color:#000">materialCount</span> <span style="color:#000">=</span> <span style="color:#000">AdMaterialFactory</span><span style="color:#000">::</span><span style="color:#000">GetInstance</span>()<span style="color:#000">-&gt;</span><span style="color:#000">GetMaterialSize</span><span style="color:#000">&lt;</span><span style="color:#000">AdUnlitMaterial</span><span style="color:#000">&gt;</span>();
+</span></span><span style="display:flex;"><span><span style="color:#a90d91">if</span>(<span style="color:#000">materialCount</span> <span style="color:#000">&gt;</span> <span style="color:#000">mLastMaterialCount</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#000">ReCreateMaterialDescPool</span>(<span style="color:#000">materialCount</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#000">shouldForceUpdateMaterial</span> <span style="color:#000">=</span> <span style="color:#a90d91">true</span>;			<span style="color:#177500">// 扩容时更新Material数据到DescriptorSet
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">view</span>.<span style="color:#000">each</span>([<span style="color:#a90d91">this</span>, <span style="color:#000">&amp;</span><span style="color:#000">shouldForceUpdateMaterial</span>](<span style="color:#a90d91">const</span> <span style="color:#000">AdTransformComponent</span> <span style="color:#000">&amp;</span><span style="color:#000">transComp</span>, <span style="color:#a90d91">const</span> <span style="color:#000">AdUnlitMaterialComponent</span> <span style="color:#000">&amp;</span><span style="color:#000">materialComp</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#a90d91">for</span> (<span style="color:#a90d91">const</span> <span style="color:#a90d91">auto</span> <span style="color:#000">&amp;</span><span style="color:#000">entry</span>: <span style="color:#000">materialComp</span>.<span style="color:#000">GetMeshMaterials</span>()){
+</span></span><span style="display:flex;"><span>        <span style="color:#000">AdUnlitMaterial</span> <span style="color:#000">*</span><span style="color:#000">material</span> <span style="color:#000">=</span> <span style="color:#000">entry</span>.<span style="color:#000">first</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">int32_t</span> <span style="color:#000">materialIndex</span> <span style="color:#000">=</span> <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">GetIndex</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkDescriptorSet</span> <span style="color:#000">paramDescSet</span> <span style="color:#000">=</span> <span style="color:#000">mMaterialDescSets</span>[<span style="color:#000">materialIndex</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#000">VkDescriptorSet</span> <span style="color:#000">resourceDescSet</span> <span style="color:#000">=</span> <span style="color:#000">mMaterialResourceDescSets</span>[<span style="color:#000">materialIndex</span>];
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#177500">// ---------------------------------------------------------------------------
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>        <span style="color:#177500">// Update material descriptor set
+</span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>        <span style="color:#a90d91">if</span>(<span style="color:#000">shouldForceUpdateMaterial</span> <span style="color:#000">||</span> <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">ShouldFlushParams</span>()){
+</span></span><span style="display:flex;"><span>            <span style="color:#000">UpdateMaterialParamsDescSet</span>(<span style="color:#000">paramDescSet</span>, <span style="color:#000">material</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">FinishFlushParams</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a90d91">if</span>(<span style="color:#000">shouldForceUpdateMaterial</span> <span style="color:#000">||</span> <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">ShouldFlushResource</span>()){
+</span></span><span style="display:flex;"><span>            <span style="color:#000">UpdateMaterialResourceDescSet</span>(<span style="color:#000">resourceDescSet</span>, <span style="color:#000">material</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#000">material</span><span style="color:#000">-&gt;</span><span style="color:#000">FinishFlushResource</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>});
+</span></span></code></pre></div><h2 id="总结">总结</h2>
+<p>关于材质系统的设计，受之前OpenGL写过一个版本的影响，还是将其兼容到ECS中去了，发现的确及其的方便，这是一大幸事。但是，因为OpenGL和Vulkan的差别很大，特别是DescriptorSet这部分，绞尽脑汁设计了特别特别久，比如下图是我当时考虑的设计方案，我就是将其列出来，然后将其优缺点加上，看看缺点能不能解决。实在不能解决就弃用。</p>
+<p>
+        <a data-fancybox="gallery" href="../assets/image-20240719170229611.png">
+            <img class="mx-auto" alt="image-20240719170229611" src="../assets/image-20240719170229611.png" />
+        </a>
+    </p>
+<p>不过，上述方案都被我自己推翻了。最终就是舍弃掉一部分之前的想法，折中设计出当前这个方案。所以该方案在后续还会一点点的去优化。</p>
+<p>所以，整个过程还是收获良多的，收获到一些架构设计的经验，当一个架构能做到方便理解、方便维护、方便拓展是非常有成就感的一件事。另外也体会到了Vulkan一些设计的优势之处，对Vulkan的了解又更深入了些。如果您看到了这里，也对渲染/动画/物理等内容感兴趣的话，可以关注一下，一起交个朋友，手动比心。哈哈。</p>
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="http://www.adiosy.com">xingchen</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan04_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E6%9D%90%E8%B4%A8%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html">http://www.adiosy.com/posts/learn_vulkan/learn_vulkan04_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E6%9D%90%E8%B4%A8%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html">Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境</a></li>
+        
+        <li><a href="/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html">OpenGL或Vulkan渲染YUV格式数据</a></li>
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan02_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E5%BC%80%E7%AF%87.html">Learn_Vulkan02_渲染框架实现_开篇</a></li>
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html">Learn_Vulkan01_重要对象浅析</a></li>
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html">Learn_Vulkan00_第一个三角形</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/vulkan' target="_blank">Vulkan</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "xingchen0085/doc"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+
+    
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">飞雪无情</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+
+    <br />
+        
+        <div>
+            <span id="busuanzi_container_site_uv" style="font-family: auto;">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+            </span>
+            &copy; 2024 <a href="http://www.adiosy.com">Adiosy&#39;s blog By xingchen</a>
+                
+                | <a rel="nofollow" target="_blank" href="http://beian.miit.gov.cn/">滇ICP备2022000560号-1</a>
+            
+    </div>
+</footer>
+
+
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.2.8/raphael.min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/flowchart/1.12.2/flowchart.min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+                if (!window.flowchart) return;
+                const blocks = document.querySelectorAll('pre code.language-flowchart, pre code.language-flow');
+                for (let i = 0; i < blocks.length; i++) {
+                    const block = blocks[i];
+                    const rootElement = block.parentNode;
+                    const container = document.createElement('div');
+                    const id = `js-flowchart-diagrams-${i}`;
+                    container.id = id;
+                    container.className = 'align-center';
+                    container.setAttribute("style", "overFlow-x:auto");
+                    rootElement.parentNode.replaceChild(container, rootElement);
+                    const diagram = flowchart.parse(block.childNodes[0].nodeValue);
+                    diagram.drawSVG(id, window.flowchartDiagramsOptions ? window.flowchartDiagramsOptions : {});
+                }
+            })();
+        </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+            if (!window.Diagram) return;
+            const blocks = document.querySelectorAll('pre code.language-sequence');
+            for (let i = 0; i < blocks.length; i++) {
+                const block = blocks[i];
+                
+                const rootElement = block.parentNode;
+                const container = document.createElement('div');
+                const id = `js-sequence-diag-${i}`;
+                container.id = id;
+                container.className = 'align-center';
+                container.setAttribute("style", "overFlow-x:auto");
+                rootElement.parentNode.replaceChild(container, rootElement);
+
+                const diagram = Diagram.parse(block.childNodes[0].nodeValue);
+                diagram.drawSVG(id, window.sequenceDiagramsOptions
+                    ? window.sequenceDiagramsOptions
+                    : { theme: 'simple' });
+            }
+        })();
+        </script><script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        
+<form id="search" action='http://www.adiosy.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://www.adiosy.com">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan04_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E6%9D%90%E8%B4%A8%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html" title="Learn_Vulkan04_渲染框架实现_材质系统设计" target="_blank">Learn_Vulkan04_渲染框架实现_材质系统设计</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/android%E8%B7%A8%E8%BF%9B%E7%A8%8B%E6%B8%B2%E6%9F%93-hardwarebuffer.html" title="Android跨进程渲染-HardwareBuffer" target="_blank">Android跨进程渲染-HardwareBuffer</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html" title="Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境" target="_blank">Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html" title="OpenGL或Vulkan渲染YUV格式数据" target="_blank">OpenGL或Vulkan渲染YUV格式数据</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan02_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E5%BC%80%E7%AF%87.html" title="Learn_Vulkan02_渲染框架实现_开篇" target="_blank">Learn_Vulkan02_渲染框架实现_开篇</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html" title="Learn_Vulkan01_重要对象浅析" target="_blank">Learn_Vulkan01_重要对象浅析</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html" title="Learn_Vulkan00_第一个三角形" target="_blank">Learn_Vulkan00_第一个三角形</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/hello-openxr-%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html" title="Hello OpenXR - 第一个OpenXR程序" target="_blank">Hello OpenXR - 第一个OpenXR程序</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面" target="_blank">OpenGL渲染器04_绘制点线面</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 " target="_blank">OpenGL渲染器03_OpenGL环境 </a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">微信公众号</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="#" title="微信公众号" target="_blank" style="color:red">
+                
+                    <img src="/posts/assets/qrcode.jpg">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="http://www.adiosy.com/categories/opengl.html">OpenGL (4)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/vulkan.html">Vulkan (5)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/yuv.html">YUV (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="http://www.adiosy.com/tags/monado.html">Monado</a>
+    
+    <a href="http://www.adiosy.com/tags/opengl.html">OpenGL</a>
+    
+    <a href="http://www.adiosy.com/tags/opengl%E6%B8%B2%E6%9F%93.html">OpenGL渲染</a>
+    
+    <a href="http://www.adiosy.com/tags/openxr.html">OpenXR</a>
+    
+    <a href="http://www.adiosy.com/tags/vr/ar.html">VR/AR</a>
+    
+    <a href="http://www.adiosy.com/tags/vulkan.html">Vulkan</a>
+    
+    <a href="http://www.adiosy.com/tags/yuv.html">YUV</a>
+    
+    <a href="http://www.adiosy.com/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6.html">图形学</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://github.com/xingchen0085" title="我的Github">我的Github</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://gitee.com/xingchen0085" title="我的Gitee">我的Gitee</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://potatomelon.com" title="土豆社区">土豆社区</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="http://www.adiosy.com/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
