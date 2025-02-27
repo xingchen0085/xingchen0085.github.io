@@ -260,10 +260,14 @@
 <blockquote>
 <p>图中虚线框标识不走该层。</p>
 </blockquote>
-<p>
-        <a data-fancybox="gallery" href="../assets/image-20230615155051528.png" target="_blank">
-            <img class="mx-auto" alt="image-20230615155051528" src="../assets/image-20230615155051528.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image-20230615155051528.png" target="_blank">
+        <img alt="" src="../assets/image-20230615155051528.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <ul>
 <li>扩展（<code>extension</code>），扩展提供给我们一些额外的功能或特性，在Vulkan API种，以<code>KHR/EXT</code>结尾的都是扩展。我们可以先查询支持的扩展列表，然后在创建实例或设备时添加我们需要的扩展。</li>
@@ -305,10 +309,14 @@
 </span></span></code></pre></div><p>在赋值时，无论实例还是设备，在<code>CreateInfo</code>对象中都有<code>enabledLayerCount</code>、<code>ppEnabledLayerNames</code>、<code>enabledExtensionCount</code>和<code>ppEnabledExtensionNames</code>四个属性，将我们最终需要的层和扩展赋值即可。</p>
 <h3 id="22-实例窗口表面设备和队列">2.2 实例、窗口表面、设备和队列</h3>
 <p>下图是实例、物理设备（一般就是GPU）、逻辑设备、队列族和队列之间的关系。</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image-20230615163929731.png" target="_blank">
-            <img class="mx-auto" alt="image-20230615163929731" src="../assets/image-20230615163929731.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image-20230615163929731.png" target="_blank">
+        <img alt="" src="../assets/image-20230615163929731.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>简要描述：</p>
 <ol>
@@ -711,10 +719,14 @@
 </span></span></code></pre></div><p>在这里我们需要一个<code>queueIndex</code>参数，这就是为什么上文要注意队列数量的原因。</p>
 <h3 id="23-交换链">2.3 交换链</h3>
 <p>交换链是渲染结果和窗口之间的传输媒介，应用程序为从交换链中获取图像进行绘制，然后将其返回给交换链，等待屏幕显示完成。</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image-20230615170514402.png" target="_blank">
-            <img class="mx-auto" alt="image-20230615170514402" src="../assets/image-20230615170514402.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image-20230615170514402.png" target="_blank">
+        <img alt="" src="../assets/image-20230615170514402.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>如图，我们在创建交换链的时候需要指定Surface，以及交换链内图像的大小、格式、用途等参数。创建完交换链后，渲染时由逻辑设备取得交换链内的图像，执行渲染后返回给交换链，最终完成提交显示。</p>
 <h4 id="231-表面参数适配">2.3.1 表面参数适配</h4>

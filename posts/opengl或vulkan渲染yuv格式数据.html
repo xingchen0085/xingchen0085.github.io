@@ -265,28 +265,44 @@
 <h2 id="2-yuv介绍">2 YUV介绍</h2>
 <p>YUV，“Y” 表示明亮度（Luminance），也就是像素的灰阶值，还含有较多的绿色通道量。因此需要单纯的 Y 分量就可以显示出完整的黑白图像。“U” 和 “V” 分别表示色度（Chrominance）和浓度（Chroma），用于描述色彩饱和度，U 分量是蓝色通道与 Y（亮度）的差值，V 分量是红色通道与 Y（亮度）的差值。</p>
 <p>U/V两个分量的变化区间见下图：</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/1712735070651-11.png" target="_blank">
-            <img class="mx-auto" alt="img" src="./assets/1712735070651-11.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/1712735070651-11.png" target="_blank">
+        <img alt="" src="./assets/1712735070651-11.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>YUV也经常称为YCbCr，两者本质上没有区别。YUV 主要是用在彩色电视中，用于模拟信号表示，优点是可以兼容老式黑白电视，只需要YUV格式中的Y分量就可以输出黑白图像。YCbCr主要用在数字视频、图像的压缩和传输，例如H264、HEVC、MPEG均采用此格式。</p>
 <p>YUV 色彩编码模型在计算机系统应用中也被广泛采用，<strong>它可以有效地降低图片数据的空间占用，提高数据处理效率</strong>，对于需要快速传输或数据量较大的图像数据，YUV 格式是一个理想的选择。</p>
 <p>比如，一张1600x1600像素的照片，RGB 和 YUV（采用YUV420方式采样）格式的空间占用对比：</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/1712735070639-1.png" target="_blank">
-            <img class="mx-auto" alt="img" src="./assets/1712735070639-1.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
     
-        <a data-fancybox="gallery" href="./assets/1712735070640-2.png" target="_blank">
-            <img class="mx-auto" alt="img" src="./assets/1712735070640-2.png" />
-        </a>
+    <a data-fancybox="gallery" href="./assets/1712735070639-1.png" target="_blank">
+        <img alt="" src="./assets/1712735070639-1.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
+    <figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/1712735070640-2.png" target="_blank">
+        <img alt="" src="./assets/1712735070640-2.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>一张图片是由N个像素组成的，在 1600x1600 分辨率的图片中，我们可以理解为水平方向有 1600 个像素，垂直方向也有 1600 个像素，大概拥有250万像素。图片在显示时，每个像素的颜色信息通常使用 RGB 线性编码格式来表示，也就是说，每个像素的颜色可以由 R、G、B 三个分量线性排列组成（图示是R8G8B8格式）。</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410170729708.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410170729708" src="./assets/image-20240410170729708.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410170729708.png" target="_blank">
+        <img alt="" src="./assets/image-20240410170729708.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>对于 YUV 格式来说，虽然每个像素也由Y、U、V  三个分量组成，但这三个分量的排列方式并不是线性的，而是按照位置特定排列的。根据采样方式和排列方式的不同，我们可以将 YUV 格式分为不同的类型。</p>
 <h3 id="211-采样方式">2.1.1 采样方式</h3>
@@ -297,24 +313,36 @@
 <li><strong>YUV420</strong>：每4个Y分量对应一套UV分量，每个像素占用（Y+0.25U+0.25V=8+2+2=12bit）1.5字节，该采样方式节省较多存储空间，因此也最常用。</li>
 </ul>
 <p>（1）YUV444</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410170753677.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410170753677" src="./assets/image-20240410170753677.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410170753677.png" target="_blank">
+        <img alt="" src="./assets/image-20240410170753677.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>上图是YUV444的采样模型，左图和右图都可以看出来每个像素点都有一对UV分量，这就相当于没有做色度二次采样，即每一个Y对应一组UV分量。</p>
 <p>（2）YUV422</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410170902503.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410170902503" src="./assets/image-20240410170902503.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410170902503.png" target="_blank">
+        <img alt="" src="./assets/image-20240410170902503.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>上图是YUV422的采样模型，左图可以看出来在竖直方向上每一个像素都有UV分量，而在水平方向上每两个像素共用一对UV分量；在右图的表现就是每行两个黑两个白。即每两个Y对应一组UV分量。</p>
 <p>（3）YUV420</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410170827387.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410170827387" src="./assets/image-20240410170827387.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410170827387.png" target="_blank">
+        <img alt="" src="./assets/image-20240410170827387.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>上图是YUV420的采样模型，左图可以看出来四个像素点共用一对UV分量，在水平方向上每两个像素共用一对UV分量，在竖直方向上也是每两个像素包含一对UV分量；在右图的表现就是第一行两个黑两个白，第二行全白。即每四个Y对应一组UV分量。</p>
 <h3 id="212-排列方式">2.1.2 排列方式</h3>
@@ -326,32 +354,48 @@
 </ul>
 <p>（1）Planar Format</p>
 <p>Planar的YUV格式，<strong>分为3个平面</strong>。平面存储格式先连续存储所有像素点的Y，紧接着存储所有像素点的U或V，最后存储剩下的U或者V。例如YU12（也叫I420，属于YUV420采样模型，每4个Y分量共用一组UV分量）的排列方式如下：</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410170931638.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410170931638" src="./assets/image-20240410170931638.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410170931638.png" target="_blank">
+        <img alt="" src="./assets/image-20240410170931638.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>（2）Semi-Planar Format</p>
 <p>Semi-Planar的YUV格式，半平面存储格式，<strong>分为2个平面</strong>，也就是先连续存储所有的Y分量，再交错存储U和V分量。例如NV12（属于YUV420sp采样模型，每4个Y分量共用一组UV分量）的排列方式如下：</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410170941841.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410170941841" src="./assets/image-20240410170941841.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410170941841.png" target="_blank">
+        <img alt="" src="./assets/image-20240410170941841.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <blockquote>
 <p>NV12还有一个兄弟格式，称为NV21，其实就是UV调换。即：</p>
 </blockquote>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410170949379.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410170949379" src="./assets/image-20240410170949379.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410170949379.png" target="_blank">
+        <img alt="" src="./assets/image-20240410170949379.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>（3）Packed Format</p>
 <p>这种格式下YUV数据是交错存储的，例如YUV分量的排列顺序是VYUY，即两个Y分量共用一组UV，属于<strong>YUV 422</strong>的一种。</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171003778.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410171003778" src="./assets/image-20240410171003778.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410171003778.png" target="_blank">
+        <img alt="" src="./assets/image-20240410171003778.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <h3 id="213-常见的yuv格式">2.1.3 常见的YUV格式</h3>
 <table>
@@ -425,26 +469,38 @@
 <ol>
 <li>
 <p>BT.601(标准数字电视SDTV)</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410165651980.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410165651980" src="./assets/image-20240410165651980.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410165651980.png" target="_blank">
+        <img alt="" src="./assets/image-20240410165651980.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 </li>
 <li>
 <p>BT.709(高清数字电视HDTV)</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410165907559.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410165907559" src="./assets/image-20240410165907559.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410165907559.png" target="_blank">
+        <img alt="" src="./assets/image-20240410165907559.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 </li>
 <li>
 <p>BT.2020(超高清数字电视UHDTV)</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171205074.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410171205074" src="./assets/image-20240410171205074.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410171205074.png" target="_blank">
+        <img alt="" src="./assets/image-20240410171205074.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 </li>
 </ol>
@@ -487,10 +543,14 @@
 </span></span><span style="display:flex;"><span>    ...
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>（2）矩阵计算</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171123417.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410171123417" src="./assets/image-20240410171123417.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410171123417.png" target="_blank">
+        <img alt="" src="./assets/image-20240410171123417.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">struct</span> <span style="color:#3f6e75">vec3</span>{
 </span></span><span style="display:flex;"><span>    <span style="color:#a90d91">float</span> <span style="color:#000">x</span>, <span style="color:#000">y</span>, <span style="color:#000">z</span>;
@@ -583,26 +643,38 @@
 <ol>
 <li>
 <p>BT.601(标准数字电视SDTV)</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171331055.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410171331055" src="./assets/image-20240410171331055.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410171331055.png" target="_blank">
+        <img alt="" src="./assets/image-20240410171331055.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 </li>
 <li>
 <p>BT.709(高清数字电视HDTV)</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171343039.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410171343039" src="./assets/image-20240410171343039.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410171343039.png" target="_blank">
+        <img alt="" src="./assets/image-20240410171343039.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 </li>
 <li>
 <p>BT.2020(超高清数字电视UHDTV)</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171357823.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410171357823" src="./assets/image-20240410171357823.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410171357823.png" target="_blank">
+        <img alt="" src="./assets/image-20240410171357823.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 </li>
 </ol>
@@ -650,25 +722,41 @@
 <p>在#3章节中，如果使用CPU来执行YUV和RGB互转，在1600x1600分辨率下，需要约40-60毫秒的处理时间。但是，如果使用GPU来处理呢？使用GPU进行处理时，通常会获得更快的处理速度，因为<strong>GPU在</strong>并行计算方面表现更为出色，能够同时处理多个像素。</p>
 <p>当我们需要将摄像设备返回的画面渲染到屏幕上时，设备通常会返回RAW或YUV格式的数据，这些数据可以通过GPU渲染而实现预览功能。此外，我们还可以将图像数据采样到一个畸变网格中，这样可以实现Video-see through（VST）的基础效果，实时显示相机捕捉到的内容，并在需要时应用畸变校正和其他增强效果。这样的处理过程通常需要借助GPU的计算能力来实现高效渲染和实时响应。</p>
 <p>使用YUVviewer打开一个NV12图像。</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/1712735070640-3.png" target="_blank">
-            <img class="mx-auto" alt="img" src="./assets/1712735070640-3.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
     
-        <a data-fancybox="gallery" href="./assets/1712735070640-4.png" target="_blank">
-            <img class="mx-auto" alt="img" src="./assets/1712735070640-4.png" />
-        </a>
+    <a data-fancybox="gallery" href="./assets/1712735070640-3.png" target="_blank">
+        <img alt="" src="./assets/1712735070640-3.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
+    <figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/1712735070640-4.png" target="_blank">
+        <img alt="img" src="./assets/1712735070640-4.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">img</figcaption>
+</figure>
     </p>
 <p>使用 OpenGL/Vulkan 两种API完成渲染，渲染结果如下：</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171435452.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410171435452" src="./assets/image-20240410171435452.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410171435452.png" target="_blank">
+        <img alt="" src="./assets/image-20240410171435452.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
-<p>
-        <a data-fancybox="gallery" href="./assets/1712735070640-6.png" target="_blank">
-            <img class="mx-auto" alt="img" src="./assets/1712735070640-6.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/1712735070640-6.png" target="_blank">
+        <img alt="" src="./assets/1712735070640-6.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>GPU渲染参考以下四个步骤：</p>
 <ol>
@@ -677,14 +765,22 @@
 <li>编写渲染着色器（Shader），给Y+UV两个平面分别采样，并使用#3章节中公式将其转换为RGB。</li>
 <li>初始化一个四边形网格，并将步骤#2中创建的两个纹理合成并应用给这个网格。</li>
 </ol>
-<p>
-        <a data-fancybox="gallery" href="./assets/1712735070640-7.png" target="_blank">
-            <img class="mx-auto" alt="img" src="./assets/1712735070640-7.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
     
-        <a data-fancybox="gallery" href="./assets/1712735070640-8.png" target="_blank">
-            <img class="mx-auto" alt="img" src="./assets/1712735070640-8.png" />
-        </a>
+    <a data-fancybox="gallery" href="./assets/1712735070640-7.png" target="_blank">
+        <img alt="" src="./assets/1712735070640-7.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
+    <figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/1712735070640-8.png" target="_blank">
+        <img alt="" src="./assets/1712735070640-8.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <h2 id="4-opengl渲染nv12nv21格式">4 OpenGL渲染NV12/NV21格式</h2>
 <h3 id="41-读取nv12nv21数据">4.1 读取NV12/NV21数据</h3>
@@ -858,15 +954,23 @@ void main(){
 }
 </code></pre><h3 id="43-创建网格体并应用yuv纹理">4.3 创建网格体并应用Y+UV纹理</h3>
 <p>本案例需要将YUV纹理平铺显示到应用窗口，所以只用一个四边形网格，并且范围是[-1,1]。</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171549322.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410171549322" src="./assets/image-20240410171549322.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410171549322.png" target="_blank">
+        <img alt="" src="./assets/image-20240410171549322.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171555712.png" target="_blank">
-            <img class="mx-auto" alt="image-20240410171555712" src="./assets/image-20240410171555712.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240410171555712.png" target="_blank">
+        <img alt="" src="./assets/image-20240410171555712.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>初始化网格。</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#a90d91">void</span> <span style="color:#000">initMesh</span>() {
@@ -913,16 +1017,24 @@ void main(){
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><h2 id="5-vulkan渲染nv12nv21格式">5 Vulkan渲染NV12/NV21格式</h2>
 <p>Vulkan中默认已有YUV的实现方案，在其内部称为“YCbCr”。比如VKFormat中就有关于YUV的一些格式：</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/1712735070640-9.png" target="_blank">
-            <img class="mx-auto" alt="img" src="./assets/1712735070640-9.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/1712735070640-9.png" target="_blank">
+        <img alt="" src="./assets/1712735070640-9.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>另外还区分了不同标准和协议。</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/1712735070640-10.png" target="_blank">
-            <img class="mx-auto" alt="img" src="./assets/1712735070640-10.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/1712735070640-10.png" target="_blank">
+        <img alt="" src="./assets/1712735070640-10.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>因此，使用Vulkan渲染NV12/NV21有两种方案。</p>
 <ol>

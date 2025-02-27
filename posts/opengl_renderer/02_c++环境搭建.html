@@ -264,10 +264,14 @@
 <p>如果我们要编译和运行C++程序，下载安装g++后：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#177500"># 编译</span>
 </span></span><span style="display:flex;"><span>g++ -c filename.cpp
-</span></span></code></pre></div><p>
-        <a data-fancybox="gallery" href="../assets/image_16370298653829.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_16370298653829.png" />
-        </a>
+</span></span></code></pre></div><p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_16370298653829.png" target="_blank">
+        <img alt="" src="../assets/image_16370298653829.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>但是，当源码文件数量太多，还有加入第三方库和链接的时候，这个就很麻烦了。任何一个项目，除了写代码外，就是代码的管理和组织，我们不会把所有内容放在main.cpp一个文件中。因此需要一个工具帮我们完成构建、链接和生成可执行程序、生成动态链接库、生成静态链接库等。有一个方案就是使用CMake和MinGW来完成这些事情。</p>
 <h3 id="cmake-构建生成">CMake-构建、生成</h3>
@@ -276,37 +280,57 @@
 <p>不过可以通篇浏览一遍，然后用到了再查，用多了就熟了。</p>
 <p><strong>CMake和Makefile什么关系？</strong></p>
 <p>CMake在Makefile的上层，CMake中会写清楚项目中代码和代码间的关系，描述文件之间的依赖关系。CMake安装（下边会介绍安装过程）完成之后，打开 cmake-gui.exe，我们看到可以生成各种Makefile。</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/cmake_16370364873912.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/cmake_16370364873912.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/cmake_16370364873912.png" target="_blank">
+        <img alt="" src="../assets/cmake_16370364873912.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>CMake-Make流程：
-
-        <a data-fancybox="gallery" href="../assets/cmake.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/cmake.png" />
-        </a>
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/cmake.png" target="_blank">
+        <img alt="" src="../assets/cmake.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <h3 id="安装">安装</h3>
 <p>下载地址：https://cmake.org/download/</p>
 <p>选择版本：3.0以上，我这里是3.12.2</p>
 <p>下载完成后，解压到指定目录，并<strong>添加bin目录到环境变量。</strong></p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image_20211116090011.png" target="_blank">
-            <img class="mx-auto" alt="Add Path" src="../assets/image_20211116090011.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_20211116090011.png" target="_blank">
+        <img alt="" src="../assets/image_20211116090011.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image_20211116090246.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_20211116090246.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_20211116090246.png" target="_blank">
+        <img alt="" src="../assets/image_20211116090246.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>验证是否配置成功：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cmake --version
-</span></span></code></pre></div><p>
-        <a data-fancybox="gallery" href="../assets/image_20211116090327.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_20211116090327.png" />
-        </a>
+</span></span></code></pre></div><p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_20211116090327.png" target="_blank">
+        <img alt="" src="../assets/image_20211116090327.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <h2 id="mingw-编译">MinGW-编译</h2>
 <p>MinGW的全称是Minimalist GNU on Windows，是将开源的gcc/g++移植到了Windows平台下，<strong>也就是C/C++编译器gcc的Windows版本</strong>。不过其他系统Linux、Mac在社区上也有对应的一些版本，同样可以使用。</p>
@@ -327,20 +351,28 @@
 <p>我这里选择的是： posix、seh</p>
 </blockquote>
 <p>如果下载的是exe，安装时会下载包，版本选择如图：</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image_20211116090549.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_20211116090549.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_20211116090549.png" target="_blank">
+        <img alt="" src="../assets/image_20211116090549.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>解压完毕之后，跟CMake一样配置Path环境变量。</p>
 <p>然后输入以下命令检验是否安装成功：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gcc --version
 </span></span><span style="display:flex;"><span>g++ --version
 </span></span><span style="display:flex;"><span>mingw32-make --version
-</span></span></code></pre></div><p>
-        <a data-fancybox="gallery" href="../assets/image_20211116090635.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_20211116090635.png" />
-        </a>
+</span></span></code></pre></div><p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_20211116090635.png" target="_blank">
+        <img alt="" src="../assets/image_20211116090635.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <h2 id="mingw生成编译c程序">MinGW生成编译C++程序</h2>
 <p>创建一个文件夹，test01，并添加CMakeLists.txt文件。</p>
@@ -359,10 +391,14 @@
 </span></span><span style="display:flex;"><span>	<span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">cout</span><span style="color:#000">&lt;&lt;</span><span style="color:#c41a16">&#34;Hello World!&#34;</span><span style="color:#000">&lt;&lt;</span><span style="color:#000">std</span><span style="color:#000">::</span><span style="color:#000">endl</span>;
 </span></span><span style="display:flex;"><span>	<span style="color:#a90d91">return</span> <span style="color:#1c01ce">0</span>;
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>
-        <a data-fancybox="gallery" href="../assets/image_20211116090730.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_20211116090730.png" />
-        </a>
+</span></span></code></pre></div><p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_20211116090730.png" target="_blank">
+        <img alt="" src="../assets/image_20211116090730.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>构建和编译，可选命令行方式，或者是GUI可视化操作方式两种。</p>
 <h3 id="使用命令行">使用命令行</h3>
@@ -374,38 +410,62 @@ mingw32-make
 </code></pre><p>执行完成之后，如果一切正常，在build目录下会生成可执行文件，运行测试。</p>
 <pre tabindex="0"><code>./test01.exe
 Hello World!
-</code></pre><p>
-        <a data-fancybox="gallery" href="../assets/image_20211116090821.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_20211116090821.png" />
-        </a>
+</code></pre><p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_20211116090821.png" target="_blank">
+        <img alt="" src="../assets/image_20211116090821.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <h3 id="使用cmake-gui">使用CMake GUI</h3>
 <p>前往%CMake_Home%/bin, 打开cmake-gui.exe。或者命令行输入：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span> cmake-gui
-</span></span></code></pre></div><p>
-        <a data-fancybox="gallery" href="../assets/cmake_step_1.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/cmake_step_1.png" />
-        </a>
+</span></span></code></pre></div><p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/cmake_step_1.png" target="_blank">
+        <img alt="" src="../assets/cmake_step_1.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
-<p>
-        <a data-fancybox="gallery" href="../assets/cmake_step_2.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/cmake_step_2.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/cmake_step_2.png" target="_blank">
+        <img alt="" src="../assets/cmake_step_2.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
-<p>
-        <a data-fancybox="gallery" href="../assets/cmake_step_3.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/cmake_step_3.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/cmake_step_3.png" target="_blank">
+        <img alt="" src="../assets/cmake_step_3.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
-<p>
-        <a data-fancybox="gallery" href="../assets/cmake_step_4.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/cmake_step_4.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/cmake_step_4.png" target="_blank">
+        <img alt="" src="../assets/cmake_step_4.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
-<p>
-        <a data-fancybox="gallery" href="../assets/cmake_step_5.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/cmake_step_5.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/cmake_step_5.png" target="_blank">
+        <img alt="" src="../assets/cmake_step_5.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <h2 id="ide">IDE</h2>
 <blockquote>
@@ -439,24 +499,36 @@ Hello World!
 <h3 id="clion">Clion</h3>
 <p>下载地址：https://www.jetbrains.com/clion/</p>
 <p>根据自己电脑系统下载对应版本即可，然后一步步安装就可以。</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image-20211116085816762.png" target="_blank">
-            <img class="mx-auto" alt="Clion" src="../assets/image-20211116085816762.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image-20211116085816762.png" target="_blank">
+        <img alt="" src="../assets/image-20211116085816762.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <h3 id="在clion中编译和构建">在Clion中编译和构建</h3>
 <p>打开Clion，首先在【File】-【Settings】-【Build】-【Toolchains】添加MinGW的根目录，Clion会自动识别g++、gcc、make和gdb工具。</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image_16370318523290.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_16370318523290.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_16370318523290.png" target="_blank">
+        <img alt="" src="../assets/image_16370318523290.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>打开项目：【File】-【Open】，打开test01，等待CLion Load CMake完毕。</p>
 <p>编译和运行</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image_16370323471812.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_16370323471812.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_16370323471812.png" target="_blank">
+        <img alt="" src="../assets/image_16370323471812.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>到此为止，我们成功在Clion中编译和运行了C++程序！</p>
 <h2 id="结语">结语</h2>

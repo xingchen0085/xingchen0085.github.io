@@ -304,10 +304,14 @@
 </ol>
 <p><strong>最后，我决定使用OpenGL</strong>。不为别的，就因为跨平台（主要别的图形库也不了解，不会用&hellip;）。不过，图形库还是一个工具，图形学知识基本都适用，所以我准备在渲染的底层数学这方面，尽量学得深入一点。</p>
 <p><strong>OpenGL</strong></p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240414004428116.png" target="_blank">
-            <img class="mx-auto" alt="image-20240414004428116" src="./assets/image-20240414004428116.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240414004428116.png" target="_blank">
+        <img alt="OpenGL Logo" src="./assets/image-20240414004428116.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">OpenGL Logo</figcaption>
+</figure>
     </p>
 <p><strong>OpenGL本身不是一个API</strong>，只是定义了一整套由Khronos组织制定并维护的规范。所以它也不是库，不能调用，它就是一个协议、规范，严格规定每个函数的输入、输出，如何执行。其具体实现，基本上是显卡厂商自行开发，OpenGL规范并没有规定实现的细节，只要求功能和结果与规范相匹配即可。</p>
 <p>我感觉OpenGL有点像是编程中的接口（interface），定义好所有的输入输出，但具体的实现接口就不管了。就像要实现一个数组排序，定好接口输入时数组，输出时排序后数组。具体的实现不管是冒泡排序、选择排序，甚至是猴子排序，也都可以。所以只要是OpenGL，接口名都很像。</p>
@@ -359,10 +363,14 @@
 <li>执行编译、安装命令</li>
 </ol>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mingw32-make install <span style="color:#177500">#install 默认会将文件写到 C:\Program Files (x86)\GLFW 中去</span>
-</span></span></code></pre></div><p>
-        <a data-fancybox="gallery" href="../assets/image_16370542408964.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_16370542408964.png" />
-        </a>
+</span></span></code></pre></div><p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_16370542408964.png" target="_blank">
+        <img alt="mingw32-make install" src="../assets/image_16370542408964.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">mingw32-make install</figcaption>
+</figure>
     </p>
 <ol>
 <li>前往 C:\Program Files (x86)\GLFW 目录下查看安装结果。<strong>将 bin/glfw3.dll 复制一份到 /lib目录。</strong></li>
@@ -705,10 +713,14 @@ imgui_impl_opengl3_loader.h
 </span></span><span style="display:flex;"><span><span style="color:#000">ImGui_ImplGlfw_Shutdown</span>();
 </span></span><span style="display:flex;"><span><span style="color:#000">ImGui</span><span style="color:#000">::</span><span style="color:#000">DestroyContext</span>();
 </span></span></code></pre></div><p>结果：</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image_16371391968647.png" target="_blank">
-            <img class="mx-auto" alt="ImGui" src="../assets/image_16371391968647.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_16371391968647.png" target="_blank">
+        <img alt="ImGui" src="../assets/image_16371391968647.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">ImGui</figcaption>
+</figure>
     </p>
 <h2 id="结语">结语</h2>
 <p>像开头所说，原本是打算跟前一篇《从零开始写一个渲染器02_C++环境搭建》放在一起的。没想到不小心又写的很啰嗦了。</p>

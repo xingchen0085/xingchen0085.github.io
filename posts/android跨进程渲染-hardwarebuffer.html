@@ -243,10 +243,14 @@
             <p>图片流交换是非常常见的需求，为了保证程序的健壮性，可以将这些步骤分为各个进程分别处理，防止中间步骤错误导致主进程crash从而降低用户体验。比如人脸识别、场景识别、直播等场景，这些图片数据可能要经过很多个步骤流转，在各步骤中执行格式转换、图层叠加、图片畸变、颜色矫正等，比如直播中常见的特效和相机图片叠加。</p>
 <p>在查阅资料过程中，发现网上相应的资料较少。对我非常有帮助的是一位博主<em>Robot 9</em>写的《<a href="https://robot9.me/hardwarebuffer-multi-process-rendering/">基于 HardwareBuffer 实现 Android 多进程渲染</a>》，但我不太想使用aidl来实现跨进程，于是我研究一段时间之后，决定使用Socket+HardwareBuffer来完成跨进程渲染。</p>
 <h2 id="实现的效果">实现的效果</h2>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240416191553558.png" target="_blank">
-            <img class="mx-auto" alt="image-20240416191553558" src="./assets/image-20240416191553558.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240416191553558.png" target="_blank">
+        <img alt="最终效果" src="./assets/image-20240416191553558.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">最终效果</figcaption>
+</figure>
     </p>
 <h2 id="为什么是hardwarebuffer">为什么是HardwareBuffer</h2>
 <p><strong>HardwareBuffer支持Android 8.0（API 级别 26）及以上版本</strong>，底层实现就是<code>GraphicBuffer</code>。</p>
@@ -256,10 +260,14 @@
 <li>对OpenGL、Vulkan等图形API原生支持，可以和常见图形API直接集成，不需要耗费性能的<code>glReadpixels()</code>这些API。</li>
 </ul>
 <h2 id="案例示意">案例示意</h2>
-<p>
-        <a data-fancybox="gallery" href="./assets/%e5%9b%be%e7%89%871-1713268128027-4.png" target="_blank">
-            <img class="mx-auto" alt="图片1" src="./assets/%e5%9b%be%e7%89%871-1713268128027-4.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/%e5%9b%be%e7%89%871-1713268128027-4.png" target="_blank">
+        <img alt="架构示意图" src="./assets/%e5%9b%be%e7%89%871-1713268128027-4.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">架构示意图</figcaption>
+</figure>
     </p>
 <p>简要描述:</p>
 <ol>
@@ -281,10 +289,14 @@
 <h2 id="实现步骤">实现步骤</h2>
 <h3 id="项目初始结构">项目初始结构</h3>
 <p>使用gradle管理两个Module，RendererServer和RendererClient。</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240416200149528.png" target="_blank">
-            <img class="mx-auto" alt="image-20240416200149528" src="./assets/image-20240416200149528.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240416200149528.png" target="_blank">
+        <img alt="项目结构" src="./assets/image-20240416200149528.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">项目结构</figcaption>
+</figure>
     </p>
 <h3 id="服务端socket">服务端Socket</h3>
 <p>在android_app的onCmdHandler中创建一个Socket线程，设置Socket Server。</p>
@@ -988,10 +1000,14 @@
 <ol start="4">
 <li>我们切换到RendererServer界面，就可以看到客户端提交的渲染画面了。</li>
 </ol>
-<p>
-        <a data-fancybox="gallery" href="./assets/shard_texture.gif" target="_blank">
-            <img class="mx-auto" alt="shard_texture.gif" src="./assets/shard_texture.gif" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/shard_texture.gif" target="_blank">
+        <img alt="动图效果" src="./assets/shard_texture.gif" />
+    </a>
+    
+    <figcaption class="p-2 text-center">动图效果</figcaption>
+</figure>
     </p>
 <p>日志也打印了服务端获取的HardwareBuffer信息：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#000">RendererServer</span>        <span style="color:#000">D</span>  <span style="color:#000">recvHandleFromUnixSocket</span>: <span style="color:#1c01ce">1024</span> <span style="color:#000">x</span> <span style="color:#1c01ce">1024</span>, <span style="color:#000">layer</span>: <span style="color:#1c01ce">1</span>, <span style="color:#000">format</span>: <span style="color:#1c01ce">1</span>

@@ -348,10 +348,14 @@
 </span></span><span style="display:flex;"><span>    ...
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>类图设计：</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/mRender%E7%B1%BB%E5%9B%BE.jpg" target="_blank">
-            <img class="mx-auto" alt="mRender类图" src="../assets/mRender%E7%B1%BB%E5%9B%BE.jpg" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/mRender%E7%B1%BB%E5%9B%BE.jpg" target="_blank">
+        <img alt="mRender类图" src="../assets/mRender%E7%B1%BB%E5%9B%BE.jpg" />
+    </a>
+    
+    <figcaption class="p-2 text-center">mRender类图</figcaption>
+</figure>
     </p>
 <h2 id="重要的几个对象介绍">重要的几个对象介绍</h2>
 <h3 id="buffergeometry-缓冲几何体">BufferGeometry 缓冲几何体</h3>
@@ -380,10 +384,14 @@
 </span></span><span style="display:flex;"><span><span style="color:#177500">//场景中添加此物体
 </span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#000">scene</span><span style="color:#000">-&gt;</span><span style="color:#000">add</span>(<span style="color:#000">colorfulTriangle</span>);
 </span></span></code></pre></div><p>渲染结果应该是这样的：</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/colorfulTriangle.png" target="_blank">
-            <img class="mx-auto" alt="彩色三角形" src="../assets/colorfulTriangle.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/colorfulTriangle.png" target="_blank">
+        <img alt="彩色三角形" src="../assets/colorfulTriangle.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">彩色三角形</figcaption>
+</figure>
     </p>
 <h3 id="object3d-三维物体">Object3D 三维物体</h3>
 <p>所有的三维物体都继承自Object3D。</p>
@@ -393,10 +401,14 @@
 <li>材质信息Material，材质相关的内容还没写多少，其实材质考虑是满足物体基色、贴图、光泽度、法线偏移、光照等等这些真实感渲染的。材质相关目前还是1%，才把基色写好，材质还没加。</li>
 <li>变换信息Transform，记录了物体的位置、旋转和缩放信息，并保存当前物体的世界坐标矩阵ModelMarix。</li>
 </ul>
-<p>
-        <a data-fancybox="gallery" href="../assets/object3dpreview.png" target="_blank">
-            <img class="mx-auto" alt="Object3D" src="../assets/object3dpreview.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/object3dpreview.png" target="_blank">
+        <img alt="Object3D" src="../assets/object3dpreview.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">Object3D</figcaption>
+</figure>
     </p>
 <h3 id="scene-场景">Scene 场景</h3>
 <p>场景继承自Object3D，它主要工作是维护整棵场景树。调用scene.add(Object3D object)，把object3d放到场景中去。然后由场景来管理Object3D，完成初始化init；在渲染时，场景完成自身的矩阵计算后，传给字对象，并调用子对象的render。以此链路完成场景中物体的初始化、渲染等操作。</p>
@@ -419,10 +431,14 @@
 </span></span></code></pre></div><p>运行过程中，如果要切换视角，也就是换到另一个相机中去，可以这样使用(暂时还没考虑下高级切换，比如平滑切换等等)：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#000">scene</span><span style="color:#000">-&gt;</span><span style="color:#000">setActiveCamera</span>(<span style="color:#000">Camera</span><span style="color:#000">*</span>);
 </span></span></code></pre></div><p>另外，类似很多引擎的一样，显示相机的预览，可以把相机中属性bPreview改为true，界面即可显示相机预览。
-
-        <a data-fancybox="gallery" href="../assets/camerapreview.png" target="_blank">
-            <img class="mx-auto" alt="相机预览" src="../assets/camerapreview.png" />
-        </a>
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/camerapreview.png" target="_blank">
+        <img alt="相机预览" src="../assets/camerapreview.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">相机预览</figcaption>
+</figure>
     </p>
 <h3 id="mrenderer-渲染器">MRenderer 渲染器</h3>
 <p>渲染器，是把glfw窗口管理起来，初始化、主循环、退出和按键、鼠标事件都是MRenderer来做，并把具体实现给到具体的对象中去。比如，负责设置opengl状态、渲染场景、渲染GUI操作。</p>

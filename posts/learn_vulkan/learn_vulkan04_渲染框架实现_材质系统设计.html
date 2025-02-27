@@ -248,17 +248,25 @@
 </blockquote>
 <p>工程源码：<a href="https://gitee.com/xingchen0085/adiosy_engine">https://gitee.com/xingchen0085/adiosy_engine</a></p>
 <p>视频：<a href="https://b23.tv/ObMaagI">XINGCHEN0085的个人空间-哔哩哔哩</a></p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image-20240719140757715.png" target="_blank">
-            <img class="mx-auto" alt="image-20240719140757715" src="../assets/image-20240719140757715.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image-20240719140757715.png" target="_blank">
+        <img alt="" src="../assets/image-20240719140757715.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <h2 id="渲染循环">渲染循环</h2>
 <p>以下是该渲染器的主循环伪代码：</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image.png" target="_blank">
-            <img class="mx-auto" alt="image" src="../assets/image.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image.png" target="_blank">
+        <img alt="" src="../assets/image.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>伪代码简要描述：</p>
 <ul>
@@ -274,10 +282,14 @@
 <p>3/ 为了性能考虑，减少绑定Descriptor的次数，所以在循环种先循环所有材质，再循环所有绑定该材质下的网格体提交渲染。</p>
 <h2 id="材质参数-material">材质参数 Material</h2>
 <p>材质内容包含两个重要信息：<strong>材质参数和纹理列表</strong>。渲染时，使用Uniform Buffer/Stoage Buffer等将材质参数打包发送给Shader；通过Tetxure/Sampler传递给着色器进行采样。如下图：</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240719220108914.png" target="_blank">
-            <img class="mx-auto" alt="image-20240719220108914" src="./assets/image-20240719220108914.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240719220108914.png" target="_blank">
+        <img alt="" src="./assets/image-20240719220108914.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>材质参数可能是：基础颜色（base color）、漫反射颜色（diffuse）、镜面反射颜色（specular），或者是PBR材质的一些参数等。</p>
 <p>不过针纹理列表的话，这里有延申设计了两个概念：</p>
@@ -358,10 +370,14 @@
 <p>材质组件由两个重要作用：</p>
 <p>1/ 标识某个Entity使用某个材质系统。</p>
 <p>2/ 绑定网格体和材质参数。</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240719220258297.png" target="_blank">
-            <img class="mx-auto" alt="image-20240719220258297" src="./assets/image-20240719220258297.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240719220258297.png" target="_blank">
+        <img alt="" src="./assets/image-20240719220258297.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>材质组件的定义：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span> <span style="color:#a90d91">template</span><span style="color:#000">&lt;</span><span style="color:#a90d91">typename</span> <span style="color:#000">T</span><span style="color:#000">&gt;</span>
@@ -660,10 +676,14 @@
 </span></span></code></pre></div><p>DS3 每个Enity的数据，比如Enity的状态，模型矩阵等信息，这类数据每个Enitity都需要更新。<strong>最好使用Push_Constant常量推送方式，只有在数据量超过了Push_Constant范围后再考虑使用DescriptorSet。</strong></p>
 <p>DS4 每个Mesh的数据，比如Mesh额外信息，这类数据每个Mesh都需要更新。<strong>最好使用Push_Constant常量推送方式，只有在数据量超过了Push_Constant范围后再考虑使用DescriptorSet。</strong></p>
 <p>举个例子：我设计了一个UnlitMaterial的材质，它是一个无光照材质。片元着色器中接收两个base_color的值，这两个base_color通过mix()函数混合；另外base_color也可以是两张纹理提供颜色数据。所以我的着色器编写如下：</p>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240719220343111.png" target="_blank">
-            <img class="mx-auto" alt="image-20240719220343111" src="./assets/image-20240719220343111.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240719220343111.png" target="_blank">
+        <img alt="" src="./assets/image-20240719220343111.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-glsl" data-lang="glsl"><span style="display:flex;"><span><span style="color:#633820">#version 450</span>
 </span></span><span style="display:flex;"><span>
@@ -922,10 +942,14 @@
 </span></span><span style="display:flex;"><span>});
 </span></span></code></pre></div><h2 id="总结">总结</h2>
 <p>关于材质系统的设计，受之前OpenGL写过一个版本的影响，还是将其兼容到ECS中去了，发现的确及其的方便，这是一大幸事。但是，因为OpenGL和Vulkan的差别很大，特别是DescriptorSet这部分，绞尽脑汁设计了特别特别久，比如下图是我当时考虑的设计方案，我就是将其列出来，然后将其优缺点加上，看看缺点能不能解决。实在不能解决就弃用。</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image-20240719170229611.png" target="_blank">
-            <img class="mx-auto" alt="image-20240719170229611" src="../assets/image-20240719170229611.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image-20240719170229611.png" target="_blank">
+        <img alt="" src="../assets/image-20240719170229611.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>不过，上述方案都被我自己推翻了。最终就是舍弃掉一部分之前的想法，折中设计出当前这个方案。所以该方案在后续还会一点点的去优化。</p>
 <p>所以，整个过程还是收获良多的，收获到一些架构设计的经验，当一个架构能做到方便理解、方便维护、方便拓展是非常有成就感的一件事。另外也体会到了Vulkan一些设计的优势之处，对Vulkan的了解又更深入了些。如果您看到了这里，也对渲染/动画/物理等内容感兴趣的话，可以关注一下，一起交个朋友，手动比心。哈哈。</p>

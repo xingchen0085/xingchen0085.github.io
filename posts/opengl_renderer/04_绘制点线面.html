@@ -272,10 +272,14 @@
 <blockquote>
 <p>图片来自 <a href="https://learnopengl-cn.github.io/">learnopengl-cn</a></p>
 </blockquote>
-<p>
-        <a data-fancybox="gallery" href="./assets/image-20240414004337946.png" target="_blank">
-            <img class="mx-auto" alt="image-20240414004337946" src="./assets/image-20240414004337946.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/image-20240414004337946.png" target="_blank">
+        <img alt="" src="./assets/image-20240414004337946.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>渲染管线：</p>
 <ol>
@@ -475,10 +479,14 @@
 </span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>        <span style="color:#1c01ce">1.0f</span>, <span style="color:#1c01ce">1.0f</span>, <span style="color:#1c01ce">0.0f</span>, <span style="color:#1c01ce">1.0f</span>, <span style="color:#177500">//黄色
 </span></span></span><span style="display:flex;"><span><span style="color:#177500"></span>};
 </span></span></code></pre></div><p>我这里定义的顶点数据都在 -1.0 ~ 1.0 的范围内，这是**标准设备坐标(Normalized Device Coordinates, NDC)**范围，是一个x、y和z值在-1.0到1.0的一小段空间。任何落在范围外的坐标都会被丢弃/裁剪，不会显示在屏幕上。与通常的屏幕坐标不同，y轴正方向为向上，(0, 0)坐标是这个图像的中心，而不是左上角。顶点着色器之后，所有(变换过的)坐标都在这个坐标空间中，否则它们就不可见了。</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image_16375500626932.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_16375500626932.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_16375500626932.png" target="_blank">
+        <img alt="" src="../assets/image_16375500626932.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>接下来是需要重点理解三个对象：</p>
 <p>VAO：Vertex Array Object 顶点数组对象</p>
@@ -526,10 +534,14 @@
 </span></span><span style="display:flex;"><span><span style="color:#000">glVertexAttribPointer</span>(<span style="color:#000">loc</span>, <span style="color:#1c01ce">4</span>, <span style="color:#000">GL_FLOAT</span>, <span style="color:#a90d91">false</span>, <span style="color:#1c01ce">0</span>, (<span style="color:#a90d91">void</span><span style="color:#000">*</span>) <span style="color:#1c01ce">0</span>);
 </span></span></code></pre></div><h4 id="vao">VAO</h4>
 <p>顶点数组对象，可以理解为，<strong>VAO就是存储上边两个VBO的指针</strong>，以后用到两个VBO的地方，只需要绑定这个VAO就可以了。</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/VAO.png" target="_blank">
-            <img class="mx-auto" alt="VAO" src="../assets/VAO.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/VAO.png" target="_blank">
+        <img alt="" src="../assets/VAO.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>不恰当的比喻：</p>
 <p>VBO存了一堆数组的指针，也存了读取规则。</p>
@@ -554,10 +566,14 @@
 <p>上边的初始化步骤全是CPU在执行，这部分的代码，除非是物体顶点属性经常变化，一般都是执行一次，不放在渲染循环中去的。尽量保证渲染循环就拿数据渲染，少一些对象的创建和逻辑判断，减轻CPU的压力。</p>
 <p>准备完Program、VAO、VBO之后。就可以执行绘制了。不过，我们希望在循环内绘制，只要窗口不关闭，我们要绘制的对象都不要消失，因此，下一步代码应该在主循环中写了。</p>
 <p>上次我们定义了 renderScene()方法，方法就是主循环调起，之前实现是空的。现在我们就将三个点放入场景然后渲染。</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image_16373182874494.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_16373182874494.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_16373182874494.png" target="_blank">
+        <img alt="" src="../assets/image_16373182874494.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>渲染步骤：</p>
 <ol>
@@ -581,10 +597,14 @@
 </span></span></span><span style="display:flex;"><span><span style="color:#177500"></span><span style="color:#000">glDrawArrays</span>(<span style="color:#000">GL_POINTS</span>, <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">3</span>);
 </span></span><span style="display:flex;"><span><span style="color:#000">glBindVertexArray</span>(<span style="color:#1c01ce">0</span>);
 </span></span></code></pre></div><p>使用VAO绘制结果：</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image_16373191092627.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_16373191092627.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_16373191092627.png" target="_blank">
+        <img alt="" src="../assets/image_16373191092627.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <h2 id="绘制线面">绘制线、面</h2>
 <p>绘制线，现有顶点 p1(0.0f, 0.5f)、p2(0.0f, 0.0f)、p3(0.5f, 0.0f)</p>
@@ -635,10 +655,14 @@
 </span></span><span style="display:flex;"><span><span style="color:#177500">//...glBindVertexArray(0);
 </span></span></span><span style="display:flex;"><span><span style="color:#177500">//...
 </span></span></span></code></pre></div><p>结果：</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/drawmode.gif" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/drawmode.gif" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/drawmode.gif" target="_blank">
+        <img alt="" src="../assets/drawmode.gif" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <h2 id="使用ebo">使用EBO</h2>
 <p>在正式使用EBO之前，我们先绘制一个四边形。</p>
@@ -665,10 +689,14 @@
 </span></span></code></pre></div><p>然后在渲染场景的地方，修改顶点数量：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span> <span style="color:#000">glDrawArrays</span>(<span style="color:#000">currentMode</span>, <span style="color:#1c01ce">0</span>, <span style="color:#1c01ce">6</span>); <span style="color:#177500">//3-&gt;6;currentMode选择GL_TRIANGLES
 </span></span></span></code></pre></div><p>结果：</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image_16375432843643.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_16375432843643.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_16375432843643.png" target="_blank">
+        <img alt="" src="../assets/image_16375432843643.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>结果正是我们想要的，但仔细观察会发现，<strong>有两个顶点是重合的。</strong></p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#177500">//第一个三角形
@@ -724,10 +752,14 @@
 </span></span></code></pre></div><p>运行后会发现结果是一样的。</p>
 <h2 id="面的朝向">面的朝向</h2>
 <p>在定义顶点数据的时候，我们是逆时针顺序定义的。</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/nishizhen.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/nishizhen.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/nishizhen.png" target="_blank">
+        <img alt="" src="../assets/nishizhen.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <p>所以，当我们要定义背面的顶点时候，其实就是过来顺时针定义。这个在三维的顶点定义时候会用到。</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#177500">// 顶点
@@ -745,20 +777,32 @@
 <p>官网： <a href="https://renderdoc.org/">https://renderdoc.org/</a></p>
 <h3 id="使用">使用</h3>
 <p>使用比较简单，首先，在【Launch Application】选项卡中，选择并运行我们的图形程序，然后再运行过程中 F12 快捷键生成若干份 Capture。打开某个Capture后，可以看到当前帧的执行流程。包括在渲染管线中，每个流程执行后的顶点坐标变化。</p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image_16375460714508.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_16375460714508.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_16375460714508.png" target="_blank">
+        <img alt="" src="../assets/image_16375460714508.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image_16375461789328.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image_16375461789328.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image_16375461789328.png" target="_blank">
+        <img alt="" src="../assets/image_16375461789328.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
-<p>
-        <a data-fancybox="gallery" href="../assets/image16375462985897.png" target="_blank">
-            <img class="mx-auto" alt="" src="../assets/image16375462985897.png" />
-        </a>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="../assets/image16375462985897.png" target="_blank">
+        <img alt="" src="../assets/image16375462985897.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center"></figcaption>
+</figure>
     </p>
 <h2 id="结语">结语</h2>
 <p>绘制最基础的点、线和三角形需要了解VAO、VBO和EBO三大对象，就需要很多代码量，也是基础，也是最重要的。通过绘制简单的点、线和面，了解如何把数据发送到GPU中去，并经过一系列图形渲染管线，然后得到我们想要的图形。</p>
