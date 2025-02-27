@@ -6,16 +6,14 @@
     <description>Recent content in OpenGL on Adiosy&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Wed, 10 Apr 2024 15:43:59 +0800</lastBuildDate><atom:link href="http://www.adiosy.com/tags/opengl/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 10 Apr 2024 15:43:59 +0800</lastBuildDate>
+    <atom:link href="http://www.adiosy.com/tags/opengl/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>OpenGL或Vulkan渲染YUV格式数据</title>
       <link>http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html</link>
       <pubDate>Wed, 10 Apr 2024 15:43:59 +0800</pubDate>
-      
       <guid>http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html</guid>
-      <description>1 概述 YUV是一种广泛应用于视频和图像处理的颜色空间格式，它通过将亮度和色度分离来表示颜色信息，以提高压缩效率和适应人眼感知。为了深入了解YUV格式及其应用，本文将分为几个部分来讨论。首先，我们将探讨YUV格式的采样方式和存储格式，以及不同采样方式对图像质量和压缩效率的影响。其次，我们将研究RGB到YUV和YUV到RGB的转换方法，包括转换公式和矩阵运算，以便在不同颜色空间之间进行准确的转换。最后会介绍如何利用OpenGL或Vulkan 来处理和渲染YUV格式的图像或视频数据，将讨论使用着色器程序和纹理贴图技术来实现YUV数据的采样、转换和渲染的方法。
-2 YUV介绍 YUV，“Y” 表示明亮度（Luminance），也就是像素的灰阶值，还含有较多的绿色通道量。因此需要单纯的 Y 分量就可以显示出完整的黑白图像。“U” 和 “V” 分别表示色度（Chrominance）和浓度（Chroma），用于描述色彩饱和度，U 分量是蓝色通道与 Y（亮度）的差值，V 分量是红色通道与 Y（亮度）的差值。</description>
+      <description>1 概述 YUV是一种广泛应用于视频和图像处理的颜色空间格式，它通过将亮度和色度分离来表示颜色信息，以提高压缩效率和适应人眼感知。为了深入了解YUV格式及其应用，本文将分为几个部分来讨论。首先，我们将探讨YUV格式的采样方式和存储格式，以及不同采样方式对图像质量和压缩效率的影响。其次，我们将研究RGB到YUV和YUV到RGB的转换方法，包括转换公式和矩阵运算，以便在不同颜色空间之间进行准确的转换。最后会介绍如何利用OpenGL或Vulkan 来处理和渲染YUV格式的图像或视频数据，将讨论使用着色器程序和纹理贴图技术来实现YUV数据的采样、转换和渲染的方法。&#xA;2 YUV介绍 YUV，“Y” 表示明亮度（Luminance），也就是像素的灰阶值，还含有较多的绿色通道量。因此需要单纯的 Y 分量就可以显示出完整的黑白图像。“U” 和 “V” 分别表示色度（Chrominance）和浓度（Chroma），用于描述色彩饱和度，U 分量是蓝色通道与 Y（亮度）的差值，V 分量是红色通道与 Y（亮度）的差值。</description>
     </item>
-    
   </channel>
 </rss>

@@ -6,42 +6,35 @@
     <description>Recent content in Categories on Adiosy&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Thu, 18 Jul 2024 00:00:00 +0000</lastBuildDate><atom:link href="http://www.adiosy.com/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 18 Jul 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://www.adiosy.com/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Vulkan</title>
       <link>http://www.adiosy.com/categories/vulkan.html</link>
       <pubDate>Thu, 18 Jul 2024 00:00:00 +0000</pubDate>
-      
       <guid>http://www.adiosy.com/categories/vulkan.html</guid>
       <description></description>
     </item>
-    
+    <item>
+      <title>OpenXR</title>
+      <link>http://www.adiosy.com/categories/openxr.html</link>
+      <pubDate>Wed, 10 Apr 2024 17:59:07 +0800</pubDate>
+      <guid>http://www.adiosy.com/categories/openxr.html</guid>
+      <description></description>
+    </item>
     <item>
       <title>YUV</title>
       <link>http://www.adiosy.com/categories/yuv.html</link>
       <pubDate>Wed, 10 Apr 2024 15:43:59 +0800</pubDate>
-      
       <guid>http://www.adiosy.com/categories/yuv.html</guid>
       <description></description>
     </item>
-    
-    <item>
-      <title>OpenXR</title>
-      <link>http://www.adiosy.com/categories/openxr.html</link>
-      <pubDate>Tue, 07 Mar 2023 14:34:07 +0800</pubDate>
-      
-      <guid>http://www.adiosy.com/categories/openxr.html</guid>
-      <description></description>
-    </item>
-    
     <item>
       <title>OpenGL</title>
       <link>http://www.adiosy.com/categories/opengl.html</link>
       <pubDate>Mon, 29 Nov 2021 14:34:07 +0800</pubDate>
-      
       <guid>http://www.adiosy.com/categories/opengl.html</guid>
       <description></description>
     </item>
-    
   </channel>
 </rss>
