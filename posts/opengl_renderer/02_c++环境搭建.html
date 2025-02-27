@@ -161,7 +161,6 @@
     <div class="post-toc-content">
         <nav id="TableOfContents">
   <ul>
-    <li><a href="#目标">目标</a></li>
     <li><a href="#构建和编译">构建和编译</a>
       <ul>
         <li><a href="#cmake-构建生成">CMake-构建、生成</a></li>
@@ -255,7 +254,7 @@
         </div>
         
         <div class="post-content">
-            <h2 id="目标">目标</h2>
+            <p>本文目标：</p>
 <ol>
 <li>使用CMake+MinGW搭建C++编译环境。</li>
 <li>使用CLion搭建C++开发环境，实现C++程序开发、生成、编译、运行；</li>
@@ -266,7 +265,7 @@
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#177500"># 编译</span>
 </span></span><span style="display:flex;"><span>g++ -c filename.cpp
 </span></span></code></pre></div><p>
-        <a data-fancybox="gallery" href="../assets/image_16370298653829.png">
+        <a data-fancybox="gallery" href="../assets/image_16370298653829.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/image_16370298653829.png" />
         </a>
     </p>
@@ -278,13 +277,13 @@
 <p><strong>CMake和Makefile什么关系？</strong></p>
 <p>CMake在Makefile的上层，CMake中会写清楚项目中代码和代码间的关系，描述文件之间的依赖关系。CMake安装（下边会介绍安装过程）完成之后，打开 cmake-gui.exe，我们看到可以生成各种Makefile。</p>
 <p>
-        <a data-fancybox="gallery" href="../assets/cmake_16370364873912.png">
+        <a data-fancybox="gallery" href="../assets/cmake_16370364873912.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/cmake_16370364873912.png" />
         </a>
     </p>
 <p>CMake-Make流程：
 
-        <a data-fancybox="gallery" href="../assets/cmake.png">
+        <a data-fancybox="gallery" href="../assets/cmake.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/cmake.png" />
         </a>
     </p>
@@ -293,19 +292,19 @@
 <p>选择版本：3.0以上，我这里是3.12.2</p>
 <p>下载完成后，解压到指定目录，并<strong>添加bin目录到环境变量。</strong></p>
 <p>
-        <a data-fancybox="gallery" href="../assets/image_20211116090011.png">
+        <a data-fancybox="gallery" href="../assets/image_20211116090011.png" target="_blank">
             <img class="mx-auto" alt="Add Path" src="../assets/image_20211116090011.png" />
         </a>
     </p>
 <p>
-        <a data-fancybox="gallery" href="../assets/image_20211116090246.png">
+        <a data-fancybox="gallery" href="../assets/image_20211116090246.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/image_20211116090246.png" />
         </a>
     </p>
 <p>验证是否配置成功：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cmake --version
 </span></span></code></pre></div><p>
-        <a data-fancybox="gallery" href="../assets/image_20211116090327.png">
+        <a data-fancybox="gallery" href="../assets/image_20211116090327.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/image_20211116090327.png" />
         </a>
     </p>
@@ -329,7 +328,7 @@
 </blockquote>
 <p>如果下载的是exe，安装时会下载包，版本选择如图：</p>
 <p>
-        <a data-fancybox="gallery" href="../assets/image_20211116090549.png">
+        <a data-fancybox="gallery" href="../assets/image_20211116090549.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/image_20211116090549.png" />
         </a>
     </p>
@@ -339,7 +338,7 @@
 </span></span><span style="display:flex;"><span>g++ --version
 </span></span><span style="display:flex;"><span>mingw32-make --version
 </span></span></code></pre></div><p>
-        <a data-fancybox="gallery" href="../assets/image_20211116090635.png">
+        <a data-fancybox="gallery" href="../assets/image_20211116090635.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/image_20211116090635.png" />
         </a>
     </p>
@@ -361,7 +360,7 @@
 </span></span><span style="display:flex;"><span>	<span style="color:#a90d91">return</span> <span style="color:#1c01ce">0</span>;
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>
-        <a data-fancybox="gallery" href="../assets/image_20211116090730.png">
+        <a data-fancybox="gallery" href="../assets/image_20211116090730.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/image_20211116090730.png" />
         </a>
     </p>
@@ -376,7 +375,7 @@ mingw32-make
 <pre tabindex="0"><code>./test01.exe
 Hello World!
 </code></pre><p>
-        <a data-fancybox="gallery" href="../assets/image_20211116090821.png">
+        <a data-fancybox="gallery" href="../assets/image_20211116090821.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/image_20211116090821.png" />
         </a>
     </p>
@@ -384,27 +383,27 @@ Hello World!
 <p>前往%CMake_Home%/bin, 打开cmake-gui.exe。或者命令行输入：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span> cmake-gui
 </span></span></code></pre></div><p>
-        <a data-fancybox="gallery" href="../assets/cmake_step_1.png">
+        <a data-fancybox="gallery" href="../assets/cmake_step_1.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/cmake_step_1.png" />
         </a>
     </p>
 <p>
-        <a data-fancybox="gallery" href="../assets/cmake_step_2.png">
+        <a data-fancybox="gallery" href="../assets/cmake_step_2.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/cmake_step_2.png" />
         </a>
     </p>
 <p>
-        <a data-fancybox="gallery" href="../assets/cmake_step_3.png">
+        <a data-fancybox="gallery" href="../assets/cmake_step_3.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/cmake_step_3.png" />
         </a>
     </p>
 <p>
-        <a data-fancybox="gallery" href="../assets/cmake_step_4.png">
+        <a data-fancybox="gallery" href="../assets/cmake_step_4.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/cmake_step_4.png" />
         </a>
     </p>
 <p>
-        <a data-fancybox="gallery" href="../assets/cmake_step_5.png">
+        <a data-fancybox="gallery" href="../assets/cmake_step_5.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/cmake_step_5.png" />
         </a>
     </p>
@@ -441,28 +440,27 @@ Hello World!
 <p>下载地址：https://www.jetbrains.com/clion/</p>
 <p>根据自己电脑系统下载对应版本即可，然后一步步安装就可以。</p>
 <p>
-        <a data-fancybox="gallery" href="../assets/image-20211116085816762.png">
+        <a data-fancybox="gallery" href="../assets/image-20211116085816762.png" target="_blank">
             <img class="mx-auto" alt="Clion" src="../assets/image-20211116085816762.png" />
         </a>
     </p>
 <h3 id="在clion中编译和构建">在Clion中编译和构建</h3>
 <p>打开Clion，首先在【File】-【Settings】-【Build】-【Toolchains】添加MinGW的根目录，Clion会自动识别g++、gcc、make和gdb工具。</p>
 <p>
-        <a data-fancybox="gallery" href="../assets/image_16370318523290.png">
+        <a data-fancybox="gallery" href="../assets/image_16370318523290.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/image_16370318523290.png" />
         </a>
     </p>
 <p>打开项目：【File】-【Open】，打开test01，等待CLion Load CMake完毕。</p>
 <p>编译和运行</p>
 <p>
-        <a data-fancybox="gallery" href="../assets/image_16370323471812.png">
+        <a data-fancybox="gallery" href="../assets/image_16370323471812.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/image_16370323471812.png" />
         </a>
     </p>
 <p>到此为止，我们成功在Clion中编译和运行了C++程序！</p>
 <h2 id="结语">结语</h2>
 <p>其实C++程序倒是写了一些，但工具方面一直是模模糊糊，写这篇笔记之前测试过很多环境配置，也算更进一步的了解环境和工具吧。</p>
-
         </div>
 
         
@@ -725,10 +723,6 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     </li>
     
     <li>
-        <a href="http://www.adiosy.com/posts/hello-openxr---monado%E8%B7%A8%E8%BF%9B%E7%A8%8B%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0.html" title="Hello OpenXR - Monado跨进程渲染流程概述">Hello OpenXR - Monado跨进程渲染流程概述</a>
-    </li>
-    
-    <li>
         <a href="http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html" title="OpenGL或Vulkan渲染YUV格式数据">OpenGL或Vulkan渲染YUV格式数据</a>
     </li>
     
@@ -750,6 +744,10 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     
     <li>
         <a href="http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面">OpenGL渲染器04_绘制点线面</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 ">OpenGL渲染器03_OpenGL环境 </a>
     </li>
     
 </ul>
@@ -779,7 +777,7 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     
     <li><a href="http://www.adiosy.com/categories/opengl.html">OpenGL (4)</a></li>
     
-    <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (2)</a></li>
+    <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
     
     <li><a href="http://www.adiosy.com/categories/vulkan.html">Vulkan (5)</a></li>
     
@@ -814,15 +812,15 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     <ul class="widget-list">
         
         <li>
-            <a target="_blank" href="https://github.com/xingchen0085" title="我的Github">我的Github</a>
+            <a target="_blank" href="https://github.com/xingchen0085" title="我的Github" target="_blank">我的Github</a>
         </li>
         
         <li>
-            <a target="_blank" href="https://gitee.com/xingchen0085" title="我的Gitee">我的Gitee</a>
+            <a target="_blank" href="https://gitee.com/xingchen0085" title="我的Gitee" target="_blank">我的Gitee</a>
         </li>
         
         <li>
-            <a target="_blank" href="https://potatomelon.com" title="土豆社区">土豆社区</a>
+            <a target="_blank" href="https://potatomelon.com" title="土豆社区" target="_blank">土豆社区</a>
         </li>
         
     </ul>

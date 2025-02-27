@@ -6,21 +6,14 @@
     <description>Recent content in VR/AR on Adiosy&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Wed, 10 Apr 2024 17:59:07 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 07 Mar 2023 14:34:07 +0800</lastBuildDate>
     <atom:link href="http://www.adiosy.com/tags/vr/ar/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Hello OpenXR - Monado跨进程渲染流程概述</title>
-      <link>http://www.adiosy.com/posts/hello-openxr---monado%E8%B7%A8%E8%BF%9B%E7%A8%8B%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0.html</link>
-      <pubDate>Wed, 10 Apr 2024 17:59:07 +0800</pubDate>
-      <guid>http://www.adiosy.com/posts/hello-openxr---monado%E8%B7%A8%E8%BF%9B%E7%A8%8B%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0.html</guid>
-      <description>1 Monado Monado是GNU/Linux的第一个OpenXR™ Runtime，旨在启动开源XR生态系统的开发，并为设备供应商提供以GNU/Linux平台为目标的基本模块。&#xA;Monado is the first OpenXR™ runtime for GNU/Linux.</description>
-    </item>
     <item>
       <title>Hello OpenXR - 第一个OpenXR程序</title>
       <link>http://www.adiosy.com/posts/hello-openxr---%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html</link>
       <pubDate>Tue, 07 Mar 2023 14:34:07 +0800</pubDate>
       <guid>http://www.adiosy.com/posts/hello-openxr---%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html</guid>
-      <description>1 概要 本文目标是实现一个最小化OpenXR应用程序，只渲染一个三角形，渲染库采用的是OpenGL，窗口管理使用GLFW，OpenXR Runtime使用的是Monado。因为Monado目前支持的是安卓和Linux平台，本人测试使用的是Ubuntu系统，所以这个DEMO可以在Ubuntu系统下正常运行，但别的系统还没有经过严格测试。&#xA;2 环境准备 点击下载cmake，如果使用apt安装，可能版本号过低。</description>
+      <description>&lt;p&gt;本文目标是实现一个最小化OpenXR应用程序，只渲染一个三角形，渲染库采用的是OpenGL，窗口管理使用&lt;a href=&#34;https://link.zhihu.com/?target=https%3A//www.glfw.org/&#34;&gt;GLFW&lt;/a&gt;，OpenXR Runtime使用的是&lt;a href=&#34;https://link.zhihu.com/?target=https%3A//monado.dev/&#34;&gt;Monado&lt;/a&gt;。因为Monado目前支持的是安卓和Linux平台，本人测试使用的是&lt;strong&gt;Ubuntu系统&lt;/strong&gt;，所以这个DEMO可以在Ubuntu系统下正常运行，但别的系统还没有经过严格测试。&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

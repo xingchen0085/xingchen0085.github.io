@@ -161,7 +161,6 @@
     <div class="post-toc-content">
         <nav id="TableOfContents">
   <ul>
-    <li><a href="#前言">前言</a></li>
     <li><a href="#渲染循环">渲染循环</a></li>
     <li><a href="#材质参数-material">材质参数 Material</a></li>
     <li><a href="#材质组件-material-component">材质组件 Material Component</a></li>
@@ -242,22 +241,22 @@
         </div>
         
         <div class="post-content">
-            <h2 id="前言">前言</h2>
-<p>工程源码：<a href="https://gitee.com/xingchen0085/adiosy_engine">https://gitee.com/xingchen0085/adiosy_engine</a></p>
-<p>视频：<a href="https://b23.tv/ObMaagI">XINGCHEN0085的个人空间-哔哩哔哩</a></p>
-<p>网格（Mesh）用作定义虚拟物体的形状，材质（Material）则是描述这些物体表面的外观，需要借助纹理和材质参数，参数包括光照参数、UV偏移、基础颜色等等。在渲染系统渲染某个网格体时，将对应材质参数传递给着色器，即可完成不同表面的渲染。如下图，这些网格体利用了不同的材质参数完成渲染。</p>
+            <p>网格（Mesh）用作定义虚拟物体的形状，材质（Material）则是描述这些物体表面的外观，需要借助纹理和材质参数，参数包括光照参数、UV偏移、基础颜色等等。在渲染系统渲染某个网格体时，将对应材质参数传递给着色器，即可完成不同表面的渲染。</p>
+<p>如下图，这些网格体利用了不同的材质参数完成渲染。</p>
 <blockquote>
 <p>说明：本文出现的代码，只是为了标明主要流程和设计，大部分只是<strong>伪代码</strong>，具体实现可查看工程源码。</p>
 </blockquote>
+<p>工程源码：<a href="https://gitee.com/xingchen0085/adiosy_engine">https://gitee.com/xingchen0085/adiosy_engine</a></p>
+<p>视频：<a href="https://b23.tv/ObMaagI">XINGCHEN0085的个人空间-哔哩哔哩</a></p>
 <p>
-        <a data-fancybox="gallery" href="../assets/image-20240719140757715.png">
+        <a data-fancybox="gallery" href="../assets/image-20240719140757715.png" target="_blank">
             <img class="mx-auto" alt="image-20240719140757715" src="../assets/image-20240719140757715.png" />
         </a>
     </p>
 <h2 id="渲染循环">渲染循环</h2>
 <p>以下是该渲染器的主循环伪代码：</p>
 <p>
-        <a data-fancybox="gallery" href="../assets/image.png">
+        <a data-fancybox="gallery" href="../assets/image.png" target="_blank">
             <img class="mx-auto" alt="image" src="../assets/image.png" />
         </a>
     </p>
@@ -276,7 +275,7 @@
 <h2 id="材质参数-material">材质参数 Material</h2>
 <p>材质内容包含两个重要信息：<strong>材质参数和纹理列表</strong>。渲染时，使用Uniform Buffer/Stoage Buffer等将材质参数打包发送给Shader；通过Tetxure/Sampler传递给着色器进行采样。如下图：</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240719220108914.png">
+        <a data-fancybox="gallery" href="./assets/image-20240719220108914.png" target="_blank">
             <img class="mx-auto" alt="image-20240719220108914" src="./assets/image-20240719220108914.png" />
         </a>
     </p>
@@ -360,7 +359,7 @@
 <p>1/ 标识某个Entity使用某个材质系统。</p>
 <p>2/ 绑定网格体和材质参数。</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240719220258297.png">
+        <a data-fancybox="gallery" href="./assets/image-20240719220258297.png" target="_blank">
             <img class="mx-auto" alt="image-20240719220258297" src="./assets/image-20240719220258297.png" />
         </a>
     </p>
@@ -662,7 +661,7 @@
 <p>DS4 每个Mesh的数据，比如Mesh额外信息，这类数据每个Mesh都需要更新。<strong>最好使用Push_Constant常量推送方式，只有在数据量超过了Push_Constant范围后再考虑使用DescriptorSet。</strong></p>
 <p>举个例子：我设计了一个UnlitMaterial的材质，它是一个无光照材质。片元着色器中接收两个base_color的值，这两个base_color通过mix()函数混合；另外base_color也可以是两张纹理提供颜色数据。所以我的着色器编写如下：</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240719220343111.png">
+        <a data-fancybox="gallery" href="./assets/image-20240719220343111.png" target="_blank">
             <img class="mx-auto" alt="image-20240719220343111" src="./assets/image-20240719220343111.png" />
         </a>
     </p>
@@ -924,13 +923,12 @@
 </span></span></code></pre></div><h2 id="总结">总结</h2>
 <p>关于材质系统的设计，受之前OpenGL写过一个版本的影响，还是将其兼容到ECS中去了，发现的确及其的方便，这是一大幸事。但是，因为OpenGL和Vulkan的差别很大，特别是DescriptorSet这部分，绞尽脑汁设计了特别特别久，比如下图是我当时考虑的设计方案，我就是将其列出来，然后将其优缺点加上，看看缺点能不能解决。实在不能解决就弃用。</p>
 <p>
-        <a data-fancybox="gallery" href="../assets/image-20240719170229611.png">
+        <a data-fancybox="gallery" href="../assets/image-20240719170229611.png" target="_blank">
             <img class="mx-auto" alt="image-20240719170229611" src="../assets/image-20240719170229611.png" />
         </a>
     </p>
 <p>不过，上述方案都被我自己推翻了。最终就是舍弃掉一部分之前的想法，折中设计出当前这个方案。所以该方案在后续还会一点点的去优化。</p>
 <p>所以，整个过程还是收获良多的，收获到一些架构设计的经验，当一个架构能做到方便理解、方便维护、方便拓展是非常有成就感的一件事。另外也体会到了Vulkan一些设计的优势之处，对Vulkan的了解又更深入了些。如果您看到了这里，也对渲染/动画/物理等内容感兴趣的话，可以关注一下，一起交个朋友，手动比心。哈哈。</p>
-
         </div>
 
         
@@ -1193,10 +1191,6 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     </li>
     
     <li>
-        <a href="http://www.adiosy.com/posts/hello-openxr---monado%E8%B7%A8%E8%BF%9B%E7%A8%8B%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0.html" title="Hello OpenXR - Monado跨进程渲染流程概述">Hello OpenXR - Monado跨进程渲染流程概述</a>
-    </li>
-    
-    <li>
         <a href="http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html" title="OpenGL或Vulkan渲染YUV格式数据">OpenGL或Vulkan渲染YUV格式数据</a>
     </li>
     
@@ -1218,6 +1212,10 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     
     <li>
         <a href="http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面">OpenGL渲染器04_绘制点线面</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 ">OpenGL渲染器03_OpenGL环境 </a>
     </li>
     
 </ul>
@@ -1247,7 +1245,7 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     
     <li><a href="http://www.adiosy.com/categories/opengl.html">OpenGL (4)</a></li>
     
-    <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (2)</a></li>
+    <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
     
     <li><a href="http://www.adiosy.com/categories/vulkan.html">Vulkan (5)</a></li>
     
@@ -1282,15 +1280,15 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     <ul class="widget-list">
         
         <li>
-            <a target="_blank" href="https://github.com/xingchen0085" title="我的Github">我的Github</a>
+            <a target="_blank" href="https://github.com/xingchen0085" title="我的Github" target="_blank">我的Github</a>
         </li>
         
         <li>
-            <a target="_blank" href="https://gitee.com/xingchen0085" title="我的Gitee">我的Gitee</a>
+            <a target="_blank" href="https://gitee.com/xingchen0085" title="我的Gitee" target="_blank">我的Gitee</a>
         </li>
         
         <li>
-            <a target="_blank" href="https://potatomelon.com" title="土豆社区">土豆社区</a>
+            <a target="_blank" href="https://potatomelon.com" title="土豆社区" target="_blank">土豆社区</a>
         </li>
         
     </ul>

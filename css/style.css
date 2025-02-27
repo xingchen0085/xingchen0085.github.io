@@ -973,7 +973,7 @@ img.alignright {
 /* read more*/
 .readmore a {
     font-size: 14px;
-    color: #444;
+    color: #0789e0;
     margin: -10px 0;
     padding: 5px 10px;
     border: 1px solid #ddd;
@@ -988,7 +988,7 @@ img.alignright {
 .post-copyright {
     margin: 2em 0 0;
     padding: 0.5em 1em;
-    border-left: 3px solid #ff1700;
+    border-left: 3px solid #ba3925;
     background-color: #f9f9f9;
     list-style: none;
 }

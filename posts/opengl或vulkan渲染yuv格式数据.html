@@ -259,13 +259,14 @@
         </div>
         
         <div class="post-content">
-            <h2 id="1-概述">1 概述</h2>
-<p>YUV是一种广泛应用于视频和图像处理的颜色空间格式，它通过将亮度和色度分离来表示颜色信息，以提高压缩效率和适应人眼感知。为了深入了解YUV格式及其应用，本文将分为几个部分来讨论。首先，我们将探讨YUV格式的采样方式和存储格式，以及不同采样方式对图像质量和压缩效率的影响。其次，我们将研究RGB到YUV和YUV到RGB的转换方法，包括转换公式和矩阵运算，以便在不同颜色空间之间进行准确的转换。最后会介绍如何利用OpenGL或Vulkan 来处理和渲染YUV格式的图像或视频数据，将讨论使用着色器程序和纹理贴图技术来实现YUV数据的采样、转换和渲染的方法。</p>
+            <p>YUV是一种广泛应用于视频和图像处理的颜色空间格式，它通过将亮度和色度分离来表示颜色信息，以提高压缩效率和适应人眼感知。为了深入了解YUV格式及其应用，本文将分为几个部分来讨论。</p>
+<h2 id="1-概述">1 概述</h2>
+<p>首先，我们将探讨YUV格式的采样方式和存储格式，以及不同采样方式对图像质量和压缩效率的影响。其次，我们将研究RGB到YUV和YUV到RGB的转换方法，包括转换公式和矩阵运算，以便在不同颜色空间之间进行准确的转换。最后会介绍如何利用OpenGL或Vulkan 来处理和渲染YUV格式的图像或视频数据，将讨论使用着色器程序和纹理贴图技术来实现YUV数据的采样、转换和渲染的方法。</p>
 <h2 id="2-yuv介绍">2 YUV介绍</h2>
 <p>YUV，“Y” 表示明亮度（Luminance），也就是像素的灰阶值，还含有较多的绿色通道量。因此需要单纯的 Y 分量就可以显示出完整的黑白图像。“U” 和 “V” 分别表示色度（Chrominance）和浓度（Chroma），用于描述色彩饱和度，U 分量是蓝色通道与 Y（亮度）的差值，V 分量是红色通道与 Y（亮度）的差值。</p>
 <p>U/V两个分量的变化区间见下图：</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/1712735070651-11.png">
+        <a data-fancybox="gallery" href="./assets/1712735070651-11.png" target="_blank">
             <img class="mx-auto" alt="img" src="./assets/1712735070651-11.png" />
         </a>
     </p>
@@ -273,17 +274,17 @@
 <p>YUV 色彩编码模型在计算机系统应用中也被广泛采用，<strong>它可以有效地降低图片数据的空间占用，提高数据处理效率</strong>，对于需要快速传输或数据量较大的图像数据，YUV 格式是一个理想的选择。</p>
 <p>比如，一张1600x1600像素的照片，RGB 和 YUV（采用YUV420方式采样）格式的空间占用对比：</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/1712735070639-1.png">
+        <a data-fancybox="gallery" href="./assets/1712735070639-1.png" target="_blank">
             <img class="mx-auto" alt="img" src="./assets/1712735070639-1.png" />
         </a>
     
-        <a data-fancybox="gallery" href="./assets/1712735070640-2.png">
+        <a data-fancybox="gallery" href="./assets/1712735070640-2.png" target="_blank">
             <img class="mx-auto" alt="img" src="./assets/1712735070640-2.png" />
         </a>
     </p>
 <p>一张图片是由N个像素组成的，在 1600x1600 分辨率的图片中，我们可以理解为水平方向有 1600 个像素，垂直方向也有 1600 个像素，大概拥有250万像素。图片在显示时，每个像素的颜色信息通常使用 RGB 线性编码格式来表示，也就是说，每个像素的颜色可以由 R、G、B 三个分量线性排列组成（图示是R8G8B8格式）。</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410170729708.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410170729708.png" target="_blank">
             <img class="mx-auto" alt="image-20240410170729708" src="./assets/image-20240410170729708.png" />
         </a>
     </p>
@@ -297,21 +298,21 @@
 </ul>
 <p>（1）YUV444</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410170753677.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410170753677.png" target="_blank">
             <img class="mx-auto" alt="image-20240410170753677" src="./assets/image-20240410170753677.png" />
         </a>
     </p>
 <p>上图是YUV444的采样模型，左图和右图都可以看出来每个像素点都有一对UV分量，这就相当于没有做色度二次采样，即每一个Y对应一组UV分量。</p>
 <p>（2）YUV422</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410170902503.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410170902503.png" target="_blank">
             <img class="mx-auto" alt="image-20240410170902503" src="./assets/image-20240410170902503.png" />
         </a>
     </p>
 <p>上图是YUV422的采样模型，左图可以看出来在竖直方向上每一个像素都有UV分量，而在水平方向上每两个像素共用一对UV分量；在右图的表现就是每行两个黑两个白。即每两个Y对应一组UV分量。</p>
 <p>（3）YUV420</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410170827387.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410170827387.png" target="_blank">
             <img class="mx-auto" alt="image-20240410170827387" src="./assets/image-20240410170827387.png" />
         </a>
     </p>
@@ -326,14 +327,14 @@
 <p>（1）Planar Format</p>
 <p>Planar的YUV格式，<strong>分为3个平面</strong>。平面存储格式先连续存储所有像素点的Y，紧接着存储所有像素点的U或V，最后存储剩下的U或者V。例如YU12（也叫I420，属于YUV420采样模型，每4个Y分量共用一组UV分量）的排列方式如下：</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410170931638.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410170931638.png" target="_blank">
             <img class="mx-auto" alt="image-20240410170931638" src="./assets/image-20240410170931638.png" />
         </a>
     </p>
 <p>（2）Semi-Planar Format</p>
 <p>Semi-Planar的YUV格式，半平面存储格式，<strong>分为2个平面</strong>，也就是先连续存储所有的Y分量，再交错存储U和V分量。例如NV12（属于YUV420sp采样模型，每4个Y分量共用一组UV分量）的排列方式如下：</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410170941841.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410170941841.png" target="_blank">
             <img class="mx-auto" alt="image-20240410170941841" src="./assets/image-20240410170941841.png" />
         </a>
     </p>
@@ -341,14 +342,14 @@
 <p>NV12还有一个兄弟格式，称为NV21，其实就是UV调换。即：</p>
 </blockquote>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410170949379.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410170949379.png" target="_blank">
             <img class="mx-auto" alt="image-20240410170949379" src="./assets/image-20240410170949379.png" />
         </a>
     </p>
 <p>（3）Packed Format</p>
 <p>这种格式下YUV数据是交错存储的，例如YUV分量的排列顺序是VYUY，即两个Y分量共用一组UV，属于<strong>YUV 422</strong>的一种。</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171003778.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410171003778.png" target="_blank">
             <img class="mx-auto" alt="image-20240410171003778" src="./assets/image-20240410171003778.png" />
         </a>
     </p>
@@ -425,7 +426,7 @@
 <li>
 <p>BT.601(标准数字电视SDTV)</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410165651980.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410165651980.png" target="_blank">
             <img class="mx-auto" alt="image-20240410165651980" src="./assets/image-20240410165651980.png" />
         </a>
     </p>
@@ -433,7 +434,7 @@
 <li>
 <p>BT.709(高清数字电视HDTV)</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410165907559.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410165907559.png" target="_blank">
             <img class="mx-auto" alt="image-20240410165907559" src="./assets/image-20240410165907559.png" />
         </a>
     </p>
@@ -441,7 +442,7 @@
 <li>
 <p>BT.2020(超高清数字电视UHDTV)</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171205074.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410171205074.png" target="_blank">
             <img class="mx-auto" alt="image-20240410171205074" src="./assets/image-20240410171205074.png" />
         </a>
     </p>
@@ -487,7 +488,7 @@
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>（2）矩阵计算</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171123417.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410171123417.png" target="_blank">
             <img class="mx-auto" alt="image-20240410171123417" src="./assets/image-20240410171123417.png" />
         </a>
     </p>
@@ -583,7 +584,7 @@
 <li>
 <p>BT.601(标准数字电视SDTV)</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171331055.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410171331055.png" target="_blank">
             <img class="mx-auto" alt="image-20240410171331055" src="./assets/image-20240410171331055.png" />
         </a>
     </p>
@@ -591,7 +592,7 @@
 <li>
 <p>BT.709(高清数字电视HDTV)</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171343039.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410171343039.png" target="_blank">
             <img class="mx-auto" alt="image-20240410171343039" src="./assets/image-20240410171343039.png" />
         </a>
     </p>
@@ -599,7 +600,7 @@
 <li>
 <p>BT.2020(超高清数字电视UHDTV)</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171357823.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410171357823.png" target="_blank">
             <img class="mx-auto" alt="image-20240410171357823" src="./assets/image-20240410171357823.png" />
         </a>
     </p>
@@ -650,22 +651,22 @@
 <p>当我们需要将摄像设备返回的画面渲染到屏幕上时，设备通常会返回RAW或YUV格式的数据，这些数据可以通过GPU渲染而实现预览功能。此外，我们还可以将图像数据采样到一个畸变网格中，这样可以实现Video-see through（VST）的基础效果，实时显示相机捕捉到的内容，并在需要时应用畸变校正和其他增强效果。这样的处理过程通常需要借助GPU的计算能力来实现高效渲染和实时响应。</p>
 <p>使用YUVviewer打开一个NV12图像。</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/1712735070640-3.png">
+        <a data-fancybox="gallery" href="./assets/1712735070640-3.png" target="_blank">
             <img class="mx-auto" alt="img" src="./assets/1712735070640-3.png" />
         </a>
     
-        <a data-fancybox="gallery" href="./assets/1712735070640-4.png">
+        <a data-fancybox="gallery" href="./assets/1712735070640-4.png" target="_blank">
             <img class="mx-auto" alt="img" src="./assets/1712735070640-4.png" />
         </a>
     </p>
 <p>使用 OpenGL/Vulkan 两种API完成渲染，渲染结果如下：</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171435452.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410171435452.png" target="_blank">
             <img class="mx-auto" alt="image-20240410171435452" src="./assets/image-20240410171435452.png" />
         </a>
     </p>
 <p>
-        <a data-fancybox="gallery" href="./assets/1712735070640-6.png">
+        <a data-fancybox="gallery" href="./assets/1712735070640-6.png" target="_blank">
             <img class="mx-auto" alt="img" src="./assets/1712735070640-6.png" />
         </a>
     </p>
@@ -677,11 +678,11 @@
 <li>初始化一个四边形网格，并将步骤#2中创建的两个纹理合成并应用给这个网格。</li>
 </ol>
 <p>
-        <a data-fancybox="gallery" href="./assets/1712735070640-7.png">
+        <a data-fancybox="gallery" href="./assets/1712735070640-7.png" target="_blank">
             <img class="mx-auto" alt="img" src="./assets/1712735070640-7.png" />
         </a>
     
-        <a data-fancybox="gallery" href="./assets/1712735070640-8.png">
+        <a data-fancybox="gallery" href="./assets/1712735070640-8.png" target="_blank">
             <img class="mx-auto" alt="img" src="./assets/1712735070640-8.png" />
         </a>
     </p>
@@ -858,12 +859,12 @@ void main(){
 </code></pre><h3 id="43-创建网格体并应用yuv纹理">4.3 创建网格体并应用Y+UV纹理</h3>
 <p>本案例需要将YUV纹理平铺显示到应用窗口，所以只用一个四边形网格，并且范围是[-1,1]。</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171549322.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410171549322.png" target="_blank">
             <img class="mx-auto" alt="image-20240410171549322" src="./assets/image-20240410171549322.png" />
         </a>
     </p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240410171555712.png">
+        <a data-fancybox="gallery" href="./assets/image-20240410171555712.png" target="_blank">
             <img class="mx-auto" alt="image-20240410171555712" src="./assets/image-20240410171555712.png" />
         </a>
     </p>
@@ -913,13 +914,13 @@ void main(){
 </span></span></code></pre></div><h2 id="5-vulkan渲染nv12nv21格式">5 Vulkan渲染NV12/NV21格式</h2>
 <p>Vulkan中默认已有YUV的实现方案，在其内部称为“YCbCr”。比如VKFormat中就有关于YUV的一些格式：</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/1712735070640-9.png">
+        <a data-fancybox="gallery" href="./assets/1712735070640-9.png" target="_blank">
             <img class="mx-auto" alt="img" src="./assets/1712735070640-9.png" />
         </a>
     </p>
 <p>另外还区分了不同标准和协议。</p>
 <p>
-        <a data-fancybox="gallery" href="./assets/1712735070640-10.png">
+        <a data-fancybox="gallery" href="./assets/1712735070640-10.png" target="_blank">
             <img class="mx-auto" alt="img" src="./assets/1712735070640-10.png" />
         </a>
     </p>
@@ -1181,7 +1182,6 @@ void main(){
 <p>[9] 知乎 <a href="https://zhuanlan.zhihu.com/p/559189793">RAW、RGB、YUV 图像格式区别</a></p>
 <p>[10] <a href="https://www.jianshu.com/p/a91502c00fb0">YUV颜色编码解析</a></p>
 <p>[11] <a href="https://blog.csdn.net/qq_43426078/article/details/124024237">【图像处理】RGB、YUV (YCbCr) 图像表示详解_小丫么小阿豪的博客-CSDN博客</a></p>
-
         </div>
 
         
@@ -1448,10 +1448,6 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     </li>
     
     <li>
-        <a href="http://www.adiosy.com/posts/hello-openxr---monado%E8%B7%A8%E8%BF%9B%E7%A8%8B%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0.html" title="Hello OpenXR - Monado跨进程渲染流程概述">Hello OpenXR - Monado跨进程渲染流程概述</a>
-    </li>
-    
-    <li>
         <a href="http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html" title="OpenGL或Vulkan渲染YUV格式数据">OpenGL或Vulkan渲染YUV格式数据</a>
     </li>
     
@@ -1473,6 +1469,10 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     
     <li>
         <a href="http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面">OpenGL渲染器04_绘制点线面</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 ">OpenGL渲染器03_OpenGL环境 </a>
     </li>
     
 </ul>
@@ -1502,7 +1502,7 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     
     <li><a href="http://www.adiosy.com/categories/opengl.html">OpenGL (4)</a></li>
     
-    <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (2)</a></li>
+    <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
     
     <li><a href="http://www.adiosy.com/categories/vulkan.html">Vulkan (5)</a></li>
     
@@ -1537,15 +1537,15 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     <ul class="widget-list">
         
         <li>
-            <a target="_blank" href="https://github.com/xingchen0085" title="我的Github">我的Github</a>
+            <a target="_blank" href="https://github.com/xingchen0085" title="我的Github" target="_blank">我的Github</a>
         </li>
         
         <li>
-            <a target="_blank" href="https://gitee.com/xingchen0085" title="我的Gitee">我的Gitee</a>
+            <a target="_blank" href="https://gitee.com/xingchen0085" title="我的Gitee" target="_blank">我的Gitee</a>
         </li>
         
         <li>
-            <a target="_blank" href="https://potatomelon.com" title="土豆社区">土豆社区</a>
+            <a target="_blank" href="https://potatomelon.com" title="土豆社区" target="_blank">土豆社区</a>
         </li>
         
     </ul>

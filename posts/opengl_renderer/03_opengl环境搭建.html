@@ -161,7 +161,6 @@
     <div class="post-toc-content">
         <nav id="TableOfContents">
   <ul>
-    <li><a href="#目标">目标</a></li>
     <li><a href="#计算机图形学">计算机图形学</a></li>
     <li><a href="#图形库">图形库</a>
       <ul>
@@ -265,10 +264,7 @@
         </div>
         
         <div class="post-content">
-            <h2 id="目标">目标</h2>
-<blockquote>
-<p>原本计划是OpenGL环境就放在上一节（C++环境搭建）中一起记录的，后面发现内容太多了，所以就分开记录。</p>
-</blockquote>
+            <p>本文目标：</p>
 <ol>
 <li>使用glfw、glad和ImGui完成OpenGL环境的搭建；</li>
 <li>创建第一个glfw窗口；</li>
@@ -309,7 +305,7 @@
 <p><strong>最后，我决定使用OpenGL</strong>。不为别的，就因为跨平台（主要别的图形库也不了解，不会用&hellip;）。不过，图形库还是一个工具，图形学知识基本都适用，所以我准备在渲染的底层数学这方面，尽量学得深入一点。</p>
 <p><strong>OpenGL</strong></p>
 <p>
-        <a data-fancybox="gallery" href="./assets/image-20240414004428116.png">
+        <a data-fancybox="gallery" href="./assets/image-20240414004428116.png" target="_blank">
             <img class="mx-auto" alt="image-20240414004428116" src="./assets/image-20240414004428116.png" />
         </a>
     </p>
@@ -364,7 +360,7 @@
 </ol>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mingw32-make install <span style="color:#177500">#install 默认会将文件写到 C:\Program Files (x86)\GLFW 中去</span>
 </span></span></code></pre></div><p>
-        <a data-fancybox="gallery" href="../assets/image_16370542408964.png">
+        <a data-fancybox="gallery" href="../assets/image_16370542408964.png" target="_blank">
             <img class="mx-auto" alt="" src="../assets/image_16370542408964.png" />
         </a>
     </p>
@@ -710,7 +706,7 @@ imgui_impl_opengl3_loader.h
 </span></span><span style="display:flex;"><span><span style="color:#000">ImGui</span><span style="color:#000">::</span><span style="color:#000">DestroyContext</span>();
 </span></span></code></pre></div><p>结果：</p>
 <p>
-        <a data-fancybox="gallery" href="../assets/image_16371391968647.png">
+        <a data-fancybox="gallery" href="../assets/image_16371391968647.png" target="_blank">
             <img class="mx-auto" alt="ImGui" src="../assets/image_16371391968647.png" />
         </a>
     </p>
@@ -720,7 +716,6 @@ imgui_impl_opengl3_loader.h
 <p>笔记中的过程都经过反复验证，但也可能存在一些问题。我放了源码在这里，可以交流交流。</p>
 <p>源码地址： <a href="https://gitee.com/xingchen0085/m-render_demo/tree/master/00_setup_environment2">00_setup_environment2</a></p>
 <p><a href="https://gitee.com/xingchen0085/m-render_demo/tree/master/00_setup_environment2">https://gitee.com/xingchen0085/m-render_demo/tree/master/00_setup_environment2</a></p>
-
         </div>
 
         
@@ -983,10 +978,6 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     </li>
     
     <li>
-        <a href="http://www.adiosy.com/posts/hello-openxr---monado%E8%B7%A8%E8%BF%9B%E7%A8%8B%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0.html" title="Hello OpenXR - Monado跨进程渲染流程概述">Hello OpenXR - Monado跨进程渲染流程概述</a>
-    </li>
-    
-    <li>
         <a href="http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html" title="OpenGL或Vulkan渲染YUV格式数据">OpenGL或Vulkan渲染YUV格式数据</a>
     </li>
     
@@ -1008,6 +999,10 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     
     <li>
         <a href="http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面">OpenGL渲染器04_绘制点线面</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/03_opengl%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" title="OpenGL渲染器03_OpenGL环境 ">OpenGL渲染器03_OpenGL环境 </a>
     </li>
     
 </ul>
@@ -1037,7 +1032,7 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     
     <li><a href="http://www.adiosy.com/categories/opengl.html">OpenGL (4)</a></li>
     
-    <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (2)</a></li>
+    <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
     
     <li><a href="http://www.adiosy.com/categories/vulkan.html">Vulkan (5)</a></li>
     
@@ -1072,15 +1067,15 @@ div.highlight:hover .copy-code,pre:hover .copy-code {
     <ul class="widget-list">
         
         <li>
-            <a target="_blank" href="https://github.com/xingchen0085" title="我的Github">我的Github</a>
+            <a target="_blank" href="https://github.com/xingchen0085" title="我的Github" target="_blank">我的Github</a>
         </li>
         
         <li>
-            <a target="_blank" href="https://gitee.com/xingchen0085" title="我的Gitee">我的Gitee</a>
+            <a target="_blank" href="https://gitee.com/xingchen0085" title="我的Gitee" target="_blank">我的Gitee</a>
         </li>
         
         <li>
-            <a target="_blank" href="https://potatomelon.com" title="土豆社区">土豆社区</a>
+            <a target="_blank" href="https://potatomelon.com" title="土豆社区" target="_blank">土豆社区</a>
         </li>
         
     </ul>
