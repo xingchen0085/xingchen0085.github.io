@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>工具 on Adiosy&#39;s blog</title>
+    <link>http://www.adiosy.com/tags/%E5%B7%A5%E5%85%B7.html</link>
+    <description>Recent content in 工具 on Adiosy&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Thu, 27 Feb 2025 15:25:07 +0800</lastBuildDate>
+    <atom:link href="http://www.adiosy.com/tags/%E5%B7%A5%E5%85%B7/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[工具] 记一次Hugo&#43;Github Pages自动部署的艰难险途</title>
+      <link>http://www.adiosy.com/posts/%E5%B7%A5%E5%85%B7%E8%AE%B0%E4%B8%80%E6%AC%A1hugo&#43;github-pages%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%E7%9A%84%E8%89%B0%E9%9A%BE%E9%99%A9%E9%80%94.html</link>
+      <pubDate>Thu, 27 Feb 2025 15:25:07 +0800</pubDate>
+      <guid>http://www.adiosy.com/posts/%E5%B7%A5%E5%85%B7%E8%AE%B0%E4%B8%80%E6%AC%A1hugo&#43;github-pages%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%E7%9A%84%E8%89%B0%E9%9A%BE%E9%99%A9%E9%80%94.html</guid>
+      <description>&lt;p&gt;关于博客，我捣鼓了很多次，比如在2017年尝试过手写界面和JavaWeb服务端实现，也试过各种静态网站生成工具。但后来发现要么维护成本过大，要么写文章不方便。期间我也一直在寻找更合适、更稳定且维护成本不大的方案，经过几次对比验证，我最后选择了&lt;a href=&#34;https://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;，其建站方便，根据Markdown自动生成Html静态页面，符合原先习惯，文章易于管理和迁移，官方支持很多主题定制，界面都挺简洁漂亮。最终就留下一个问题，就是更新博客后如何自动部署？怎么给小伙伴们访问呢？除了购买云服务器外，从经济实惠角度，我觉得GithubPages是一个很好的选择。不过我在配置GithubPages自动发布的过程中还是遇到了很多问题，所以本文就简单记录一下如何将Hugo项目自动发布到GithubPages，并支持自定义域名访问。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

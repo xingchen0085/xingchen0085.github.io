@@ -6,8 +6,15 @@
     <description>Recent content in Categories on Adiosy&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Thu, 18 Jul 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 27 Feb 2025 15:25:07 +0800</lastBuildDate>
     <atom:link href="http://www.adiosy.com/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>工具</title>
+      <link>http://www.adiosy.com/categories/%E5%B7%A5%E5%85%B7.html</link>
+      <pubDate>Thu, 27 Feb 2025 15:25:07 +0800</pubDate>
+      <guid>http://www.adiosy.com/categories/%E5%B7%A5%E5%85%B7.html</guid>
+      <description></description>
+    </item>
     <item>
       <title>Vulkan</title>
       <link>http://www.adiosy.com/categories/vulkan.html</link>

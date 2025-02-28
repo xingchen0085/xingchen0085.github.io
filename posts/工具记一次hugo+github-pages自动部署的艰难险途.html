@@ -1,0 +1,974 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>[工具] 记一次Hugo&#43;Github Pages自动部署的艰难险途 | Adiosy&#39;s blog</title>
+    <meta property="og:title" content="[工具] 记一次Hugo&#43;Github Pages自动部署的艰难险途 - Adiosy&#39;s blog">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2025-02-27T15:25:07&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2025-02-27T15:25:07&#43;08:00'>
+        
+    <meta name="Keywords" content="C/C&#43;&#43;,Java,计算机图形学,渲染,动画">
+    <meta name="description" content="[工具] 记一次Hugo&#43;Github Pages自动部署的艰难险途">
+        
+    <meta name="author" content="xingchen">
+    <meta property="og:url" content="http://www.adiosy.com/posts/%E5%B7%A5%E5%85%B7%E8%AE%B0%E4%B8%80%E6%AC%A1hugo&#43;github-pages%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%E7%9A%84%E8%89%B0%E9%9A%BE%E9%99%A9%E9%80%94.html">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+        <link href="https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet">
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/custom.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://www.adiosy.com/">
+                        Adiosy&#39;s blog
+                    </a>
+                
+                <p class="description">民间图形学爱好者.</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://www.adiosy.com/">Home</a>
+                    
+                    <a  href="http://www.adiosy.com/archives.html" title="归档">归档</a>
+                    
+                    <a  href="http://www.adiosy.com/categories/opengl.html" title="OpenGL/ES">OpenGL/ES</a>
+                    
+                    <a  href="http://www.adiosy.com/categories/vulkan.html" title="Vulkan">Vulkan</a>
+                    
+                    <a  href="http://www.adiosy.com/books.html" title="读书">读书</a>
+                    
+                    <a  href="http://www.adiosy.com/about.html" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 220px;
+        margin-left: -260px;
+        padding: 5px 0px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 20px;
+        word-wrap: break-word;
+        white-space: nowrap;
+        z-index: 999;
+        cursor: pointer;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 13px;
+         
+         
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+        list-style: none;
+        padding-inline-start: 1px !important;
+    }
+
+    .post-toc .post-toc-content ul {
+        list-style: none;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: inherit;
+    }
+
+    .post-toc .post-toc-content>nav>ul>li{
+        background-color: #fff;
+         
+        padding: 2px 5px 2px 5px;
+    }
+
+    .post-toc .post-toc-content ul li:hover{
+ 
+ 
+    }
+
+    .post-toc .post-toc-content ul li a{
+        display: inline-block;
+        width: 100%;
+    }
+
+    .post-toc .post-toc-content ul li a:hover{
+        background-color: #666;
+        color: #fff;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 153px;">
+    <h2 class="post-toc-title">目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#建立一个hugo站点">建立一个Hugo站点</a></li>
+    <li><a href="#githubpages自动发布">GithubPages自动发布</a>
+      <ul>
+        <li><a href="#github帐号token设置">Github帐号Token设置</a></li>
+        <li><a href="#创建两个仓库">创建两个仓库</a></li>
+        <li><a href="#编写work-flow">编写Work flow</a></li>
+        <li><a href="#发布网站">发布网站</a></li>
+      </ul>
+    </li>
+    <li><a href="#自定义域名">自定义域名</a>
+      <ul>
+        <li><a href="#域名准备">域名准备</a></li>
+        <li><a href="#域名dns解析配置">域名DNS解析配置</a></li>
+        <li><a href="#github配置域名">Github配置域名</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 15, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 125,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 98.375
+                    },
+                };
+
+            var e = $(window).animate({scrollTop: 0}, 600);
+            e < t ? postToc.css(a.start) : postToc.css(a.process);
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+
+    <article class="post">
+        <header>
+            <h1 class="post-title">[工具] 记一次Hugo&#43;Github Pages自动部署的艰难险途</h1>
+        </header>
+        
+  <time datetime="2025-02-27T07:25:07Z" class="post-meta meta-date dt-published">
+    2025-02-27
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/%E5%B7%A5%E5%85%B7'>工具</a>
+  
+</div>
+
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">Table of Contents</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <p>关于博客，我捣鼓了很多次，比如在2017年尝试过手写界面和JavaWeb服务端实现，也试过各种静态网站生成工具。但后来发现要么维护成本过大，要么写文章不方便。期间我也一直在寻找更合适、更稳定且维护成本不大的方案，经过几次对比验证，我最后选择了<a href="https://gohugo.io/">Hugo</a>，其建站方便，根据Markdown自动生成Html静态页面，符合原先习惯，文章易于管理和迁移，官方支持很多主题定制，界面都挺简洁漂亮。最终就留下一个问题，就是更新博客后如何自动部署？怎么给小伙伴们访问呢？除了购买云服务器外，从经济实惠角度，我觉得GithubPages是一个很好的选择。不过我在配置GithubPages自动发布的过程中还是遇到了很多问题，所以本文就简单记录一下如何将Hugo项目自动发布到GithubPages，并支持自定义域名访问。</p>
+<blockquote>
+<p>题外话，我也尝试用过<a href="https://www.mkdocs.org/">MkDocs</a>，两者很像，但我感觉MkDocs更适合用来写一些关联性文章，比如一本书，容易分开结构，跳转上一章、下一章等；另外我在MkDocs中没找到支持 <strong>归档</strong> 的功能，这个功能我觉得对博客网站还是蛮重要的。</p>
+</blockquote>
+<h2 id="建立一个hugo站点">建立一个Hugo站点</h2>
+<p>可根据平台在Github中下载可执行文件：<a href="https://github.com/gohugoio/hugo/releases">https://github.com/gohugoio/hugo/releases</a>。</p>
+<p>我在编写本文时下载的版本是：hugo_extended_0.144.2_windows-amd64.zip。</p>
+<ol>
+<li>下载完成后，执行以下命令：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>hugo new site quickstart
+</span></span><span style="display:flex;"><span>git init
+</span></span><span style="display:flex;"><span>git submodule add https://github.com/theNewDynamic/gohugo-theme-ananke.git themes/ananke
+</span></span></code></pre></div><ol start="2">
+<li>
+<p>然后在hugo.toml文件中增加主题配置：<code>theme ='ananke'</code>。
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/hug_toml_init.png" target="_blank">
+        <img alt="hugo.toml中配置主题" src="./assets/hug_toml_init.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">hugo.toml中配置主题</figcaption>
+</figure>
+    </p>
+</li>
+<li>
+<p>启动 Hugo server</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>hugo server
+</span></span></code></pre></div><p>如果编译没有报错，在浏览器中访问：“localhost:1313” 即可看到部署好的网站。大概长这样：
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/hello_hugo.png" target="_blank">
+        <img alt="本地部署预览" src="./assets/hello_hugo.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">本地部署预览</figcaption>
+</figure>
+    </p>
+<ol start="4">
+<li>添加一个篇新文章</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>hugo new content content/posts/my-first-post.md
+</span></span></code></pre></div><p>此时会在<code>content/posts</code>目录下生成 my-first-post.md 文件，可以随意添加点内容：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-md" data-lang="md"><span style="display:flex;"><span>+++
+</span></span><span style="display:flex;"><span>date = &#39;2025-02-27T19:32:40+08:00&#39;
+</span></span><span style="display:flex;"><span>draft = true
+</span></span><span style="display:flex;"><span>title = &#39;My First Post&#39;
+</span></span><span style="display:flex;"><span>+++
+</span></span><span style="display:flex;"><span>## Introduction
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>This is **bold** text, and this is *emphasized* text.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Visit the [<span style="color:#000">Hugo</span>](<span style="color:#836c28">https://gohugo.io</span>) website!
+</span></span></code></pre></div><p>文章保存后会自动刷新页面，无需重新启动server。<code>draft = true</code>表示默认生成的文章是草稿状态，在预览或发布时添加<code>-D</code>以包含草稿文件。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>hugo -D server
+</span></span></code></pre></div><p>此时网站可以看到有这篇文章了：
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/first_hugo_blog.png" target="_blank">
+        <img alt="文章预览" src="./assets/first_hugo_blog.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">文章预览</figcaption>
+</figure>
+    </p>
+<p>以上就是Hugo建站的基本使用，对于主题定制等详细内容，就留给有兴趣的小伙伴慢慢摸索啦！</p>
+<h2 id="githubpages自动发布">GithubPages自动发布</h2>
+<h3 id="github帐号token设置">Github帐号Token设置</h3>
+<ol>
+<li>进入Github帐号设置页面【头像】-【Settings】-【Developer Settings】。
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/step_1_1.png" target="_blank">
+        <img alt="Developer Settings" src="./assets/step_1_1.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">Developer Settings</figcaption>
+</figure>
+    </li>
+<li>然后进入【Developer Settings】-【Tokens(classic)】，生成一个新的Tokens(classic)。
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/step_2.png" target="_blank">
+        <img alt="生成新的Token" src="./assets/step_2.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">生成新的Token</figcaption>
+</figure>
+    </li>
+<li>随意填一个名称后，<strong>过期时间选择永久【No expiration】</strong>（方便后续直接使用，如果为了安全考虑可根据实际情况选择）；另外选中 <strong>【repo】和【workflow】</strong> 选项（Token可访问数据权限，很重要），然后点击生成Token。
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/step_3.png" target="_blank">
+        <img alt="选择过期时间和访问范围" src="./assets/step_3.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">选择过期时间和访问范围</figcaption>
+</figure>
+    </li>
+<li>生成成功后Token只会显示一次，先妥善保管好Token。
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/step_4.png" target="_blank">
+        <img alt="Token信息" src="./assets/step_4.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">Token信息</figcaption>
+</figure>
+    </li>
+</ol>
+<h3 id="创建两个仓库">创建两个仓库</h3>
+<ol start="5">
+<li>两个仓库分别是：</li>
+</ol>
+<ul>
+<li>Blog源文件仓库，负责管理博客源文件，可以将其设置为Private。</li>
+<li>Blog发布仓库，作为GithubPages访问的仓库，将根据下文配置的 Action 自动更新和发布博客静态页面，<strong>必须设置为Public，且仓库名必须设置为${你的Github账号}.github.io</strong>。</li>
+</ul>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/step_5.png" target="_blank">
+        <img alt="创建源文件仓库" src="./assets/step_5.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">创建源文件仓库</figcaption>
+</figure>
+    
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/step_5_1.png" target="_blank">
+        <img alt="创建github.io仓库" src="./assets/step_5_1.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">创建github.io仓库</figcaption>
+</figure>
+    </p>
+<ol start="6">
+<li>在<code>hugo_demo_quickstart</code>仓库中打开【Settings】-【Secrets and variables】-【Actions】，将步骤4中保存的Token存放到一个Action secrets中，后续部署直接使用该Secret，防止Token被暴漏的风险。</li>
+</ol>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/step_6.png" target="_blank">
+        <img alt="创建Secret 保存Token" src="./assets/step_6.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">创建Secret 保存Token</figcaption>
+</figure>
+    </p>
+<h3 id="编写work-flow">编写Work flow</h3>
+<ol start="7">
+<li>在博客根目录中创建 <code>.github/workflows/</code> 文件夹（可参考Github的Workflow有关内容），然后添加一个yaml文件，内容如下：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#000">name</span>: <span style="color:#1c01ce">deploy</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#177500"># 代码提交到main分支时触发github action</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">on</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#000">push</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#000">branches</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#1c01ce">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000">jobs</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#000">deploy</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#000">runs-on</span>: <span style="color:#1c01ce">ubuntu-latest                                     </span> <span style="color:#177500"># 在什么环境执行</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000">steps</span>:                                                      <span style="color:#177500"># 步骤</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#000">name</span>: <span style="color:#1c01ce">Checkout                                       </span> <span style="color:#177500"># 第一步 Checkout</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#000">uses</span>: <span style="color:#1c01ce">actions/checkout@v4</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#000">with</span>:
+</span></span><span style="display:flex;"><span>              <span style="color:#000">fetch-depth</span>: <span style="color:#1c01ce">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#000">name</span>: <span style="color:#1c01ce">Update Submodule                               </span> <span style="color:#177500"># 第二步 更新子模块</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#000">run</span>: <span style="color:#1c01ce">git submodule update --init --recursive</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#000">name</span>: <span style="color:#1c01ce">Setup Hugo                                     </span> <span style="color:#177500"># 第三步 Hugo 配置</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#000">uses</span>: <span style="color:#1c01ce">peaceiris/actions-hugo@v3</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#000">with</span>:
+</span></span><span style="display:flex;"><span>              <span style="color:#000">hugo-version</span>: <span style="color:#c41a16">&#39;0.144.2&#39;</span>                           <span style="color:#177500"># 使用的 Hugo 版本</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#000">extended</span>: <span style="color:#a90d91">true</span>                                    <span style="color:#177500"># 是否使用 extended 版本</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#000">name</span>: <span style="color:#1c01ce">Build Web                                      </span> <span style="color:#177500"># 第四步 构建</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#000">run</span>: <span style="color:#1c01ce">hugo -E                                         </span> <span style="color:#177500"># 构建命令</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#000">name</span>: <span style="color:#1c01ce">Deploy Web                                     </span> <span style="color:#177500"># 第四步 发布</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#000">uses</span>: <span style="color:#1c01ce">peaceiris/actions-gh-pages@v4</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#000">with</span>:
+</span></span><span style="display:flex;"><span>              <span style="color:#000">PERSONAL_TOKEN</span>: <span style="color:#1c01ce">${{ secrets.你的KEY名称 }}</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#000">EXTERNAL_REPOSITORY</span>: <span style="color:#1c01ce">你的Github帐号/你的Github帐号.github.io</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#000">PUBLISH_BRANCH</span>: <span style="color:#1c01ce">main</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#000">PUBLISH_DIR</span>: <span style="color:#1c01ce">./public</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#000">commit_message</span>: <span style="color:#1c01ce">auto deploy</span>
+</span></span></code></pre></div><p>注意修改几个点：</p>
+<p>1） Hugo版本。因为本文使用的是 hugo_extended_0.144.2_windows-amd64 验证，所以版本填写为<code>0.144.2</code>，且<code>extended</code>为true。</p>
+<p>2）构建命令。如果自动部署需要包含草稿文件，加 <code>-D</code> 参数；文件中加了 <code>-E</code> 指的是包含已过期文件（Hugo官方有说明）。</p>
+<p>3）<code>PERSONAL_TOKEN</code>指的是在<code>hugo_demo_quickstart</code>中配置的Sercet名称，不是Token本身，注意只要把“你的KEY名称”替换即可，“${{ secrets.xx }}”格式保持不变。</p>
+<p>4）如果定制主题后不想动态更新，也可以去掉第二步，本地也去掉Submodule。</p>
+<h3 id="发布网站">发布网站</h3>
+<ol start="8">
+<li>为了后续方便管理，可以增加一个<code>.gitignore</code>忽略掉生成的文件。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#177500"># 自动生成的文件</span>
+</span></span><span style="display:flex;"><span>public
+</span></span><span style="display:flex;"><span>resources
+</span></span><span style="display:flex;"><span>.hugo_build.lock
+</span></span></code></pre></div><ol start="9">
+<li>将博客源文件提交到<code>hugo_demo_quickstart</code>仓库。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>git add .
+</span></span><span style="display:flex;"><span>git commit -m <span style="color:#c41a16">&#39;Init.&#39;</span>
+</span></span><span style="display:flex;"><span>git push origin main
+</span></span></code></pre></div><ol start="10">
+<li>Push完成后，就会触发Github的Action自动运行。可以在这个页面查看Action的执行情况。</li>
+</ol>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/step_10.png" target="_blank">
+        <img alt="Action执行情况" src="./assets/step_10.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">Action执行情况</figcaption>
+</figure>
+    </p>
+<p>还可以点击某个具体的 Action 查看执行日志，当Action失败时，可以根据日志排查问题。
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/step_10_1.png" target="_blank">
+        <img alt="Action执行日志" src="./assets/step_10_1.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">Action执行日志</figcaption>
+</figure>
+    </p>
+<ol start="11">
+<li>
+<p>此时前往<code>xxx.github.io</code>仓库，会发现自动提交了一笔合入。
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/step_10_2.png" target="_blank">
+        <img alt="github.io仓库合入记录" src="./assets/step_10_2.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">github.io仓库合入记录</figcaption>
+</figure>
+    </p>
+</li>
+<li>
+<p>此时打开<code>xxx.github.io</code>网址，如果没问题的话会看到网站部署成功了。
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/step_10_3.png" target="_blank">
+        <img alt="静态页面部署成功" src="./assets/step_10_3.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">静态页面部署成功</figcaption>
+</figure>
+    </p>
+</li>
+</ol>
+<p>到此为止，Hugo+GithubPage自动发布就算完成了，不过为了方便宣传和记忆，还可以自定义域名指向GithubPages，这样就可以通过自定义域名访问我们的博客了。</p>
+<h2 id="自定义域名">自定义域名</h2>
+<h3 id="域名准备">域名准备</h3>
+<p>域名可以通过阿里云、腾讯云等云服务商注册并备案完成，这个步骤省略。</p>
+<h3 id="域名dns解析配置">域名DNS解析配置</h3>
+<ol>
+<li>首先需要添加验证域名，点击【头像】-【Settings】-【Pages】-【Add a domain】。</li>
+</ol>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/add_verified_domain.png" target="_blank">
+        <img alt="添加验证域名" src="./assets/add_verified_domain.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">添加验证域名</figcaption>
+</figure>
+    </p>
+<p><figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/add_verified_domain2.png" target="_blank">
+        <img alt="添加验证域名2" src="./assets/add_verified_domain2.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">添加验证域名2</figcaption>
+</figure>
+    </p>
+<ol start="2">
+<li>接下来Github会提供一个TXT记录，需要在域名解析中添加。
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/dns_txt_record.png" target="_blank">
+        <img alt="DNS TXT 记录信息" src="./assets/dns_txt_record.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">DNS TXT 记录信息</figcaption>
+</figure>
+    </li>
+</ol>
+<p>具体域名DNS解析根据不同的提供商（比如腾讯云或阿里云）会有所不同，以下是腾讯云中的配置示例。
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/dns_txt_record2.png" target="_blank">
+        <img alt="添加域名解析TXT记录" src="./assets/dns_txt_record2.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">添加域名解析TXT记录</figcaption>
+</figure>
+    </p>
+<ol start="3">
+<li>添加完成后，虽然DNS解析显示要24小时内生效，但一般几分钟内就生效了。此时回到Github，点击【Verify】验证记录。
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/verify_domain_success.png" target="_blank">
+        <img alt="域名验证成功" src="./assets/verify_domain_success.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">域名验证成功</figcaption>
+</figure>
+    </li>
+</ol>
+<h3 id="github配置域名">Github配置域名</h3>
+<ol start="4">
+<li>
+<p>回到<code>xxx.github.io</code>仓库，点击【Settings】-【Pages】，在【Custom domain】中填入刚才的自定义域名。
+<figure class="max-w-2xl mx-auto overflow-hidden">
+    
+    <a data-fancybox="gallery" href="./assets/custom_domain.png" target="_blank">
+        <img alt="Custom domain配置" src="./assets/custom_domain.png" />
+    </a>
+    
+    <figcaption class="p-2 text-center">Custom domain配置</figcaption>
+</figure>
+    </p>
+</li>
+<li>
+<p>配置完成后，每次自动发布后地址会重新变为<code>xxx.github.io</code>，所以需要在博客源文件夹<code>content</code>中添加一个<code>CNAME</code>的文件，文件内容就是你刚才配置的域名。</p>
+</li>
+</ol>
+<p>完成以上步骤，Hugo+GithubPages自动发布就配置成功啦，如果有什么问题，可在评论区留言哦。</p>
+<h2 id="参考">参考</h2>
+<ol>
+<li><a href="https://sazerac-kk.github.io/p/%E6%95%99%E7%A8%8Bhugo-github%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2/">Sazerac.教程hugo-github博客部署</a></li>
+<li><a href="https://blog.csdn.net/qq_34902437/article/details/140298754">【教程】Github Page 添加自定义域名</a></li>
+</ol>
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="http://www.adiosy.com/">xingchen</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="http://www.adiosy.com/posts/%E5%B7%A5%E5%85%B7%E8%AE%B0%E4%B8%80%E6%AC%A1hugo&#43;github-pages%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%E7%9A%84%E8%89%B0%E9%9A%BE%E9%99%A9%E9%80%94.html">http://www.adiosy.com/posts/%E5%B7%A5%E5%85%B7%E8%AE%B0%E4%B8%80%E6%AC%A1hugo&#43;github-pages%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%E7%9A%84%E8%89%B0%E9%9A%BE%E9%99%A9%E9%80%94.html</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan04_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E6%9D%90%E8%B4%A8%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html">Learn_Vulkan04_渲染框架实现_材质系统设计</a></li>
+        
+        <li><a href="/posts/android%E8%B7%A8%E8%BF%9B%E7%A8%8B%E6%B8%B2%E6%9F%93-hardwarebuffer.html">Android跨进程渲染-HardwareBuffer</a></li>
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html">Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境</a></li>
+        
+        <li><a href="/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html">OpenGL或Vulkan渲染YUV格式数据</a></li>
+        
+        <li><a href="/posts/learn_vulkan/learn_vulkan02_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E5%BC%80%E7%AF%87.html">Learn_Vulkan02_渲染框架实现_开篇</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/%E5%B7%A5%E5%85%B7'>工具</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "xingchen0085/doc"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+
+    
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">飞雪无情</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+
+    <br />
+        
+        <div>
+            <span id="busuanzi_container_site_uv" style="font-family: auto;">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+            </span>
+            &copy; 2025 <a href="http://www.adiosy.com/">Adiosy&#39;s blog By xingchen</a>
+                
+                | <a rel="nofollow" target="_blank" href="http://beian.miit.gov.cn/">滇ICP备2022000560号-1</a>
+            
+    </div>
+</footer>
+
+
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.2.8/raphael.min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/flowchart/1.12.2/flowchart.min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+                if (!window.flowchart) return;
+                const blocks = document.querySelectorAll('pre code.language-flowchart, pre code.language-flow');
+                for (let i = 0; i < blocks.length; i++) {
+                    const block = blocks[i];
+                    const rootElement = block.parentNode;
+                    const container = document.createElement('div');
+                    const id = `js-flowchart-diagrams-${i}`;
+                    container.id = id;
+                    container.className = 'align-center';
+                    container.setAttribute("style", "overFlow-x:auto");
+                    rootElement.parentNode.replaceChild(container, rootElement);
+                    const diagram = flowchart.parse(block.childNodes[0].nodeValue);
+                    diagram.drawSVG(id, window.flowchartDiagramsOptions ? window.flowchartDiagramsOptions : {});
+                }
+            })();
+        </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js" crossorigin="anonymous"></script>
+        <script>(function () {
+            if (!window.Diagram) return;
+            const blocks = document.querySelectorAll('pre code.language-sequence');
+            for (let i = 0; i < blocks.length; i++) {
+                const block = blocks[i];
+                
+                const rootElement = block.parentNode;
+                const container = document.createElement('div');
+                const id = `js-sequence-diag-${i}`;
+                container.id = id;
+                container.className = 'align-center';
+                container.setAttribute("style", "overFlow-x:auto");
+                rootElement.parentNode.replaceChild(container, rootElement);
+
+                const diagram = Diagram.parse(block.childNodes[0].nodeValue);
+                diagram.drawSVG(id, window.sequenceDiagramsOptions
+                    ? window.sequenceDiagramsOptions
+                    : { theme: 'simple' });
+            }
+        })();
+        </script><script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+
+
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        
+<form id="search" action='http://www.adiosy.com/search' method="get" accept-charset="utf-8" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://www.adiosy.com/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/%E5%B7%A5%E5%85%B7%E8%AE%B0%E4%B8%80%E6%AC%A1hugo&#43;github-pages%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%E7%9A%84%E8%89%B0%E9%9A%BE%E9%99%A9%E9%80%94.html" title="[工具] 记一次Hugo&#43;Github Pages自动部署的艰难险途">[工具] 记一次Hugo&#43;Github Pages自动部署的艰难险途</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan04_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E6%9D%90%E8%B4%A8%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html" title="Learn_Vulkan04_渲染框架实现_材质系统设计">Learn_Vulkan04_渲染框架实现_材质系统设计</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/android%E8%B7%A8%E8%BF%9B%E7%A8%8B%E6%B8%B2%E6%9F%93-hardwarebuffer.html" title="Android跨进程渲染-HardwareBuffer">Android跨进程渲染-HardwareBuffer</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan03_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E7%AA%97%E5%8F%A3%E5%92%8Cvulkan%E7%8E%AF%E5%A2%83.html" title="Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境">Learn_Vulkan03_渲染框架实现_窗口和Vulkan环境</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl%E6%88%96vulkan%E6%B8%B2%E6%9F%93yuv%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE.html" title="OpenGL或Vulkan渲染YUV格式数据">OpenGL或Vulkan渲染YUV格式数据</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan02_%E6%B8%B2%E6%9F%93%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0_%E5%BC%80%E7%AF%87.html" title="Learn_Vulkan02_渲染框架实现_开篇">Learn_Vulkan02_渲染框架实现_开篇</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan01_%E9%87%8D%E8%A6%81%E5%AF%B9%E8%B1%A1%E6%B5%85%E6%9E%90.html" title="Learn_Vulkan01_重要对象浅析">Learn_Vulkan01_重要对象浅析</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/learn_vulkan/learn_vulkan00_%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%89%E8%A7%92%E5%BD%A2.html" title="Learn_Vulkan00_第一个三角形">Learn_Vulkan00_第一个三角形</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/hello-openxr---%E7%AC%AC%E4%B8%80%E4%B8%AAopenxr%E7%A8%8B%E5%BA%8F.html" title="Hello OpenXR - 第一个OpenXR程序">Hello OpenXR - 第一个OpenXR程序</a>
+    </li>
+    
+    <li>
+        <a href="http://www.adiosy.com/posts/opengl_renderer/04_%E7%BB%98%E5%88%B6%E7%82%B9%E7%BA%BF%E9%9D%A2.html" title="OpenGL渲染器04_绘制点线面">OpenGL渲染器04_绘制点线面</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">加入讨论群</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="#" title="加入讨论群" target="_blank" style="color:red">
+                
+                    <img src="/posts/assets/qrcode_qq_group.jpg">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        
+<h3 class="widget-title">Categories</h3>
+<ul class="widget-list">
+    
+    <li><a href="http://www.adiosy.com/categories/opengl.html">OpenGL (4)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/openxr.html">OpenXR (1)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/vulkan.html">Vulkan (5)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/yuv.html">YUV (1)</a></li>
+    
+    <li><a href="http://www.adiosy.com/categories/%E5%B7%A5%E5%85%B7.html">工具 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        
+<h3 class="widget-title">Tags</h3>
+<div class="tagcloud">
+    
+    <a href="http://www.adiosy.com/tags/monado.html">Monado</a>
+    
+    <a href="http://www.adiosy.com/tags/opengl.html">OpenGL</a>
+    
+    <a href="http://www.adiosy.com/tags/openxr.html">OpenXR</a>
+    
+    <a href="http://www.adiosy.com/tags/vr/ar.html">VR/AR</a>
+    
+    <a href="http://www.adiosy.com/tags/vulkan.html">Vulkan</a>
+    
+    <a href="http://www.adiosy.com/tags/yuv.html">YUV</a>
+    
+    <a href="http://www.adiosy.com/tags/%E5%B7%A5%E5%85%B7.html">工具</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://github.com/xingchen0085" title="我的Github" target="_blank">我的Github</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://gitee.com/xingchen0085" title="我的Gitee" target="_blank">我的Gitee</a>
+        </li>
+        
+        <li>
+            <a target="_blank" href="https://potatomelon.com" title="土豆社区" target="_blank">土豆社区</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="http://www.adiosy.com/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
