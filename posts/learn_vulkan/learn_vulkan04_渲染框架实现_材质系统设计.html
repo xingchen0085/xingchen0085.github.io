@@ -445,7 +445,7 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>};
 </span></span></code></pre></div><blockquote>
-<p><strong>alignas 是为了手动内存对齐。改工程中，给Shader传输的数据包全部采用 std140 形式打包。</strong></p>
+<p><strong>alignas 是为了手动内存对齐。该工程中，给Shader传输的数据包全部采用 std140 形式打包。</strong></p>
 </blockquote>
 <p><strong>材质组件的第一个作用如何体现呢？</strong></p>
 <p>可以通过下述代码，给Enity添加一个材质组件。</p>
@@ -565,8 +565,8 @@
 </span></span></code></pre></div><h2 id="设计规则">设计规则</h2>
 <p>上文把该工程材质系统设计用到的内容都列了以下，但其实内部还有很多小的细节，又或者有的是困惑了非常之久的问题。所以我将部分再详细描述以下。</p>
 <h3 id="1-descriptorset规范">1. DescriptorSet规范</h3>
-<p>上文提到，关于渲染的大部分内容其实实在Material System中实现的。和Shader打交道的就是Material System，我们可以通过Uniform Buffer和Texture等方式将数据传递给Shader。但有一个问题是，VkDescriptorSet是一个透明对象，它和CommandBuffer类似，也是需要从Pool中申请处理，然后执行”录制“，再提交给GPU。只不过这里的”录制“就是将材质参数和纹理绑定到DescriptorSet，调用的是<code>vkUpdateDescriptorSets()</code>这个API。</p>
-<p>但是，当后期渲染场景变大，材质数量变多之后，如果每次都执行一边vkUpdateDescriptorSets()，会导致极大的性能问题。所以<strong>控制<code>vkUpdateDescriptorSets()</code>的调用次数，对于性能来说较为重要。</strong></p>
+<p>上文提到，关于渲染的大部分内容其实是在Material System中实现的。和Shader打交道的就是Material System，我们可以通过Uniform Buffer和Texture等方式将数据传递给Shader。但有一个问题是，VkDescriptorSet是一个透明对象，它和CommandBuffer类似，也是需要从Pool中申请处理，然后执行”录制“，再提交给GPU。只不过这里的”录制“就是将材质参数和纹理绑定到DescriptorSet，调用的是<code>vkUpdateDescriptorSets()</code>这个API。</p>
+<p>但是，当后期渲染场景变大，材质数量变多之后，如果每次都执行一遍vkUpdateDescriptorSets()，会导致性能问题。所以<strong>控制<code>vkUpdateDescriptorSets()</code>的调用次数就很重要了。</strong></p>
 <p>那怎么做呢？</p>
 <p>一般的方案是：<strong>传递给着色器的数据，根据不同的更新频率分类，将其分为若干个DescriptorSet，单独更新</strong>。切记不要将不同更新频率的数据放在同一个DescriptorSet中，这样会白白浪费性能。</p>
 <p>举个例子：我们可以分为一下几种DescriptorSet。</p>
@@ -673,8 +673,8 @@
 </span></span><span style="display:flex;"><span>        ...
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>DS3 每个Enity的数据，比如Enity的状态，模型矩阵等信息，这类数据每个Enitity都需要更新。<strong>最好使用Push_Constant常量推送方式，只有在数据量超过了Push_Constant范围后再考虑使用DescriptorSet。</strong></p>
-<p>DS4 每个Mesh的数据，比如Mesh额外信息，这类数据每个Mesh都需要更新。<strong>最好使用Push_Constant常量推送方式，只有在数据量超过了Push_Constant范围后再考虑使用DescriptorSet。</strong></p>
+</span></span></code></pre></div><p>DS3 每个Enity的数据，比如Enity的状态，模型矩阵等信息，这类数据每个Enitity都需要更新。<strong>最好使用Push_Constant常量推送方式，只有在大小超过了Push_Constant范围后再考虑使用DescriptorSet。</strong></p>
+<p>DS4 每个Mesh的数据，比如Mesh额外信息，这类数据每个Mesh都需要更新。<strong>最好使用Push_Constant常量推送方式，只有在大小超过了Push_Constant范围后再考虑使用DescriptorSet。</strong></p>
 <p>举个例子：我设计了一个UnlitMaterial的材质，它是一个无光照材质。片元着色器中接收两个base_color的值，这两个base_color通过mix()函数混合；另外base_color也可以是两张纹理提供颜色数据。所以我的着色器编写如下：</p>
 <p><figure class="max-w-2xl mx-auto overflow-hidden">
     
@@ -865,8 +865,8 @@
 <p>解决这个问题，目前我了解到的有三种解决方案：</p>
 <p>1/ 创建DescriptorSetPool时，指定VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT 标识。当指定该标识后，Descriptor的释放需要手动进行，所以可以做到动态的申请和是否DescriptorSet。但这就没用到DescriptorPool原生释放上的一些优化，针对Material，也不应该每一帧都重新申请再释放DescriptorSet，这样意味着每一帧都需要vkUpdateDescriptorSets()。所以弃用该方案。</p>
 <p>2/ 手动指定vkResetDescriptorPool()，重置Pool，但也需要每一帧都需要vkUpdateDescriptorSets()。所以弃用该方案。</p>
-<p>3/ 申请一定量的DescriptorSet后，将其缓存，然后复用这些DescriptorSet。最终Destory DescriptorPool时自动释放这些DescriptorSet。这个方案可行，但这个”一定量“不容把控。</p>
-<p>我目前考虑使用的方案是：<strong>采用方案三，然后默认初始化16个DescriptorSet，当发现Material数量超过16时，以2倍的速率扩容，知道数量大于等于Material数量，这一期间再重新创建一次DescriptorPool</strong>。该方案使用这样的扩容机制：16 -&gt; 32 -&gt; 48 -&gt; 96 -&gt; 128 -&gt; 256 -&gt; 512 -&gt; 1024 -&gt; 2048&hellip;</p>
+<p>3/ 申请一定量的DescriptorSet后，将其缓存，然后复用这些DescriptorSet。最终Destory DescriptorPool时自动释放这些DescriptorSet。这个方案可行，但这个”一定量“不好把控。</p>
+<p>我目前考虑使用的方案是：<strong>采用方案三，然后默认初始化16个DescriptorSet，当发现Material数量超过16时，以2倍的速率扩容，扩容时重新创建一次DescriptorPool和申请DescriptorSet</strong>。该方案使用这样的扩容机制：16 -&gt; 32 -&gt; 48 -&gt; 96 -&gt; 128 -&gt; 256 -&gt; 512 -&gt; 1024 -&gt; 2048&hellip;</p>
 <p>实现：</p>
 <p>1/ 定义默认DescriptorSet数量和最大数量。</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#633820">#define NUM_MATERIAL_BATCH              16
@@ -941,7 +941,7 @@
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>});
 </span></span></code></pre></div><h2 id="总结">总结</h2>
-<p>关于材质系统的设计，受之前OpenGL写过一个版本的影响，还是将其兼容到ECS中去了，发现的确及其的方便，这是一大幸事。但是，因为OpenGL和Vulkan的差别很大，特别是DescriptorSet这部分，绞尽脑汁设计了特别特别久，比如下图是我当时考虑的设计方案，我就是将其列出来，然后将其优缺点加上，看看缺点能不能解决。实在不能解决就弃用。</p>
+<p>关于材质系统的设计，受之前OpenGL写过一个版本的影响，还是将其兼容到ECS中去了，发现的确很方便，这是一大幸事。但是，因为OpenGL和Vulkan的差别很大，特别是DescriptorSet这部分，绞尽脑汁设计了特别久，比如下图是我当时考虑的所有设计方案，对比各方案优缺点，然后尝试能不能处理掉缺点。实在不能解决就弃用。</p>
 <p><figure class="max-w-2xl mx-auto overflow-hidden">
     
     <a data-fancybox="gallery" href="../assets/image-20240719170229611.png" target="_blank">
@@ -952,7 +952,7 @@
 </figure>
     </p>
 <p>不过，上述方案都被我自己推翻了。最终就是舍弃掉一部分之前的想法，折中设计出当前这个方案。所以该方案在后续还会一点点的去优化。</p>
-<p>所以，整个过程还是收获良多的，收获到一些架构设计的经验，当一个架构能做到方便理解、方便维护、方便拓展是非常有成就感的一件事。另外也体会到了Vulkan一些设计的优势之处，对Vulkan的了解又更深入了些。如果您看到了这里，也对渲染/动画/物理等内容感兴趣的话，可以关注一下，一起交个朋友，手动比心。哈哈。</p>
+<p>所以，整个过程还是收获良多的，收获到一些架构设计的经验，当一个架构能做到方便理解、方便维护、方便拓展是非常有成就感的一件事。另外也体会到了Vulkan一些设计的优势之处，对Vulkan的了解又更深入了些。</p>
         </div>
 
         
